@@ -7,9 +7,24 @@ Cinematic, editorial portfolio site for **Ansh Chandpara — Director · Title D
 ```bash
 npm install
 npm run dev      # http://localhost:5173
+npm run dev:lan  # same, on your local network (test on a phone)
 npm run build    # production build → dist/
 npm run preview  # preview the build
 ```
+
+## Publishing (local first, then live)
+
+The site is live at **[chandparaaa.in](https://chandparaaa.in)** via GitHub Pages. Work happens
+on the **`dev`** branch, which never deploys; **`main`** is the live branch.
+
+```bash
+npm run status   # what's on your machine vs. what's live
+npm run ship     # validate the build, then publish dev → main → live
+```
+
+`npm run ship` only publishes if `npm run build` succeeds, so a broken build can't reach the
+live site. Pass a message to control the commit text: `npm run ship "Reworked hero timing"`.
+Deploys take ~40s; the script waits and reports when the site is live.
 
 > Requires Node 18+. This repo was set up with Node 22 LTS.
 

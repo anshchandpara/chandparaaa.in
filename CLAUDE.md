@@ -4,11 +4,30 @@ Cinematic dark portfolio for **Ansh Chandpara — Director · Title Designer · 
 **React + Vite.** `README.md` is the authoritative reference for the file tree, design tokens, and
 the imagery / video / credits / location systems — read it before making changes.
 
+## Workflow: local first, then publish
+**`dev` = working branch (default; never deploys). `main` = live.** Never commit design work
+straight to `main`.
+```bash
+npm run dev       # localhost:5173 — iterate here
+npm run dev:lan   # same, exposed on the LAN → check on your phone
+npm run status    # what's local vs. live
+npm run ship      # commit + validate build + dev→main→deploy (only when happy)
+npm run ship "Reworked hero timing"   # with a custom commit message
+```
+`tools/ship.sh` refuses to run off `dev`, aborts if `npm run build` fails (so a broken build
+can never reach the live site), pushes `dev` as backup, fast-forward merges into `main`,
+returns you to `dev`, then polls the Actions run and prints the result. `tools/status.sh` shows
+uncommitted files + unshipped commits.
+
 ## Deployment (live)
 - **GitHub Pages** from public repo **`anshchandpara/chandparaaa.in`**; custom domain
-  **chandparaaa.in** (`public/CNAME`). Deploys via `.github/workflows/deploy.yml`
-  (Actions: npm ci → vite build → deploy-pages) on every push to `main` — to ship changes,
-  commit + push. Pages build_type=workflow; cname set via API.
+  **chandparaaa.in** (`public/CNAME`), **HTTPS enforced** (Let's Encrypt cert issued for the
+  apex). Deploys via `.github/workflows/deploy.yml` (Actions: npm ci → vite build →
+  deploy-pages) on push to `main` only. Pages build_type=workflow; cname set via API.
+- **Cert gotcha:** if the custom domain is attached before DNS resolves to GitHub, no cert is
+  ever requested (`https_certificate: null`, serves the wildcard `*.github.io` cert). Fix =
+  detach + re-attach the domain via API (`PUT /pages` with `cname:null`, then the domain
+  again) — issuance starts immediately.
 - **gh CLI** at `~/.local/bin/gh`, authed as `anshchandpara` (device flow; scopes
   repo/workflow/read:org). Git identity: Ansh Chandpara <anshchandpara@gmail.com>.
 - **DNS (user-side, at registrar):** apex A → 185.199.108.153/.109/.110/.111, www CNAME →

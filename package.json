@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:lan": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ship": "bash tools/ship.sh",
+    "status": "bash tools/status.sh"
   },
   "dependencies": {
     "gsap": "^3.12.5",
