@@ -4,6 +4,18 @@ Cinematic dark portfolio for **Ansh Chandpara — Director · Title Designer · 
 **React + Vite.** `README.md` is the authoritative reference for the file tree, design tokens, and
 the imagery / video / credits / location systems — read it before making changes.
 
+## Deployment (live)
+- **GitHub Pages** from public repo **`anshchandpara/chandparaaa.in`**; custom domain
+  **chandparaaa.in** (`public/CNAME`). Deploys via `.github/workflows/deploy.yml`
+  (Actions: npm ci → vite build → deploy-pages) on every push to `main` — to ship changes,
+  commit + push. Pages build_type=workflow; cname set via API.
+- **gh CLI** at `~/.local/bin/gh`, authed as `anshchandpara` (device flow; scopes
+  repo/workflow/read:org). Git identity: Ansh Chandpara <anshchandpara@gmail.com>.
+- **DNS (user-side, at registrar):** apex A → 185.199.108.153/.109/.110/.111, www CNAME →
+  `anshchandpara.github.io`. As of 2026-07-25 the domain still pointed at registrar parking
+  (15.197.148.33) — once switched, enable **Enforce HTTPS** (API: `PUT /pages
+  -F https_enforced=true` after cert issues).
+
 ## Run
 ```bash
 cd ansh-portfolio
