@@ -1,0 +1,131 @@
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 110px var(--pad-x) 52px;
+  border-bottom: 1px solid var(--line);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero__media--img { filter: saturate(1) contrast(1.05) brightness(0.66) grayscale(0.12); }
+.hero__media--placeholder { background: var(--bg); }
+.hero__media--video {
+  background: var(--bg);
+  filter: saturate(1.06) contrast(1.05) brightness(0.82);
+}
+
+.hero__veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    radial-gradient(120% 90% at 18% 100%, rgba(10, 10, 10, 0.72), transparent 58%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.45) 0%, transparent 34%, rgba(10, 10, 10, 0.92) 100%);
+}
+
+.hero__top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: auto;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.hero__top .eyebrow { margin: 0; }
+
+.hero__title {
+  position: relative;
+  z-index: 2;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(35px, 7.25vw, 110px);
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0 0 40px;
+  color: var(--fg);
+}
+
+/* Each letter is independently transformable for the scatter-in intro. */
+.hero__letter {
+  display: inline-block;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* SVG filter holder — kept out of flow */
+.hero__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* --- Wordmark hover: colour invert + glassy distortion --- */
+.hero__word {
+  position: relative;
+  display: inline-block;
+  color: var(--fg);
+  /* Glass distortion filter is always attached; it's an identity warp until
+     the displacement scale is animated up on hover (see Hero.jsx). */
+  filter: url(#hero-glass);
+}
+
+/* On hover the wordmark inverts against whatever sits behind it (dark backdrop
+   or the showreel video) via the difference blend. */
+.hero__word.is-hot {
+  mix-blend-mode: difference;
+  color: #fff;
+}
+
+.hero__foot {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.hero__sub {
+  max-width: 460px;
+  font-size: clamp(15px, 1.3vw, 17px);
+  line-height: 1.6;
+  color: var(--fg-2);
+  margin: 0;
+}
+
+.hero__scroll {
+  position: absolute;
+  right: var(--pad-x);
+  bottom: 52px;
+  z-index: 2;
+  color: var(--fg-3);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+@media (max-width: 720px) {
+  .hero__scroll { display: none; }
+  .hero__foot { gap: 28px; }
+}

@@ -1,0 +1,146 @@
+.work__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 24px;
+  margin-bottom: clamp(48px, 6vw, 72px);
+}
+
+.work__title {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(38px, 5.5vw, 72px);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.work__eyebrow { margin: 0 0 8px; }
+
+/* Masonry — fixed round-robin flex columns (stable when infinite scroll
+   appends cards; CSS multicolumn would rebalance and reshuffle). Edge-to-edge:
+   full-bleed width, no gutters, thumbnails butt flush. */
+.work__grid {
+  display: flex;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.work__col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.work__sentinel {
+  height: 1px;
+}
+
+.fcard {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
+.fcard__link {
+  position: relative;
+  display: block;
+}
+
+.fcard__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+.fcard__img,
+.fcard__gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.fcard__img {
+  object-fit: cover;
+  transform: scale(1.012);
+  transition: transform 0.4s var(--ease);
+  will-change: transform;
+}
+.fcard__link:hover .fcard__img { transform: scale(1.055); }
+
+.fcard__num {
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  z-index: 2;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.82);
+  mix-blend-mode: difference;
+}
+
+/* Caption overlaid on the thumbnail (over a gradient scrim) so the images
+   butt directly together with no gap. */
+.fcard__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  margin: 0;
+  padding: clamp(40px, 5vw, 72px) clamp(18px, 2.4vw, 36px) clamp(18px, 2vw, 28px);
+  background: linear-gradient(
+    to top,
+    rgba(10, 10, 10, 0.92) 0%,
+    rgba(10, 10, 10, 0.5) 45%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.fcard__title {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(22px, 2.4vw, 34px);
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  color: var(--fg);
+}
+
+.fcard__meta {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  margin: 0;
+}
+
+.work__foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: clamp(40px, 5vw, 72px);
+  border-top: 1px solid var(--line);
+  padding-top: 28px;
+}
+
+.work__all {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 16px;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(24px, 3vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  transition: color 0.35s var(--ease);
+}
+.work__all:hover { color: var(--accent); }

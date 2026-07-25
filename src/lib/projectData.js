@@ -1,0 +1,75 @@
+import data from '../data/projects.json';
+import { getAccent } from './accents';
+import { getImages, baseName } from './images';
+
+/**
+ * Flatten work + lab into a single ordered list of detail-page records.
+ * Draft projects are excluded by default (they stay hidden until content is
+ * added); pass `{ includeDrafts: true }` to resolve one for preview.
+ */
+export function getAllProjects({ includeDrafts = false } = {}) {
+  const list = [
+    ...data.work.map((p) => ({
+      slug: p.slug,
+      num: p.num,
+      title: p.title,
+      subtitle: p.subtitle || '',
+      category: p.category,
+      client: p.client || '—',
+      year: p.year ? String(p.year) : '—',
+      role: p.role || '—',
+      platform: p.platform || '—',
+      desc: p.desc || '',
+      credits: p.credits || [],
+      image: p.image || '',
+      gallery: p.gallery || [],
+      video: p.video || '', // Vimeo ID — plays the title sequence as the hero
+      draft: !!p.draft,
+    })),
+    ...data.lab.map((x) => ({
+      slug: x.slug,
+      num: `L·${x.code}`,
+      title: x.title,
+      subtitle: '',
+      category: x.kind,
+      client: 'Personal',
+      year: x.year ? String(x.year) : '—',
+      role: 'Experiment',
+      platform: '—',
+      desc: x.desc || '',
+      credits: [],
+      image: '',
+      gallery: [],
+      video: x.video || '',
+      draft: !!x.draft,
+    })),
+  ];
+  return includeDrafts ? list : list.filter((r) => !r.draft);
+}
+
+/** Resolve a project (and its "next") by slug, with derived view fields. */
+export function getProject(slug) {
+  // Resolve against everything (so a draft's ?p= link still previews), but
+  // pick "next" only among published projects — never link out to a draft.
+  const all = getAllProjects({ includeDrafts: true });
+  const published = all.filter((a) => !a.draft);
+
+  const item = all.find((a) => a.slug === slug) || published[0] || all[0];
+  const pubIdx = published.findIndex((a) => a.slug === item.slug);
+  const next =
+    published.length > 0
+      ? published[(pubIdx >= 0 ? pubIdx + 1 : 0) % published.length]
+      : item;
+  const accent = getAccent(item.slug);
+
+  // Real imagery: designated hero first, the rest become the gallery.
+  const imgs = getImages(item.slug, baseName(item.image));
+  const heroImg = imgs[0] || '';
+  const galleryImgs = imgs.slice(1).map((src, i) => ({
+    src,
+    alt: `${item.title || 'Frame'} — frame ${i + 1}`,
+    wide: i === 0,
+  }));
+
+  return { item, next, accent, heroImg, galleryImgs };
+}

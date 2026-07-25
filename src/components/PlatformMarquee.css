@@ -1,0 +1,61 @@
+/* Full-bleed band, matching the masonry's edge-to-edge treatment. */
+.pmq {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  overflow: hidden;
+  padding: clamp(28px, 4vw, 48px) 0;
+  /* soft cinematic fade at both edges */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 clamp(48px, 8vw, 160px),
+    #000 calc(100% - clamp(48px, 8vw, 160px)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 clamp(48px, 8vw, 160px),
+    #000 calc(100% - clamp(48px, 8vw, 160px)),
+    transparent
+  );
+}
+
+.pmq__track {
+  display: flex;
+  width: max-content;
+  animation: pmq-scroll 42s linear infinite;
+}
+.pmq:hover .pmq__track { animation-play-state: paused; }
+
+@keyframes pmq-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* NOTE: padding-right must equal the gap so the duplicated strip tiles
+   seamlessly under the track's translateX(-50%). */
+.pmq__strip {
+  display: flex;
+  align-items: center;
+  gap: clamp(48px, 7vw, 110px);
+  padding-right: clamp(48px, 7vw, 110px);
+}
+
+.pmq__logo {
+  height: clamp(34px, 4.5vw, 54px);
+  width: auto;
+  display: block;
+  user-select: none;
+  /* marks sit as light-grey ghosts; brand colour returns on hover */
+  filter: grayscale(1) brightness(1.5);
+  opacity: 0.75;
+  transition: filter 0.35s var(--ease), opacity 0.35s var(--ease);
+}
+.pmq__logo:hover { filter: none; opacity: 1; }
+
+/* Reduced motion: the global kill-switch stops the animation; keep the
+   strip statically visible from its start. */
+@media (prefers-reduced-motion: reduce) {
+  .pmq__track { transform: none; }
+}

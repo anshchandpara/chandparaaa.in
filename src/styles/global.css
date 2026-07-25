@@ -1,0 +1,197 @@
+/* ============================================================================
+   Ansh Chandpara — Portfolio
+   Design tokens + base layer. Recreated from the design handoff README.
+   Easing is LINEAR everywhere; scroll is native (no smooth-scroll interp).
+   ========================================================================== */
+
+:root {
+  /* Colors */
+  --bg: #0a0a0a;          /* page background */
+  --bg-2: #111111;        /* elevated surface / grid band */
+  --bg-3: #161616;        /* highest surface */
+  --fg: #f4f1ea;          /* primary text (warm off-white) */
+  --fg-2: #bdb7ab;        /* body / secondary */
+  --fg-3: #7b7569;        /* eyebrows, metadata, captions */
+  --line: rgba(244, 241, 234, 0.12); /* hairline dividers */
+  --accent: #d98b2b;      /* warm gold accent */
+
+  /* Type */
+  --f-display: "Space Grotesk", "Arial Narrow", sans-serif;
+  --f-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Layout */
+  --max: 1440px;
+  --pad-x: clamp(20px, 4vw, 72px);
+
+  /* Motion — linear everywhere, short durations */
+  --ease: linear;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--f-sans);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--accent); color: var(--bg); }
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+img, video, canvas { display: block; max-width: 100%; }
+
+/* --- Custom cursor hide-system-cursor toggle --- */
+@media (hover: hover) and (pointer: fine) {
+  body.cursor-on,
+  body.cursor-on a,
+  body.cursor-on button { cursor: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Shared utility classes (formerly in the _ds bundle)
+   --------------------------------------------------------------------------- */
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  font-weight: 400;
+}
+
+.section {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: clamp(80px, 12vh, 160px) var(--pad-x);
+  box-sizing: border-box;
+}
+
+/* --- Nav --- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px var(--pad-x);
+  box-sizing: border-box;
+  mix-blend-mode: difference;
+  transition: background 0.3s var(--ease), backdrop-filter 0.3s var(--ease),
+    padding 0.3s var(--ease);
+}
+
+.nav.is-scrolled {
+  mix-blend-mode: normal;
+  background: rgba(10, 10, 10, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.nav__links a {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+  opacity: 0.85;
+  transition: opacity 0.25s var(--ease);
+}
+.nav__links a:hover { opacity: 1; }
+
+/* --- Hero CTA --- */
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 22px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+}
+.hero__cta:hover { border-color: var(--fg); }
+.hero__cta svg { width: 16px; height: 16px; }
+
+.hero__scroll {
+  position: absolute;
+  right: var(--pad-x);
+  bottom: 52px;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+/* --- Footer --- */
+.foot {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 30px var(--pad-x);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 32px;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* --- Page transitions / standalone pages --- */
+/* Opacity-only route fade (a transform would re-anchor the fixed nav). */
+.page-fade { animation: page-fade 0.45s var(--ease) both; }
+@keyframes page-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Pages without a hero start below the fixed nav. */
+.page-offset { padding-top: clamp(48px, 8vh, 96px); }
+
+/* --- Text hover glow --- */
+/* Subtle highlighting glow on hover for regular text (body copy, links,
+   labels, section heads). The glow takes the element's own colour via
+   color-mix on currentColor, so accent text glows gold, muted text glows
+   soft grey. Big display headers (h1 / hero wordmark / project titles) are
+   excluded — they carry their own hover treatments. Mouse only. */
+@media (hover: hover) {
+  p, li, dt, dd, h2, h3, a, button, summary,
+  .eyebrow, .foot span {
+    transition: text-shadow 0.3s var(--ease);
+  }
+  p:hover, li:hover, dt:hover, dd:hover, h2:hover, h3:hover, a:hover,
+  button:hover, summary:hover, .eyebrow:hover, .foot span:hover {
+    text-shadow: 0 0 0.55em color-mix(in srgb, currentColor 45%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

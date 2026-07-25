@@ -1,0 +1,50 @@
+#cursor-dot,
+#cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+#cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+/* Trailing inverted-triangle outline */
+#cursor-ring {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  overflow: visible;
+  transition: width 0.18s var(--ease), height 0.18s var(--ease),
+    margin 0.18s var(--ease);
+}
+#cursor-ring polygon {
+  fill: transparent;
+  stroke: rgba(255, 255, 255, 0.65);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  transition: stroke 0.18s var(--ease), fill 0.18s var(--ease);
+}
+
+#cursor-ring.is-grow {
+  width: 66px;
+  height: 66px;
+  margin: -33px 0 0 -33px;
+}
+#cursor-ring.is-grow polygon {
+  stroke: rgba(217, 139, 43, 0.9);
+  fill: rgba(217, 139, 43, 0.08);
+}
+
+@media (hover: none) {
+  #cursor-dot,
+  #cursor-ring { display: none; }
+}

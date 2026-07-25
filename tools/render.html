@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Render Studio — Chandparaaa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --panel: #131313;
+        --panel-2: #1a1a1a;
+        --line: #262626;
+        --text: #f2f0ec;
+        --muted: #8c8781;
+        --accent: #d98b2b;
+        --danger: #c0553f;
+        --ok: #7fae6b;
+        --radius: 10px;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; background: var(--bg); color: var(--text);
+        font-family: Inter, system-ui, sans-serif; font-weight: 300; line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap { max-width: 980px; margin: 0 auto; padding: 56px 24px 120px; }
+      .eyebrow { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin: 0 0 10px; }
+      h1 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(30px, 5vw, 44px); margin: 0 0 8px; letter-spacing: -0.02em; }
+      .lede { color: var(--muted); max-width: 70ch; margin: 0 0 28px; }
+      .lede code, .lede b { color: var(--text); }
+      .lede code { background: var(--panel-2); padding: 1px 6px; border-radius: 5px; font-size: 0.9em; }
+
+      h2 { font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 15px; letter-spacing: 0.14em;
+        text-transform: uppercase; color: var(--muted); margin: 40px 0 16px; padding-bottom: 10px;
+        border-bottom: 1px solid var(--line); display: flex; align-items: baseline; justify-content: space-between; }
+
+      input, select, textarea {
+        background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+        font: inherit; font-size: 15px; padding: 10px 12px; border-radius: 8px; width: 100%; transition: border-color 0.15s;
+      }
+      textarea { resize: vertical; min-height: 62px; line-height: 1.45; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+      input::placeholder, textarea::placeholder { color: #5a554f; }
+      select { -webkit-appearance: none; appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%238c8781' stroke-width='1.5'><path d='M1 1l4 4 4-4'/></svg>");
+        background-repeat: no-repeat; background-position: right 12px center; padding-right: 28px; cursor: pointer; }
+
+      button.btn { font: inherit; font-size: 14px; padding: 11px 20px; border-radius: 999px; cursor: pointer;
+        border: 1px solid var(--line); background: transparent; color: var(--text); transition: all 0.15s; }
+      button.btn:hover { border-color: var(--muted); }
+      button.btn.primary { background: var(--accent); border-color: var(--accent); color: #140d02; font-weight: 500; }
+      button.btn.primary:hover { filter: brightness(1.08); }
+      button.btn.sm { font-size: 12.5px; padding: 7px 14px; }
+      button.btn:disabled { opacity: 0.4; cursor: default; }
+
+      /* Create bar */
+      .create-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+      .create-bar input { flex: 1; }
+
+      /* Queue banner */
+      .queue-banner { display: none; align-items: center; gap: 12px; margin: 18px 0 0;
+        background: rgba(217,139,43,0.08); border: 1px solid var(--accent); border-radius: var(--radius);
+        padding: 12px 16px; font-size: 13.5px; }
+      .queue-banner.show { display: flex; }
+      .queue-banner b { color: var(--accent); }
+
+      /* Shot card */
+      .shot { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 22px; overflow: hidden; }
+      .shot-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+      .shot-head input.title { flex: 1; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 16px; background: transparent; border-color: transparent; padding: 6px 8px; }
+      .shot-head input.title:hover { border-color: var(--line); }
+      .shot-head input.title:focus { border-color: var(--accent); background: var(--panel-2); }
+      .shot-head .mini { flex: none; color: var(--muted); font-size: 12.5px; background: none; border: 0; cursor: pointer; font: inherit; }
+      .shot-head .mini:hover { color: var(--danger); }
+
+      .stage { padding: 18px 16px; }
+      .stage + .stage { border-top: 1px dashed var(--line); }
+      .stage-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; display: flex; align-items: center; gap: 10px; }
+      .stage-label .n { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--accent); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+      .stage.locked { opacity: 0.5; pointer-events: none; }
+      .stage-hint { color: var(--muted); font-size: 12.5px; margin: -6px 0 14px; }
+
+      .grid2 { display: grid; grid-template-columns: 220px 1fr; gap: 18px; align-items: start; }
+      @media (max-width: 680px) { .grid2 { grid-template-columns: 1fr; } }
+
+      /* Drop zones */
+      .drop { border: 1px dashed var(--line); border-radius: var(--radius); background: var(--panel-2);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+        color: var(--muted); font-size: 12.5px; cursor: pointer; padding: 14px; transition: border-color 0.15s, color 0.15s; position: relative; overflow: hidden; }
+      .drop:hover, .drop.over { border-color: var(--accent); color: var(--text); }
+      .drop.still { aspect-ratio: 16 / 9; }
+      .drop.video { aspect-ratio: 16 / 9; }
+      .drop img, .drop video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .drop .replace { position: absolute; bottom: 6px; right: 8px; font-size: 11px; background: rgba(0,0,0,0.6); padding: 3px 8px; border-radius: 999px; z-index: 2; }
+      .drop.grey img { filter: grayscale(1) contrast(1.02); }
+
+      .controls { display: flex; flex-direction: column; gap: 12px; }
+      .controls .row { display: flex; gap: 10px; align-items: center; }
+      .controls .row select { width: 120px; flex: none; }
+
+      /* Status badge */
+      .status { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+      .status.queued, .status.running { color: var(--accent); border-color: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+      .status.done { color: var(--ok); border-color: var(--ok); }
+      .status.error { color: var(--danger); border-color: var(--danger); }
+      @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+      .job-note { color: var(--muted); font-size: 12px; margin-top: 8px; }
+      .job-note.error { color: var(--danger); }
+
+      /* Prompt checker chips */
+      .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+      .chip { font-size: 11px; letter-spacing: 0.04em; padding: 3px 9px; border-radius: 999px;
+        border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+      .chip.ok { border-color: rgba(127, 174, 107, 0.55); color: var(--ok); }
+      .chip.warn { border-color: rgba(217, 139, 43, 0.55); color: var(--accent); }
+      .chip.bad { border-color: rgba(192, 85, 63, 0.65); color: var(--danger); }
+
+      /* Look lock */
+      .lockrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      .lockrow .lbl { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+      .lockchip { font-size: 12px; padding: 3px 10px; border-radius: 999px;
+        background: rgba(217, 139, 43, 0.1); border: 1px solid var(--accent); color: var(--accent); }
+      .lockrow .mini { color: var(--muted); background: none; border: 0; cursor: pointer; font: inherit; font-size: 12px; }
+      .lockrow .mini:hover { color: var(--danger); }
+
+      textarea.brief { border-left: 2px solid var(--accent); }
+      .field-lbl { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 -6px; }
+
+      /* Segment timeline editor */
+      .segs { display: flex; flex-direction: column; gap: 8px; }
+      .segrow { display: grid; grid-template-columns: 1fr 62px 62px 1.5fr 1fr 1.5fr auto; gap: 6px; align-items: center; }
+      .segrow input, .segrow select { background: rgba(255,255,255,0.03); border: 1px solid var(--line);
+        color: var(--text); border-radius: 8px; padding: 6px 8px; font: inherit; font-size: 12px; min-width: 0; }
+      .segrow input:focus, .segrow select:focus { outline: none; border-color: var(--accent); }
+      .segrow .mini { color: var(--muted); background: none; border: 0; cursor: pointer; font: inherit; }
+      .segrow .mini:hover { color: var(--danger); }
+      .seg-empty { color: var(--muted); font-size: 12px; margin: 0; }
+
+      /* Result galleries */
+      .frames { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+      .frame { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel-2); position: relative; }
+      .frame.approved { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+      .frame img, .frame video { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: #000; }
+      .frame video { aspect-ratio: auto; }
+      .frame-foot { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; font-size: 12px; }
+      .frame-foot .mini { color: var(--muted); background: none; border: 0; cursor: pointer; font: inherit; font-size: 12px; }
+      .frame-foot .mini:hover { color: var(--text); }
+      .frame-foot .mini.del:hover { color: var(--danger); }
+      .frame-foot .approve.on { color: var(--accent); }
+      .frame .tag { position: absolute; top: 6px; left: 6px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; background: var(--accent); color: #140d02; padding: 2px 7px; border-radius: 999px; }
+      .empty { color: var(--muted); font-size: 13px; padding: 4px 2px; }
+
+      .renders { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin-top: 16px; }
+
+      #toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+        background: var(--panel-2); border: 1px solid var(--line); color: var(--text); padding: 12px 20px;
+        border-radius: 999px; font-size: 14px; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.5); z-index: 50; }
+      #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      #toast.err { border-color: var(--danger); }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <p class="eyebrow">Chandparaaa · Render Studio</p>
+      <h1>Grayscale → high-res renders</h1>
+      <p class="lede">
+        Stage grayscale source and let Higgsfield do the heavy lifting.
+        <b>1)</b> Upload a grayscale still and describe the look <b>in your own words</b> —
+        <i>Enhance prompt</i> has Claude engineer the real prompt and set a <b>look lock</b>
+        (palette / lighting / texture tokens every generation must keep). The checker chips flag
+        gaps, contradictions and look drift. <b>2)</b> Generate <b>styleframes</b>, approve one,
+        upload the grayscale <code>mp4</code>, and queue a <b>styleframe-guided</b> render — the
+        lock rides along so the video matches the frame you approved. This tool only queues jobs —
+        ask <b>Claude</b> to run the queue. Dev-only; nothing ships to the site.
+      </p>
+
+      <div class="create-bar">
+        <input id="new-title" type="text" placeholder="New shot name (e.g. Opening title — wide)" autocomplete="off" />
+        <button class="btn primary" id="create" type="button">+ New shot</button>
+      </div>
+
+      <div class="queue-banner" id="queue-banner">
+        <span><b id="queue-n">0</b> job(s) queued.</span>
+        <span style="color: var(--muted)">Tell Claude: <b style="color:var(--text)">“run the render queue”</b> — it reads <code style="background:var(--panel-2);padding:1px 5px;border-radius:4px">/render/api/jobs</code> and generates via Higgsfield.</span>
+      </div>
+
+      <h2>Shots <span class="count" id="shot-count"></span></h2>
+      <div id="shots"><p class="empty">Loading…</p></div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+      const $ = (s, r = document) => r.querySelector(s);
+      const API = '/render/api';
+      let state = { shots: [] };
+      let lastJSON = '';
+
+      const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+      function toast(msg, isErr) {
+        const t = $('#toast');
+        t.textContent = msg;
+        t.className = 'show' + (isErr ? ' err' : '');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => (t.className = ''), 2600);
+      }
+
+      async function api(path, method = 'GET', body) {
+        let res;
+        try {
+          res = await fetch(API + path, {
+            method,
+            headers: body ? { 'content-type': 'application/json' } : undefined,
+            body: body ? JSON.stringify(body) : undefined,
+          });
+        } catch {
+          // fetch itself threw = network-level failure (dev server restarted / stopped)
+          throw new Error('Lost the dev server — check `npm run dev` is running, then retry.');
+        }
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+        return data;
+      }
+
+      function apply(newState) {
+        state = newState;
+        lastJSON = JSON.stringify(newState);
+        render();
+      }
+
+      async function createShot() {
+        const title = $('#new-title').value.trim();
+        try {
+          apply(await api('/shots', 'POST', { title }));
+          $('#new-title').value = '';
+          toast('Shot created.');
+        } catch (e) { toast(e.message, true); }
+      }
+
+      async function deleteShot(id, title) {
+        if (!confirm(`Delete shot “${title}” and all its files?`)) return;
+        try { apply(await api(`/shots/${id}`, 'DELETE')); toast('Shot deleted.'); }
+        catch (e) { toast(e.message, true); }
+      }
+
+      async function saveField(id, patch) {
+        try { apply(await api(`/shots/${id}`, 'PATCH', patch)); }
+        catch (e) { toast(e.message, true); }
+      }
+
+      // Silent save: persist without re-rendering (used while editing segment
+      // rows so focus isn't destroyed between fields; poll syncs the UI later).
+      async function saveFieldSilent(id, patch) {
+        try {
+          const s = await api(`/shots/${id}`, 'PATCH', patch);
+          lastJSON = JSON.stringify(s);
+          state = s;
+        } catch (e) { toast(e.message, true); }
+      }
+
+      // Read the segment editor rows back into a segments array.
+      function collectSegs(shotId) {
+        const box = $(`[data-segs="${shotId}"]`);
+        if (!box) return [];
+        return [...box.querySelectorAll('[data-segid]')].map((row) => {
+          const v = (k) => row.querySelector(`[data-sf="${k}"]`)?.value ?? '';
+          return {
+            id: row.dataset.segid,
+            label: v('label'),
+            tStart: parseFloat(v('tStart')) || 0,
+            tEnd: parseFloat(v('tEnd')) || 0,
+            element: v('element'),
+            styleframeId: v('styleframeId'),
+            tweaks: v('tweaks'),
+          };
+        });
+      }
+
+      async function upload(id, kind, file) {
+        if (!file) return;
+        const okType = kind === 'still' ? /^image\//.test(file.type) : /^video\//.test(file.type);
+        if (!okType) return toast(kind === 'still' ? 'Pick an image.' : 'Pick a video (mp4/mov).', true);
+        toast(`Uploading ${file.name}…`);
+        try {
+          // Stream the file's raw bytes — no FileReader/base64/JSON. Data-URL
+          // encoding real mp4s blows past browser string limits ("failed to
+          // execute fetch"); fetch streams a File body natively.
+          let res;
+          try {
+            res = await fetch(
+              `${API}/shots/${id}/upload-raw?kind=${kind}&name=${encodeURIComponent(file.name)}`,
+              {
+                method: 'POST',
+                headers: { 'content-type': file.type || 'application/octet-stream' },
+                body: file,
+              }
+            );
+          } catch {
+            throw new Error('Upload failed — lost the dev server mid-transfer. Retry once it\'s back.');
+          }
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+          apply(data);
+          toast(`${kind === 'still' ? 'Still' : 'Video'} uploaded.`);
+        } catch (e) { toast(e.message, true); }
+      }
+
+      async function queuePrompt(id) {
+        // Persist an in-flight brief edit before queueing so Claude reads the latest words.
+        const ta = $(`textarea[data-brief="${id}"]`);
+        const s = state.shots.find((x) => x.id === id);
+        try {
+          if (ta && s && ta.value !== s.brief) await api(`/shots/${id}`, 'PATCH', { brief: ta.value });
+          apply(await api(`/shots/${id}/queue-prompt`, 'POST', {}));
+          toast('Prompt enhancement queued — ask Claude to run the queue.');
+        } catch (e) { toast(e.message, true); }
+      }
+
+      async function queueStyleframes(id, count) {
+        try { apply(await api(`/shots/${id}/queue-styleframes`, 'POST', { count })); toast('Styleframes queued — ask Claude to run the queue.'); }
+        catch (e) { toast(e.message, true); }
+      }
+      async function approve(id, sfId) {
+        try { apply(await api(`/shots/${id}/approve/${sfId}`, 'POST', {})); }
+        catch (e) { toast(e.message, true); }
+      }
+      async function delStyleframe(id, sfId) {
+        try { apply(await api(`/shots/${id}/styleframes/${sfId}`, 'DELETE')); }
+        catch (e) { toast(e.message, true); }
+      }
+      async function queueRender(id, prompt) {
+        try { apply(await api(`/shots/${id}/queue-render`, 'POST', { prompt })); toast('Render queued — ask Claude to run the queue.'); }
+        catch (e) { toast(e.message, true); }
+      }
+
+      // ── Prompt checker ───────────────────────────────────────────────────
+      // Pure client-side adherence linting: does the prompt cover the craft
+      // categories, avoid contradictions, and keep the look-lock tokens?
+      const CATS = [
+        { label: 'palette', words: ['palette','colour','color','warm','cool','amber','gold','golden','teal','crimson','sepia','cyan','magenta','orange','blue','red','green','desaturat','saturat','pastel','neon','tungsten','monochrom'] },
+        { label: 'lighting', words: ['light','lit','shadow','glow','contrast','backlit','rim','key','fill','practical','softbox','hard light','golden hour','dusk','overcast','tungsten','neon','lantern','candle'] },
+        { label: 'film/texture', words: ['grain','35mm','16mm','65mm','film','stock','kodak','fuji','halation','bloom','texture','anamorphic','lens','bokeh','vignette','celluloid','print'] },
+        { label: 'mood', words: ['noir','mood','dream','cinematic','ethereal','gritty','elegant','melanchol','tense','serene','epic','intimate','brooding','romantic','mysterious','somber','nostalg'] },
+        { label: 'source adherence', words: ['preserve','maintain','match','keep','faithful','composition','motion','timing','structure','silhouette','retain','exact'] },
+      ];
+
+      function checkPrompt(text, lock = []) {
+        const p = String(text || '').toLowerCase();
+        if (!p.trim()) return [{ level: 'warn', label: 'no prompt yet — write a brief and enhance' }];
+        const out = [];
+        const words = p.trim().split(/\s+/).length;
+        if (words < 8) out.push({ level: 'warn', label: 'thin — add look detail' });
+        if (words > 120) out.push({ level: 'warn', label: 'long — may dilute adherence' });
+        for (const c of CATS) {
+          const hit = c.words.some((w) => p.includes(w));
+          out.push(hit ? { level: 'ok', label: c.label } : { level: 'warn', label: `add ${c.label}` });
+        }
+        // "grayscale source/footage/…" is a legit reference to the *input* —
+        // only flag mono terms that describe the output look.
+        const pOut = p.replace(/(black and white|monochrome|grayscale|greyscale)\s+(source|still|footage|input|video|mp4|plate|frame)/g, '');
+        if (/(black and white|monochrome|grayscale|greyscale)/.test(pOut) && !/(away from|not |avoid )/.test(p))
+          out.push({ level: 'bad', label: 'mono terms — output may stay grey' });
+        if (/photoreal/.test(p) && /(cartoon|anime|illustrat)/.test(p))
+          out.push({ level: 'bad', label: 'photoreal vs stylised conflict' });
+        if (/\bday(light|time)?\b/.test(p) && /\bnight\b/.test(p))
+          out.push({ level: 'warn', label: 'day + night both present' });
+        if (/warm/.test(p) && /cool/.test(p) && !/(shadow|highlight|key|fill)/.test(p))
+          out.push({ level: 'warn', label: 'warm + cool — say where each lives' });
+        if (lock?.length) {
+          // A token counts as present if all its words appear somewhere in the
+          // prompt ("35mm grain" matches "Kodak 35mm film grain").
+          const missing = lock.filter(
+            (t) => !String(t).toLowerCase().split(/\s+/).every((w) => p.includes(w))
+          );
+          out.push(
+            missing.length
+              ? { level: 'bad', label: `look drift — missing: ${missing.slice(0, 3).join(', ')}${missing.length > 3 ? '…' : ''}` }
+              : { level: 'ok', label: 'look lock intact' }
+          );
+        }
+        return out;
+      }
+
+      const chipsHtml = (checks) =>
+        checks.map((c) => `<span class="chip ${c.level}">${c.level === 'ok' ? '✓ ' : c.level === 'bad' ? '✕ ' : '! '}${esc(c.label)}</span>`).join('');
+
+      // Segment timeline editor: parts of the mp4, each anchored to a
+      // Higgsfield element (name/UUID) or a gallery styleframe, with tweaks.
+      const segEditor = (shot) => {
+        const opts = (sel) =>
+          `<option value="">— gallery frame —</option>` +
+          (shot.styleframes || []).map((f, i) =>
+            `<option value="${f.id}" ${sel === f.id ? 'selected' : ''}>frame ${i + 1}${shot.approvedStyleframeId === f.id ? ' ✓' : ''}</option>`).join('');
+        const rows = (shot.segments || []).map((g) => `
+          <div class="segrow" data-segid="${g.id}">
+            <input data-sf="label" placeholder="label" value="${esc(g.label)}">
+            <input data-sf="tStart" type="number" min="0" step="0.1" placeholder="in s" value="${g.tStart}">
+            <input data-sf="tEnd" type="number" min="0" step="0.1" placeholder="out s" value="${g.tEnd}">
+            <input data-sf="element" placeholder="Higgsfield element (name / UUID)" value="${esc(g.element)}">
+            <select data-sf="styleframeId">${opts(g.styleframeId)}</select>
+            <input data-sf="tweaks" placeholder="segment tweaks" value="${esc(g.tweaks)}">
+            <button class="mini" data-delseg="${g.id}" data-shot="${shot.id}" type="button">✕</button>
+          </div>`).join('');
+        return `
+          <div class="segs" data-segs="${shot.id}">
+            <p class="field-lbl">Segments — parts of the mp4, each with its own look anchor</p>
+            ${rows || `<p class="seg-empty">No segments — the whole clip follows the approved styleframe. Add segments to anchor each part to a Higgsfield element or a gallery frame; camera motion always comes from the greyscale source.</p>`}
+            <div class="row"><button class="btn sm" data-addseg="${shot.id}" type="button">+ Add segment</button></div>
+          </div>`;
+      };
+
+      const lockRow = (shot, clearable) =>
+        shot.lookLock?.length
+          ? `<div class="lockrow"><span class="lbl">Look lock</span>${shot.lookLock
+              .map((t) => `<span class="lockchip">${esc(t)}</span>`)
+              .join('')}${clearable ? `<button class="mini" data-clearlock="${shot.id}" type="button">clear</button>` : ''}</div>`
+          : '';
+
+      // Re-lint a shot's prompt fields in place (no full re-render → no focus loss).
+      function refreshChips(shotId) {
+        const s = state.shots.find((x) => x.id === shotId);
+        if (!s) return;
+        const ta = $(`textarea[data-prompt="${shotId}"]`);
+        const box = $(`[data-chips="${shotId}"]`);
+        if (ta && box) box.innerHTML = chipsHtml(checkPrompt(ta.value, s.lookLock));
+        const rta = $(`textarea[data-rprompt="${shotId}"]`);
+        const rbox = $(`[data-rchips="${shotId}"]`);
+        if (rta && rbox)
+          rbox.innerHTML = rta.value.trim()
+            ? chipsHtml(checkPrompt(rta.value, s.lookLock))
+            : `<span class="chip ok">✓ uses engineered prompt + look lock</span>`;
+      }
+
+      // ── Rendering ────────────────────────────────────────────────────────
+      const badge = (job, running = 'Rendering…') => {
+        const st = job?.status || 'idle';
+        const label = { idle: 'Not started', queued: 'Queued', running, done: 'Done', error: 'Error' }[st];
+        return `<span class="status ${st}">${label}</span>`;
+      };
+
+      function dropZone(shot, kind) {
+        const media = kind === 'still' ? shot.still : shot.video;
+        const inner = media
+          ? kind === 'still'
+            ? `<img src="${esc(media.url)}" alt="" /><span class="replace">Replace</span>`
+            : `<video src="${esc(media.url)}" muted playsinline></video><span class="replace">Replace</span>`
+          : `<div>Drop grayscale ${kind === 'still' ? 'still' : 'mp4'}<br />or click to browse</div>`;
+        return `<div class="drop ${kind} grey" data-drop="${kind}" data-shot="${shot.id}">${inner}
+          <input type="file" accept="${kind === 'still' ? 'image/*' : 'video/*'}" hidden data-file="${kind}" data-shot="${shot.id}" /></div>`;
+      }
+
+      function styleframeGallery(shot) {
+        if (!shot.styleframes?.length)
+          return `<p class="empty">${shot.styleframeJob?.status === 'queued' || shot.styleframeJob?.status === 'running' ? 'Waiting for Claude to generate…' : 'No styleframes yet.'}</p>`;
+        return `<div class="frames">` + shot.styleframes.map((f) => {
+          const on = shot.approvedStyleframeId === f.id;
+          return `<div class="frame ${on ? 'approved' : ''}">
+            ${on ? '<span class="tag">Look ref</span>' : ''}
+            <img src="${esc(f.url)}" alt="" />
+            <div class="frame-foot">
+              <button class="mini approve ${on ? 'on' : ''}" data-approve="${f.id}" data-shot="${shot.id}">${on ? '✓ approved' : 'approve'}</button>
+              <button class="mini del" data-delsf="${f.id}" data-shot="${shot.id}">delete</button>
+            </div></div>`;
+        }).join('') + `</div>`;
+      }
+
+      function renderGallery(shot) {
+        if (!shot.renders?.length)
+          return `<p class="empty">${shot.renderJob?.status === 'queued' || shot.renderJob?.status === 'running' ? 'Waiting for Claude to render…' : 'No renders yet.'}</p>`;
+        return `<div class="renders">` + shot.renders.map((r) =>
+          `<div class="frame"><video src="${esc(r.url)}" controls playsinline preload="metadata"></video>
+            <div class="frame-foot"><span style="color:var(--muted)">${new Date(r.createdAt).toLocaleString()}</span>
+            <a class="mini" href="${esc(r.url)}" download>download</a></div></div>`
+        ).join('') + `</div>`;
+      }
+
+      function shotCard(shot) {
+        const pJob = shot.promptJob || {};
+        const sfJob = shot.styleframeJob || {};
+        const rJob = shot.renderJob || {};
+        const hasApproved = !!shot.approvedStyleframeId;
+        const el = document.createElement('div');
+        el.className = 'shot';
+        el.dataset.shot = shot.id;
+        el.innerHTML = `
+          <div class="shot-head">
+            <input class="title" value="${esc(shot.title)}" data-title="${shot.id}" />
+            <button class="mini" data-del="${shot.id}" type="button">delete shot</button>
+          </div>
+
+          <div class="stage">
+            <p class="stage-label"><span class="n">1</span> Styleframes</p>
+            <p class="stage-hint">Upload a grayscale still and say the look in your own words — Claude engineers the prompt and locks the look. Approve a frame to guide the video.</p>
+            <div class="grid2">
+              ${dropZone(shot, 'still')}
+              <div class="controls">
+                <p class="field-lbl">Your words</p>
+                <textarea class="brief" data-brief="${shot.id}" placeholder="Speak it — 'smoky bar, everything amber like old Kodak, moody, keep my framing exactly'">${esc(shot.brief)}</textarea>
+                <div class="row">
+                  <button class="btn sm" data-enhance="${shot.id}" type="button">✦ Enhance prompt</button>
+                  ${badge(pJob, 'Enhancing…')}
+                </div>
+                ${pJob.error ? `<div class="job-note error">${esc(pJob.error)}</div>` : pJob.note ? `<div class="job-note">${esc(pJob.note)}</div>` : ''}
+                <p class="field-lbl">Engineered prompt</p>
+                <textarea data-prompt="${shot.id}" placeholder="Claude writes this from your brief — editable. Palette, lighting, film stock, mood, source-adherence.">${esc(shot.prompt)}</textarea>
+                <div class="chips" data-chips="${shot.id}">${chipsHtml(checkPrompt(shot.prompt, shot.lookLock))}</div>
+                ${lockRow(shot, true)}
+                <div class="row">
+                  <select data-count="${shot.id}">
+                    ${[1,2,3,4].map((n) => `<option value="${n}" ${(sfJob.count || 3) === n ? 'selected' : ''}>${n} frame${n>1?'s':''}</option>`).join('')}
+                  </select>
+                  <button class="btn sm primary" data-genstyle="${shot.id}" ${shot.still ? '' : 'disabled'}>Generate styleframes</button>
+                  ${badge(sfJob, 'Generating…')}
+                </div>
+                ${sfJob.error ? `<div class="job-note error">${esc(sfJob.error)}</div>` : sfJob.note ? `<div class="job-note">${esc(sfJob.note)}</div>` : ''}
+              </div>
+            </div>
+            ${styleframeGallery(shot)}
+          </div>
+
+          <div class="stage ${hasApproved ? '' : 'locked'}">
+            <p class="stage-label"><span class="n">2</span> Styleframe-guided render</p>
+            <p class="stage-hint">${hasApproved ? 'Upload the grayscale mp4 — the approved styleframe + look lock ride along as the adherence contract.' : 'Approve a styleframe above to unlock the video render.'}</p>
+            <div class="grid2">
+              ${dropZone(shot, 'video')}
+              <div class="controls">
+                ${lockRow(shot, false)}
+                ${segEditor(shot)}
+                <textarea data-rprompt="${shot.id}" placeholder="Optional render notes / prompt override (defaults to the engineered prompt + look lock)"></textarea>
+                <div class="chips" data-rchips="${shot.id}"><span class="chip ok">✓ uses engineered prompt + look lock</span></div>
+                <div class="row">
+                  <button class="btn sm primary" data-genrender="${shot.id}" ${shot.video && (hasApproved || ((shot.segments||[]).length && (shot.segments||[]).every(g=>g.element||g.styleframeId))) ? '' : 'disabled'}>Queue render</button>
+                  ${badge(rJob, 'Rendering…')}
+                </div>
+                ${rJob.error ? `<div class="job-note error">${esc(rJob.error)}</div>` : rJob.note ? `<div class="job-note">${esc(rJob.note)}</div>` : ''}
+              </div>
+            </div>
+            ${renderGallery(shot)}
+          </div>`;
+        return el;
+      }
+
+      function render() {
+        const box = $('#shots');
+        box.innerHTML = '';
+        if (!state.shots.length) { box.innerHTML = '<p class="empty">No shots yet — create one above to begin.</p>'; }
+        else state.shots.forEach((s) => box.appendChild(shotCard(s)));
+        $('#shot-count').textContent = state.shots.length || '';
+
+        const queued = state.shots.reduce((n, s) =>
+          n + (s.promptJob?.status === 'queued' ? 1 : 0) +
+          (s.styleframeJob?.status === 'queued' ? 1 : 0) + (s.renderJob?.status === 'queued' ? 1 : 0), 0);
+        $('#queue-n').textContent = queued;
+        $('#queue-banner').classList.toggle('show', queued > 0);
+      }
+
+      // ── Delegated events ───────────────────────────────────────────────
+      $('#shots').addEventListener('click', (e) => {
+        const t = e.target.closest('[data-del],[data-enhance],[data-clearlock],[data-genstyle],[data-genrender],[data-approve],[data-delsf],[data-drop],[data-addseg],[data-delseg]');
+        if (!t) return;
+        const shots = state.shots;
+        if (t.dataset.addseg) { const sid = t.dataset.addseg; saveField(sid, { segments: [...collectSegs(sid), { id: '', label: '', tStart: 0, tEnd: 0, element: '', styleframeId: '', tweaks: '' }] }); }
+        else if (t.dataset.delseg) { const sid = t.dataset.shot; saveField(sid, { segments: collectSegs(sid).filter((g) => g.id !== t.dataset.delseg) }); }
+        else if (t.dataset.del) { const s = shots.find((x) => x.id === t.dataset.del); deleteShot(t.dataset.del, s?.title || ''); }
+        else if (t.dataset.enhance) queuePrompt(t.dataset.enhance);
+        else if (t.dataset.clearlock) { if (confirm('Clear the look lock? Future prompts won\'t be checked against it.')) saveField(t.dataset.clearlock, { lookLock: [] }); }
+        else if (t.dataset.genstyle) { const sel = $(`select[data-count="${t.dataset.genstyle}"]`); queueStyleframes(t.dataset.genstyle, +sel.value); }
+        else if (t.dataset.genrender) { const ta = $(`textarea[data-rprompt="${t.dataset.genrender}"]`); queueRender(t.dataset.genrender, ta?.value || ''); }
+        else if (t.dataset.approve) approve(t.dataset.shot, t.dataset.approve);
+        else if (t.dataset.delsf) delStyleframe(t.dataset.shot, t.dataset.delsf);
+        else if (t.dataset.drop) { const inp = $(`input[data-file="${t.dataset.drop}"][data-shot="${t.dataset.shot}"]`); inp?.click(); }
+      });
+
+      // Live adherence linting while typing (updates chips only — no re-render).
+      $('#shots').addEventListener('input', (e) => {
+        const t = e.target.closest('textarea[data-prompt],textarea[data-rprompt]');
+        if (t) refreshChips(t.dataset.prompt || t.dataset.rprompt);
+      });
+
+      $('#shots').addEventListener('change', (e) => {
+        const f = e.target.closest('input[data-file]');
+        if (f && f.files[0]) { upload(f.dataset.shot, f.dataset.file, f.files[0]); f.value = ''; }
+      });
+
+      // Save title / brief / prompt on blur.
+      $('#shots').addEventListener('blur', (e) => {
+        const ti = e.target.closest('input[data-title]');
+        const br = e.target.closest('textarea[data-brief]');
+        const pr = e.target.closest('textarea[data-prompt]');
+        if (ti) { const s = state.shots.find((x) => x.id === ti.dataset.title); if (s && ti.value.trim() && ti.value.trim() !== s.title) saveField(ti.dataset.title, { title: ti.value.trim() }); }
+        if (br) { const s = state.shots.find((x) => x.id === br.dataset.brief); if (s && br.value !== s.brief) saveField(br.dataset.brief, { brief: br.value }); }
+        if (pr) { const s = state.shots.find((x) => x.id === pr.dataset.prompt); if (s && pr.value !== s.prompt) saveField(pr.dataset.prompt, { prompt: pr.value }); }
+        // Segment rows save silently (no re-render) so tabbing between fields works.
+        const sg = e.target.closest('[data-segs]');
+        if (sg && e.target.matches('input, select')) saveFieldSilent(sg.dataset.segs, { segments: collectSegs(sg.dataset.segs) });
+      }, true);
+
+      // Drag & drop onto zones.
+      $('#shots').addEventListener('dragover', (e) => { const d = e.target.closest('[data-drop]'); if (d) { e.preventDefault(); d.classList.add('over'); } });
+      $('#shots').addEventListener('dragleave', (e) => { const d = e.target.closest('[data-drop]'); if (d) d.classList.remove('over'); });
+      $('#shots').addEventListener('drop', (e) => {
+        const d = e.target.closest('[data-drop]');
+        if (!d) return;
+        e.preventDefault(); d.classList.remove('over');
+        const file = e.dataTransfer.files[0];
+        if (file) upload(d.dataset.shot, d.dataset.drop, file);
+      });
+
+      $('#create').addEventListener('click', createShot);
+      $('#new-title').addEventListener('keydown', (e) => { if (e.key === 'Enter') createShot(); });
+
+      // Poll — but never clobber a field the user is editing.
+      async function poll() {
+        try {
+          const s = await api('/state');
+          const active = document.activeElement;
+          const editing = active && $('#shots').contains(active) && /INPUT|TEXTAREA|SELECT/.test(active.tagName);
+          const json = JSON.stringify(s);
+          if (json !== lastJSON && !editing) apply(s);
+          else if (json !== lastJSON) { state = s; lastJSON = json; } // stash; render on next idle poll
+        } catch { /* dev server hiccup */ }
+      }
+
+      async function boot() {
+        try { apply(await api('/state')); }
+        catch { $('#shots').innerHTML = '<p class="empty">Could not reach the dev server.</p>'; }
+        setInterval(poll, 3000);
+      }
+      boot();
+    </script>
+  </body>
+</html>
