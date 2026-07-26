@@ -6,12 +6,15 @@ import PlatformMarquee from './PlatformMarquee';
 import Work from './Work';
 import Footer from './Footer';
 import { useMode } from '../hooks/useMode';
+import { DESIGN } from '../lib/design';
 
 const INTRO_KEY = 'acIntroPlayed';
 
 // Props (configurable settings from the design handoff):
-const INTRO = true; // show/skip the intro loader
-const COLUMNS = 2; // masonry density: projects per row (min 2 / max 4 / default 2)
+const INTRO = DESIGN.introLoader; // show/skip the intro loader (/admin → Design)
+// Masonry density cap on the widest screens (set in /admin → Design); the grid
+// steps down responsively (4 → 3 → 2 → 1) as the viewport narrows.
+const COLUMNS = DESIGN.columns;
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&

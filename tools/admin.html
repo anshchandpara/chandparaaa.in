@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex" />
-    <title>New Projects — Chandparaaa</title>
+    <title>Studio — Chandparaaa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -13,138 +13,145 @@
     />
     <style>
       :root {
-        --bg: #0a0a0a;
-        --panel: #131313;
-        --panel-2: #1a1a1a;
-        --line: #262626;
-        --text: #f2f0ec;
-        --muted: #8c8781;
-        --accent: #d98b2b;
-        --danger: #c0553f;
-        --radius: 10px;
+        --bg: #0a0a0a; --panel: #131313; --panel-2: #1a1a1a; --line: #262626;
+        --text: #f2f0ec; --muted: #8c8781; --accent: #d98b2b; --danger: #c0553f;
+        --ok: #4f9d69; --radius: 10px;
       }
       * { box-sizing: border-box; }
       body {
-        margin: 0;
-        background: var(--bg);
-        color: var(--text);
-        font-family: Inter, system-ui, sans-serif;
-        font-weight: 300;
-        line-height: 1.5;
+        margin: 0; background: var(--bg); color: var(--text);
+        font-family: Inter, system-ui, sans-serif; font-weight: 300; line-height: 1.5;
         -webkit-font-smoothing: antialiased;
       }
-      .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 96px; }
-      .eyebrow {
-        font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
-        color: var(--accent); margin: 0 0 10px;
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 24px 120px; }
+      a { color: inherit; }
+
+      /* Header + tabs */
+      .head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+      h1 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px; margin: 0; letter-spacing: -0.02em; }
+      .head .live { font-size: 12.5px; color: var(--muted); }
+      .head .live b { color: var(--ok); font-weight: 400; }
+      .tabs { display: flex; gap: 4px; margin: 26px 0 30px; border-bottom: 1px solid var(--line); }
+      .tab {
+        background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted);
+        font: inherit; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+        padding: 10px 16px; cursor: pointer; margin-bottom: -1px; transition: color .2s, border-color .2s;
       }
-      h1 {
-        font-family: 'Space Grotesk', sans-serif; font-weight: 700;
-        font-size: clamp(30px, 5vw, 44px); margin: 0 0 8px; letter-spacing: -0.02em;
-      }
-      .lede { color: var(--muted); max-width: 60ch; margin: 0 0 40px; }
-      .lede code { color: var(--text); background: var(--panel-2); padding: 1px 6px; border-radius: 5px; font-size: 0.9em; }
+      .tab:hover { color: var(--text); }
+      .tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+      .panel { display: none; }
+      .panel.is-active { display: block; }
+
       h2 {
-        font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 15px;
+        font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 14px;
         letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
-        margin: 44px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
-        display: flex; align-items: baseline; justify-content: space-between;
+        margin: 34px 0 14px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
+        display: flex; justify-content: space-between; align-items: baseline;
       }
-      h2 .count { font-family: Inter; letter-spacing: 0; text-transform: none; font-size: 13px; }
+      h2:first-child { margin-top: 0; }
+      .lede { color: var(--muted); max-width: 66ch; margin: 0 0 18px; font-size: 14px; }
+      .lede code { color: var(--text); background: var(--panel-2); padding: 1px 6px; border-radius: 5px; }
 
-      /* New-slot rows */
-      .row {
-        background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-        padding: 14px 14px 4px; margin-bottom: 12px;
-      }
-      .row-top { display: flex; gap: 10px; align-items: center; }
-      .row-top .idx { color: var(--muted); font-size: 13px; width: 20px; text-align: right; flex: none; font-variant-numeric: tabular-nums; }
-      input, select {
+      /* Forms */
+      label.f { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+      input, select, textarea {
         background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
-        font: inherit; font-size: 15px; padding: 10px 12px; border-radius: 8px; width: 100%;
-        transition: border-color 0.15s;
+        font: inherit; font-size: 14px; padding: 9px 11px; border-radius: 8px; width: 100%;
+        transition: border-color .15s;
       }
-      input:focus, select:focus { outline: none; border-color: var(--accent); }
-      input::placeholder { color: #5a554f; }
-      select { flex: none; width: 108px; cursor: pointer; -webkit-appearance: none; appearance: none;
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none' stroke='%238c8781' stroke-width='1.5'><path d='M1 1l4 4 4-4'/></svg>");
-        background-repeat: no-repeat; background-position: right 12px center; padding-right: 28px; }
-      .icon-btn {
-        flex: none; width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--line);
-        background: transparent; color: var(--muted); cursor: pointer; font-size: 18px; line-height: 1;
-        transition: color 0.15s, border-color 0.15s;
-      }
-      .icon-btn:hover { color: var(--danger); border-color: var(--danger); }
-      .row-meta { display: none; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0 12px; padding-left: 30px; }
-      .row.open .row-meta { display: grid; }
-      .row-foot { display: flex; align-items: center; gap: 14px; padding: 8px 0 10px 30px; }
-      .slug { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
-      .slug b { color: var(--accent); font-weight: 400; }
-      .toggle-meta { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; font-size: 12.5px; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
-      .toggle-meta:hover { color: var(--text); }
+      textarea { min-height: 92px; resize: vertical; line-height: 1.6; }
+      input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+      input::placeholder, textarea::placeholder { color: #5a554f; }
+      input[type=color] { padding: 3px; height: 38px; cursor: pointer; }
+      input[type=range] { padding: 0; accent-color: var(--accent); }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .field { margin-bottom: 14px; }
 
-      .actions { display: flex; gap: 12px; align-items: center; margin-top: 18px; }
       button.btn {
-        font: inherit; font-size: 14px; padding: 11px 20px; border-radius: 999px; cursor: pointer;
-        border: 1px solid var(--line); background: transparent; color: var(--text); transition: all 0.15s;
+        font: inherit; font-size: 13.5px; padding: 10px 18px; border-radius: 999px; cursor: pointer;
+        border: 1px solid var(--line); background: transparent; color: var(--text); transition: all .15s;
       }
       button.btn:hover { border-color: var(--muted); }
       button.btn.primary { background: var(--accent); border-color: var(--accent); color: #140d02; font-weight: 500; }
       button.btn.primary:hover { filter: brightness(1.08); }
-      button.btn:disabled { opacity: 0.5; cursor: default; }
+      button.btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+      button.btn:disabled { opacity: .5; cursor: default; }
+      .actions { display: flex; gap: 10px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+      .hint { color: var(--muted); font-size: 12.5px; }
 
-      /* Existing lists */
-      .item {
-        display: flex; align-items: center; gap: 12px; padding: 11px 14px;
-        border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; background: var(--panel);
+      /* Project list */
+      .plist { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+      .pcard {
+        display: flex; gap: 10px; align-items: center; text-align: left; padding: 9px 11px;
+        border: 1px solid var(--line); border-radius: 9px; background: var(--panel);
+        cursor: pointer; font: inherit; color: var(--text); transition: border-color .15s;
       }
-      .item .num { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; flex: none; width: 44px; }
-      .item .title { flex: 1; font-size: 15px; }
-      .item input.title-edit { flex: 1; padding: 7px 10px; font-size: 15px; }
-      .item .badge { flex: none; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2px 9px; }
-      .item a.link, .item .mini { flex: none; color: var(--muted); font-size: 12.5px; text-decoration: none; cursor: pointer; background: none; border: 0; font: inherit; }
-      .item a.link:hover, .item .mini:hover { color: var(--text); }
-      .item .mini.del:hover { color: var(--danger); }
-      .empty { color: var(--muted); font-size: 14px; padding: 6px 2px; }
-      details.published summary { color: var(--muted); cursor: pointer; font-size: 14px; }
-      details.published[open] summary { margin-bottom: 12px; }
-      .item.readonly { opacity: 0.72; }
+      .pcard:hover { border-color: var(--muted); }
+      .pcard.is-open { border-color: var(--accent); }
+      .pcard .thumb { width: 42px; height: 34px; object-fit: cover; border-radius: 4px; background: var(--panel-2); flex: none; }
+      .pcard .nm { flex: 1; min-width: 0; }
+      .pcard .nm b { display: block; font-weight: 400; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .pcard .nm span { font-size: 11px; color: var(--muted); }
+      .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+      .dot.draft { background: var(--accent); }
+      .dot.live { background: var(--ok); }
 
-      /* Team directory rows */
-      .people-row { display: flex; align-items: center; gap: 12px; padding: 8px 2px; border-bottom: 1px solid var(--line); }
-      .people-row .pname { flex: none; width: 210px; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      /* Editor */
+      .editor { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); padding: 18px; margin-top: 16px; }
+      .editor.hidden { display: none; }
+      .ehead { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+      .ehead h3 { font-family: 'Space Grotesk', sans-serif; margin: 0; font-size: 20px; font-weight: 700; }
+      .badge { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; border-radius: 999px; padding: 3px 9px; border: 1px solid; }
+      .badge.draft { color: var(--accent); border-color: var(--accent); }
+      .badge.live { color: var(--ok); border-color: var(--ok); }
+      .switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
+      .switch input { width: auto; }
+
+      /* Media */
+      .media { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 10px; }
+      .mitem { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel-2); }
+      .mitem img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+      .mitem.is-hero { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+      .mbar { display: flex; justify-content: space-between; align-items: center; padding: 5px 7px; font-size: 10.5px; color: var(--muted); gap: 6px; }
+      .mbar button { background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; font-size: 10.5px; padding: 0; }
+      .mbar button:hover { color: var(--text); }
+      .mbar button.del:hover { color: var(--danger); }
+      .mbar .heroTag { color: var(--accent); }
+      .drop { border: 1px dashed var(--line); border-radius: 8px; padding: 16px; text-align: center; color: var(--muted); font-size: 13px; cursor: pointer; }
+      .drop:hover, .drop.over { border-color: var(--accent); color: var(--text); }
+
+      /* Credits rows */
+      .credit-line { display: flex; gap: 8px; margin-bottom: 7px; }
+      .credit-line input.crole { flex: none; width: 190px; }
+      .icon-btn { flex: none; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; font-size: 17px; }
+      .icon-btn:hover { color: var(--danger); border-color: var(--danger); }
+
+      /* Team rows */
+      .people-row { display: flex; align-items: center; gap: 12px; padding: 7px 2px; border-bottom: 1px solid var(--line); }
+      .people-row .pname { flex: none; width: 200px; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .people-row .pname.owner { color: var(--accent); }
-      .people-row input.purl { flex: 1; padding: 8px 11px; font-size: 13.5px; }
-      .people-row .mini { flex: none; color: var(--muted); font-size: 12.5px; background: none; border: 0; cursor: pointer; font: inherit; }
+      .people-row .mini { flex: none; background: none; border: 0; color: var(--muted); cursor: pointer; font: inherit; font-size: 12px; }
       .people-row .mini:hover { color: var(--danger); }
-      .add-person { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-      .add-person input:first-of-type { flex: none; width: 260px; }
+      .add-person { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+      .add-person input:first-of-type { flex: none; width: 240px; }
       .add-person input:nth-of-type(2) { flex: 1; min-width: 200px; }
 
-      /* About portrait */
-      .portrait-box { display: flex; gap: 20px; align-items: flex-start; }
-      .portrait-box img {
-        width: 180px; aspect-ratio: 4 / 5; object-fit: cover; display: block;
-        border: 1px solid var(--line); background: var(--panel);
-      }
-      .portrait-empty {
-        width: 180px; aspect-ratio: 4 / 5; border: 1px dashed var(--line); border-radius: var(--radius);
-        display: flex; align-items: center; justify-content: center; color: var(--muted);
-        font-size: 12.5px; text-align: center; padding: 12px; box-sizing: border-box;
-      }
-
-      /* Credits editor */
-      .credit-picker { margin-bottom: 16px; }
-      .credit-picker select { width: 100%; }
-      .credit-line { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-      .credit-line input.crole { flex: none; width: 210px; }
-      .credit-line input.cnames { flex: 1; }
+      /* Design tab */
+      .swatch { display: flex; gap: 10px; align-items: center; }
+      .swatch input[type=color] { width: 56px; flex: none; }
+      .rangeRow { display: flex; align-items: center; gap: 12px; }
+      .rangeRow output { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--accent); width: 52px; text-align: right; }
+      .portrait-box { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+      .portrait-box img { width: 150px; aspect-ratio: 4/5; object-fit: cover; border: 1px solid var(--line); display: block; }
+      .portrait-empty { width: 150px; aspect-ratio: 4/5; border: 1px dashed var(--line); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; text-align: center; padding: 10px; }
+      .empty { color: var(--muted); font-size: 13.5px; }
 
       #toast {
-        position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
-        background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
-        padding: 12px 20px; border-radius: 999px; font-size: 14px; opacity: 0;
-        pointer-events: none; transition: opacity 0.25s, transform 0.25s; box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(18px);
+        background: var(--panel-2); border: 1px solid var(--line); padding: 11px 20px;
+        border-radius: 999px; font-size: 13.5px; opacity: 0; pointer-events: none;
+        transition: opacity .25s, transform .25s; box-shadow: 0 12px 40px rgba(0,0,0,.5); z-index: 50;
       }
       #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
       #toast.err { border-color: var(--danger); }
@@ -152,515 +159,522 @@
   </head>
   <body>
     <div class="wrap">
-      <p class="eyebrow">Chandparaaa · Authoring</p>
-      <h1>New projects</h1>
-      <p class="lede">
-        Add project titles now — they're saved as hidden <b>drafts</b> in
-        <code>projects.json</code> and stay off the live site (masonry + archive) until you add
-        images, video and credits later. Only <b>Title</b> is required; everything else is optional.
-        Dev-only tool — it won't ship with the site.
-      </p>
-
-      <h2>New slots</h2>
-      <div id="rows"></div>
-      <button class="btn" id="add-row" type="button">+ Add another</button>
-
-      <div class="actions">
-        <button class="btn primary" id="create" type="button">Create drafts</button>
-        <span class="slug" id="new-count"></span>
+      <div class="head">
+        <h1>Studio</h1>
+        <span class="live">Editing locally · publish with <b>npm run ship</b></span>
       </div>
 
-      <h2>Draft projects <span class="count" id="draft-count"></span></h2>
-      <div id="drafts"><p class="empty">Loading…</p></div>
-
-      <h2>Published (for reference)</h2>
-      <details class="published">
-        <summary id="pub-summary">Show published projects</summary>
-        <div id="published"></div>
-      </details>
-
-      <h2>Team &amp; social links <span class="count" id="people-count"></span></h2>
-      <p class="lede" style="margin: -4px 0 16px">
-        Paste each person's social or website URL — their name becomes a clickable link
-        (opening in a new tab) wherever it appears in project credits. Blank stays plain text.
-        Your own name is highlighted.
-      </p>
-      <div id="people"><p class="empty">Loading…</p></div>
-      <div class="add-person">
-        <input id="np-name" type="text" placeholder="Add a name (match credit spelling)" autocomplete="off" />
-        <input id="np-url" type="text" placeholder="https:// social link (optional)" autocomplete="off" />
-        <button class="btn" id="add-person" type="button">+ Add</button>
-      </div>
-      <div class="actions">
-        <button class="btn primary" id="save-people" type="button">Save links</button>
-        <span class="slug" id="people-status"></span>
+      <div class="tabs">
+        <button class="tab is-active" data-tab="projects">Projects</button>
+        <button class="tab" data-tab="team">Team</button>
+        <button class="tab" data-tab="design">Design</button>
       </div>
 
-      <h2>Project credits</h2>
-      <p class="lede" style="margin: -4px 0 16px">
-        Credits appear on each project's page as “Role — Names”. Names autocomplete from the team
-        list above; any new name is added there automatically so you can give it a link.
-      </p>
-      <div class="credit-picker">
-        <select id="credit-project"></select>
-      </div>
-      <div id="credit-lines"></div>
-      <button class="btn" id="add-credit" type="button">+ Add credit line</button>
-      <div class="actions">
-        <button class="btn primary" id="save-credits" type="button">Save credits</button>
-        <span class="slug" id="credit-status"></span>
-      </div>
+      <!-- ───────── PROJECTS ───────── -->
+      <section class="panel is-active" id="tab-projects">
+        <h2>All projects <span class="hint" id="pcount"></span></h2>
+        <p class="lede">
+          Click a project to edit its details, credits and images. The dot shows whether it's
+          <b style="color:var(--ok)">live</b> or a <b style="color:var(--accent)">draft</b>
+          (drafts are hidden from the site until you publish them).
+        </p>
+        <div class="plist" id="plist"></div>
 
-      <h2>About portrait</h2>
-      <p class="lede" style="margin: -4px 0 16px">
-        Your photo on the About page — it sits under the “A study in motion…” heading, beside the
-        bio. Uploads are optimized automatically (JPEG, max 2000px). Remove it and the layout
-        collapses back to text-only.
-      </p>
-      <div class="portrait-box">
-        <div id="portrait-slot"><div class="portrait-empty">No portrait yet</div></div>
-        <div class="actions" style="margin: 0; flex-direction: column; align-items: flex-start; gap: 10px">
-          <button class="btn primary" id="portrait-pick" type="button">Upload photo</button>
-          <button class="btn" id="portrait-remove" type="button" style="display: none">Remove</button>
-          <span class="slug" id="portrait-status"></span>
+        <div class="editor hidden" id="editor"></div>
+
+        <h2>Add new projects</h2>
+        <div id="rows"></div>
+        <div class="actions">
+          <button class="btn" id="add-row" type="button">+ Add row</button>
+          <button class="btn primary" id="create" type="button">Create drafts</button>
+          <span class="hint" id="new-count"></span>
         </div>
-      </div>
-      <input id="portrait-file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+      </section>
+
+      <!-- ───────── TEAM ───────── -->
+      <section class="panel" id="tab-team">
+        <h2>Team &amp; social links <span class="hint" id="people-count"></span></h2>
+        <p class="lede">
+          A URL here turns that person's name into a link everywhere it appears in project
+          credits. Blank stays plain text. Your own name is highlighted.
+        </p>
+        <div id="people"><p class="empty">Loading…</p></div>
+        <div class="add-person">
+          <input id="np-name" type="text" placeholder="Name (match the credit spelling)" autocomplete="off" />
+          <input id="np-url" type="text" placeholder="https:// social or site" autocomplete="off" />
+          <button class="btn" id="add-person" type="button">+ Add</button>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="save-people" type="button">Save links</button>
+          <span class="hint" id="people-status"></span>
+        </div>
+      </section>
+
+      <!-- ───────── DESIGN ───────── -->
+      <section class="panel" id="tab-design">
+        <h2>Design controls</h2>
+        <p class="lede">
+          These write <code>src/data/design.json</code> and the site reloads instantly. Nothing
+          here is live until you <code>npm run ship</code>.
+        </p>
+        <div class="grid2">
+          <div class="field">
+            <label class="f">Accent colour</label>
+            <div class="swatch">
+              <input type="color" id="d-accent" />
+              <input type="text" id="d-accent-hex" spellcheck="false" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="f">Background</label>
+            <div class="swatch">
+              <input type="color" id="d-bg" />
+              <input type="text" id="d-bg-hex" spellcheck="false" />
+            </div>
+          </div>
+        </div>
+
+        <div class="grid3">
+          <div class="field">
+            <label class="f">Grid columns (widest screens)</label>
+            <div class="rangeRow">
+              <input type="range" id="d-columns" min="2" max="4" step="1" />
+              <output id="d-columns-o"></output>
+            </div>
+          </div>
+          <div class="field">
+            <label class="f">Marquee speed (seconds/loop)</label>
+            <div class="rangeRow">
+              <input type="range" id="d-marquee" min="10" max="120" step="1" />
+              <output id="d-marquee-o"></output>
+            </div>
+          </div>
+          <div class="field">
+            <label class="f">FUI grid strength</label>
+            <div class="rangeRow">
+              <input type="range" id="d-fui" min="0" max="0.4" step="0.005" />
+              <output id="d-fui-o"></output>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid3">
+          <label class="switch"><input type="checkbox" id="d-fuiglow" /> Cursor glow on grid</label>
+          <label class="switch"><input type="checkbox" id="d-intro" /> Intro loader</label>
+          <label class="switch"><input type="checkbox" id="d-zoom" /> Card hover zoom</label>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="save-design" type="button">Save design</button>
+          <button class="btn" id="reset-design" type="button">Reset to defaults</button>
+          <span class="hint" id="design-status"></span>
+        </div>
+
+        <h2>About portrait</h2>
+        <p class="lede">Your photo on the About page. Auto-optimized (JPEG, max 2000px).</p>
+        <div class="portrait-box">
+          <div id="portrait-slot"><div class="portrait-empty">No portrait</div></div>
+          <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start">
+            <button class="btn primary" id="portrait-pick" type="button">Upload photo</button>
+            <button class="btn danger" id="portrait-remove" type="button" style="display:none">Remove</button>
+            <span class="hint" id="portrait-status"></span>
+          </div>
+        </div>
+        <input id="portrait-file" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+      </section>
 
       <datalist id="people-list"></datalist>
     </div>
-
     <div id="toast"></div>
 
     <script>
-      const API = '/admin/api/projects';
       const $ = (s, r = document) => r.querySelector(s);
-      const rowsEl = $('#rows');
+      const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+      const API = '/admin/api';
+      const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
       let projectsState = { work: [], lab: [] };
-      let peopleState = {};
-      let peopleOwner = '';
+      let peopleState = {}, peopleOwner = '';
+      let designState = {};
+      let openSlug = null;
 
-      const slugify = (s) =>
-        String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
-          .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+      function toast(msg, err) {
+        const t = $('#toast'); t.textContent = msg; t.className = 'show' + (err ? ' err' : '');
+        clearTimeout(toast._t); toast._t = setTimeout(() => (t.className = ''), 2600);
+      }
+      const jget = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error((await r.json()).error || 'Failed'); return r.json(); };
+      const jsend = async (u, method, body) => {
+        const r = await fetch(u, { method, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || 'Failed'); return d;
+      };
+      const readFileAsDataURL = (f) => new Promise((res, rej) => {
+        const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f);
+      });
 
-      function toast(msg, isErr) {
-        const t = $('#toast');
-        t.textContent = msg;
-        t.className = 'show' + (isErr ? ' err' : '');
-        clearTimeout(toast._t);
-        toast._t = setTimeout(() => (t.className = ''), 2600);
+      /* ───────── Tabs ───────── */
+      $$('.tab').forEach((t) => t.addEventListener('click', () => {
+        $$('.tab').forEach((x) => x.classList.toggle('is-active', x === t));
+        $$('.panel').forEach((p) => p.classList.toggle('is-active', p.id === 'tab-' + t.dataset.tab));
+      }));
+
+      /* ───────── Project list ───────── */
+      function allProjects() {
+        return [...projectsState.work.map((p) => ({ ...p, mode: 'work' })),
+                ...projectsState.lab.map((p) => ({ ...p, mode: 'lab' }))];
+      }
+      function renderList() {
+        const list = allProjects();
+        const box = $('#plist'); box.innerHTML = '';
+        for (const p of list) {
+          const b = document.createElement('button');
+          b.className = 'pcard' + (p.slug === openSlug ? ' is-open' : '');
+          b.type = 'button';
+          b.innerHTML = `
+            <span class="dot ${p.draft ? 'draft' : 'live'}"></span>
+            ${p.thumb ? `<img class="thumb" src="${esc(p.thumb)}" alt="" />` : '<span class="thumb"></span>'}
+            <span class="nm"><b>${esc(p.title)}</b><span>${p.mode === 'lab' ? 'L·' + p.code : p.num} · ${p.draft ? 'Draft' : 'Live'}</span></span>`;
+          b.addEventListener('click', () => openEditor(p.slug));
+          box.appendChild(b);
+        }
+        const drafts = list.filter((p) => p.draft).length;
+        $('#pcount').textContent = `${list.length} total · ${drafts} draft${drafts === 1 ? '' : 's'}`;
       }
 
+      /* ───────── Editor ───────── */
+      async function openEditor(slug) {
+        openSlug = slug;
+        renderList();
+        const ed = $('#editor');
+        ed.classList.remove('hidden');
+        ed.innerHTML = '<p class="empty">Loading…</p>';
+        let data;
+        try { data = await jget(`${API}/project/${encodeURIComponent(slug)}`); }
+        catch (e) { ed.innerHTML = `<p class="empty">${esc(e.message)}</p>`; return; }
+        const e = data.entry;
+        const isLab = 'code' in e;
+        ed.innerHTML = `
+          <div class="ehead">
+            <h3>${esc(e.title)}</h3>
+            <div style="display:flex;gap:10px;align-items:center">
+              <span class="badge ${e.draft ? 'draft' : 'live'}">${e.draft ? 'Draft' : 'Live'}</span>
+              <a class="hint" href="/?p=${encodeURIComponent(slug)}" target="_blank" rel="noopener">preview ↗</a>
+              <button class="btn" id="ed-close" type="button">Close</button>
+            </div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label class="f">Title</label><input id="f-title" value="${esc(e.title)}" /></div>
+            <div class="field"><label class="f">Subtitle</label><input id="f-subtitle" value="${esc(e.subtitle)}" /></div>
+          </div>
+          <div class="grid3">
+            <div class="field"><label class="f">${isLab ? 'Kind' : 'Category'}</label><input id="f-category" value="${esc(isLab ? e.kind : e.category)}" /></div>
+            <div class="field"><label class="f">Client</label><input id="f-client" value="${esc(e.client)}" /></div>
+            <div class="field"><label class="f">Year</label><input id="f-year" inputmode="numeric" value="${e.year ?? ''}" placeholder="e.g. 2024" /></div>
+          </div>
+          <div class="grid3">
+            <div class="field"><label class="f">Platform</label><input id="f-platform" value="${esc(e.platform)}" /></div>
+            <div class="field"><label class="f">Your role</label><input id="f-role" value="${esc(e.role)}" /></div>
+            <div class="field"><label class="f">Vimeo ID</label><input id="f-video" value="${esc(e.video)}" placeholder="numeric id" /></div>
+          </div>
+          <div class="field"><label class="f">Description</label><textarea id="f-desc" placeholder="What the project is, in a sentence or two.">${esc(e.desc)}</textarea></div>
+
+          <h2 style="margin-top:24px">Credits</h2>
+          <div id="credit-lines"></div>
+          <button class="btn" id="add-credit" type="button" style="margin-top:4px">+ Credit line</button>
+
+          <h2 style="margin-top:24px">Images <span class="hint" id="mcount"></span></h2>
+          <div class="drop" id="drop">Drop images here, or click to choose — optimized automatically</div>
+          <input type="file" id="media-file" accept="image/*" multiple hidden />
+          <div class="media" id="media"></div>
+
+          <div class="actions" style="border-top:1px solid var(--line); padding-top:16px; margin-top:22px">
+            <button class="btn primary" id="ed-save" type="button">Save changes</button>
+            <label class="switch"><input type="checkbox" id="f-draft" ${e.draft ? 'checked' : ''} /> Keep as draft (hidden)</label>
+            ${isLab ? '' : `<label class="switch"><input type="checkbox" id="f-featured" ${e.featured ? 'checked' : ''} /> Featured</label>`}
+            <span class="hint" id="ed-status"></span>
+          </div>`;
+
+        // credits
+        const cbox = $('#credit-lines');
+        const addCredit = (role = '', names = '') => {
+          const line = document.createElement('div');
+          line.className = 'credit-line';
+          line.innerHTML = `<input class="crole" placeholder="Role" value="${esc(role)}" />
+            <input class="cnames" list="people-list" placeholder="Name(s), comma-separated" value="${esc(names)}" />
+            <button class="icon-btn" type="button">×</button>`;
+          line.querySelector('.icon-btn').addEventListener('click', () => line.remove());
+          cbox.appendChild(line);
+        };
+        (e.credits || []).forEach((c) => {
+          const m = String(c).match(/^(.*?)\s[—–-]\s(.*)$/);
+          m ? addCredit(m[1].trim(), m[2].trim()) : addCredit('', c);
+        });
+        if (!(e.credits || []).length) addCredit();
+        $('#add-credit').addEventListener('click', () => addCredit());
+
+        renderMedia(slug, data.media, e.image);
+        $('#ed-close').addEventListener('click', () => { openSlug = null; ed.classList.add('hidden'); renderList(); });
+        $('#ed-save').addEventListener('click', () => saveEditor(slug, isLab));
+
+        // uploads
+        const fileInput = $('#media-file'), drop = $('#drop');
+        drop.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => { uploadMedia(slug, [...fileInput.files]); fileInput.value = ''; });
+        ['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, (x) => { x.preventDefault(); drop.classList.add('over'); }));
+        ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, (x) => { x.preventDefault(); drop.classList.remove('over'); }));
+        drop.addEventListener('drop', (x) => uploadMedia(slug, [...x.dataTransfer.files].filter(f => f.type.startsWith('image/'))));
+      }
+
+      function renderMedia(slug, media, heroFile) {
+        const hero = (heroFile || '').split('/').pop();
+        const box = $('#media'); if (!box) return;
+        box.innerHTML = '';
+        $('#mcount').textContent = `${media.length} image${media.length === 1 ? '' : 's'}`;
+        if (!media.length) { box.innerHTML = '<p class="empty">No images yet.</p>'; return; }
+        media.forEach((m, i) => {
+          const isHero = hero ? m.file === hero : i === 0;
+          const el = document.createElement('div');
+          el.className = 'mitem' + (isHero ? ' is-hero' : '');
+          el.innerHTML = `<img src="${esc(m.url)}" alt="" loading="lazy" />
+            <div class="mbar">
+              <span>${esc(m.file)}</span>
+              <span style="display:flex;gap:8px">
+                ${isHero ? '<span class="heroTag">cover</span>' : '<button type="button" class="hero">cover</button>'}
+                <button type="button" class="del">delete</button>
+              </span>
+            </div>`;
+          const heroBtn = el.querySelector('.hero');
+          if (heroBtn) heroBtn.addEventListener('click', async () => {
+            try {
+              const d = await jsend(`${API}/project/${encodeURIComponent(slug)}`, 'PUT', { image: m.file });
+              projectsState = d.projects; renderList(); renderMedia(slug, d.media, d.entry.image);
+              toast('Cover updated.');
+            } catch (err) { toast(err.message, true); }
+          });
+          el.querySelector('.del').addEventListener('click', async () => {
+            if (!confirm(`Delete ${m.file}?`)) return;
+            try {
+              const r = await fetch(
+                `${API}/project/${encodeURIComponent(slug)}/media/${encodeURIComponent(m.file)}`,
+                { method: 'DELETE' }
+              );
+              const d = await r.json();
+              if (!r.ok) throw new Error(d.error || 'Failed');
+              const fresh = await jget(`${API}/project/${encodeURIComponent(slug)}`);
+              renderMedia(slug, fresh.media, fresh.entry.image);
+              projectsState = await jget(`${API}/projects`);
+              renderList();
+              toast('Image deleted.');
+            } catch (err) { toast(err.message, true); }
+          });
+          box.appendChild(el);
+        });
+      }
+
+      async function uploadMedia(slug, files) {
+        if (!files.length) return;
+        $('#mcount').textContent = `uploading ${files.length}…`;
+        try {
+          const payload = [];
+          for (const f of files) payload.push({ dataUrl: await readFileAsDataURL(f), name: f.name });
+          const r = await fetch(`${API}/project/${encodeURIComponent(slug)}/media`, {
+            method: 'POST', headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ files: payload }),
+          });
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || 'Upload failed');
+          const fresh = await jget(`${API}/project/${encodeURIComponent(slug)}`);
+          renderMedia(slug, fresh.media, fresh.entry.image);
+          projectsState = (await jget(`${API}/projects`));
+          renderList();
+          toast(`Added ${d.saved.length} image${d.saved.length === 1 ? '' : 's'}.`);
+        } catch (e) { toast(e.message, true); }
+      }
+
+      async function saveEditor(slug, isLab) {
+        const credits = $$('#credit-lines .credit-line').map((l) => {
+          const role = l.querySelector('.crole').value.trim();
+          const names = l.querySelector('.cnames').value.split(/\s*,\s*/).map(s => s.trim()).filter(Boolean).join(', ');
+          if (!names) return '';
+          return role ? `${role} — ${names}` : names;
+        }).filter(Boolean);
+
+        const body = {
+          title: $('#f-title').value, subtitle: $('#f-subtitle').value,
+          category: $('#f-category').value, client: $('#f-client').value,
+          year: $('#f-year').value, platform: $('#f-platform').value,
+          role: $('#f-role').value, desc: $('#f-desc').value, video: $('#f-video').value,
+          draft: $('#f-draft').checked, credits,
+        };
+        if (!isLab) body.featured = $('#f-featured').checked;
+        const btn = $('#ed-save'); btn.disabled = true;
+        try {
+          const d = await jsend(`${API}/project/${encodeURIComponent(slug)}`, 'PUT', body);
+          projectsState = d.projects; renderList();
+          $('#ed-status').textContent = 'Saved ✓';
+          setTimeout(() => { const s = $('#ed-status'); if (s) s.textContent = ''; }, 2500);
+          toast('Project saved.');
+          await loadPeople();
+        } catch (e) { toast(e.message, true); }
+        finally { btn.disabled = false; }
+      }
+
+      /* ───────── New drafts ───────── */
+      const rowsEl = $('#rows');
+      const slugify = (s) => String(s).toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
       function makeRow() {
         const row = document.createElement('div');
-        row.className = 'row';
-        row.innerHTML = `
-          <div class="row-top">
-            <span class="idx"></span>
-            <input class="f-title" type="text" placeholder="Project title" autocomplete="off" />
-            <select class="f-mode" title="Section">
-              <option value="work">Work</option>
-              <option value="lab">Lab</option>
-            </select>
-            <button class="icon-btn rm" type="button" title="Remove row">×</button>
-          </div>
-          <div class="row-meta">
-            <input class="f-category" type="text" placeholder="Category (e.g. Title Sequence)" autocomplete="off" />
-            <input class="f-client" type="text" placeholder="Client" autocomplete="off" />
-            <input class="f-year" type="text" inputmode="numeric" placeholder="Year (e.g. 2026)" autocomplete="off" />
-            <input class="f-platform" type="text" placeholder="Platform (e.g. Netflix)" autocomplete="off" />
-            <input class="f-role" type="text" placeholder="Your role" autocomplete="off" style="grid-column:1/-1" />
-          </div>
-          <div class="row-foot">
-            <span class="slug">slug: <b>—</b></span>
-            <button class="toggle-meta" type="button">+ optional details</button>
-          </div>`;
-        const title = $('.f-title', row);
-        const slugB = $('.slug b', row);
-        title.addEventListener('input', () => {
-          slugB.textContent = title.value.trim() ? slugify(title.value) || '—' : '—';
-          renumber();
-        });
-        title.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') { e.preventDefault(); addRow(); }
-        });
-        $('.rm', row).addEventListener('click', () => { row.remove(); renumber(); });
-        $('.toggle-meta', row).addEventListener('click', (e) => {
-          row.classList.toggle('open');
-          e.target.textContent = row.classList.contains('open') ? '– optional details' : '+ optional details';
-        });
+        row.className = 'credit-line';
+        row.innerHTML = `<input class="t" placeholder="New project title" />
+          <select class="m" style="width:110px;flex:none"><option value="work">Work</option><option value="lab">Lab</option></select>
+          <button class="icon-btn" type="button">×</button>`;
+        row.querySelector('.icon-btn').addEventListener('click', () => { row.remove(); count(); });
+        row.querySelector('.t').addEventListener('input', count);
+        row.querySelector('.t').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addRow(); } });
         return row;
       }
-
-      function addRow(focus = true) {
-        const row = makeRow();
-        rowsEl.appendChild(row);
-        renumber();
-        if (focus) $('.f-title', row).focus();
-      }
-
-      function renumber() {
-        const rows = [...rowsEl.children];
-        rows.forEach((r, i) => ($('.idx', r).textContent = String(i + 1).padStart(2, '0')));
-        const filled = rows.filter((r) => $('.f-title', r).value.trim()).length;
-        $('#new-count').textContent = filled ? `${filled} ready to create` : '';
-      }
-
-      function collect() {
-        return [...rowsEl.children]
-          .map((r) => ({
-            title: $('.f-title', r).value.trim(),
-            mode: $('.f-mode', r).value,
-            category: $('.f-category', r).value.trim(),
-            client: $('.f-client', r).value.trim(),
-            year: $('.f-year', r).value.trim(),
-            platform: $('.f-platform', r).value.trim(),
-            role: $('.f-role', r).value.trim(),
-          }))
-          .filter((it) => it.title);
-      }
-
-      async function create() {
-        const items = collect();
-        if (!items.length) return toast('Add at least one title first.', true);
-        const btn = $('#create');
-        btn.disabled = true;
+      const addRow = (focus = true) => { const r = makeRow(); rowsEl.appendChild(r); if (focus) r.querySelector('.t').focus(); count(); };
+      const count = () => {
+        const n = $$('#rows .credit-line').filter(r => r.querySelector('.t').value.trim()).length;
+        $('#new-count').textContent = n ? `${n} ready` : '';
+      };
+      $('#add-row').addEventListener('click', () => addRow());
+      $('#create').addEventListener('click', async () => {
+        const items = $$('#rows .credit-line').map(r => ({
+          title: r.querySelector('.t').value.trim(), mode: r.querySelector('.m').value,
+        })).filter(i => i.title);
+        if (!items.length) return toast('Add a title first.', true);
         try {
-          const res = await fetch(API, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ items }),
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || 'Failed');
-          render(data.projects);
-          rowsEl.innerHTML = '';
-          addRow();
-          toast(`Created ${data.created.length} draft${data.created.length > 1 ? 's' : ''}.`);
-        } catch (e) {
-          toast(e.message, true);
-        } finally {
-          btn.disabled = false;
-        }
+          const d = await jsend(`${API}/projects`, 'POST', { items });
+          projectsState = d.projects; renderList();
+          rowsEl.innerHTML = ''; addRow(false); count();
+          toast(`Created ${d.created.length} draft${d.created.length === 1 ? '' : 's'}.`);
+        } catch (e) { toast(e.message, true); }
+      });
+
+      /* ───────── Team ───────── */
+      function refreshDatalist() {
+        $('#people-list').innerHTML = Object.keys(peopleState).sort((a,b)=>a.localeCompare(b))
+          .map(n => `<option value="${esc(n)}">`).join('');
       }
-
-      async function patchTitle(slug, title) {
-        const res = await fetch(`${API}/${encodeURIComponent(slug)}`, {
-          method: 'PATCH',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ title }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed');
-        render(data.projects);
-      }
-
-      async function del(slug, title) {
-        if (!confirm(`Delete draft “${title}”? This can't be undone.`)) return;
-        const res = await fetch(`${API}/${encodeURIComponent(slug)}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (!res.ok) return toast(data.error || 'Failed', true);
-        render(data.projects);
-        toast('Draft deleted.');
-      }
-
-      function draftItem(p, mode) {
-        const el = document.createElement('div');
-        el.className = 'item';
-        el.innerHTML = `
-          <span class="num">${mode === 'lab' ? 'L·' + p.code : p.num}</span>
-          <input class="title-edit" value="${p.title.replace(/"/g, '&quot;')}" />
-          <span class="badge">Draft</span>
-          <a class="link" href="/?p=${p.slug}" target="_blank" rel="noopener">preview ↗</a>
-          <button class="mini del" type="button">delete</button>`;
-        const input = $('.title-edit', el);
-        const commit = async () => {
-          const v = input.value.trim();
-          if (!v || v === p.title) { input.value = p.title; return; }
-          try { await patchTitle(p.slug, v); toast('Renamed.'); }
-          catch (e) { toast(e.message, true); input.value = p.title; }
-        };
-        input.addEventListener('blur', commit);
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); });
-        $('.del', el).addEventListener('click', () => del(p.slug, p.title));
-        return el;
-      }
-
-      function pubItem(p, mode) {
-        const el = document.createElement('div');
-        el.className = 'item readonly';
-        el.innerHTML = `<span class="num">${mode === 'lab' ? 'L·' + p.code : p.num}</span>
-          <span class="title">${p.title}</span>`;
-        return el;
-      }
-
-      function render(projects) {
-        projectsState = projects;
-        const all = [
-          ...projects.work.map((p) => ({ ...p, mode: 'work' })),
-          ...projects.lab.map((p) => ({ ...p, mode: 'lab' })),
-        ];
-        const drafts = all.filter((p) => p.draft);
-        const pub = all.filter((p) => !p.draft);
-
-        const draftsEl = $('#drafts');
-        draftsEl.innerHTML = '';
-        if (!drafts.length) draftsEl.innerHTML = '<p class="empty">No drafts yet — create some above.</p>';
-        else drafts.forEach((p) => draftsEl.appendChild(draftItem(p, p.mode)));
-        $('#draft-count').textContent = drafts.length ? `${drafts.length}` : '';
-
-        const pubEl = $('#published');
-        pubEl.innerHTML = '';
-        pub.forEach((p) => pubEl.appendChild(pubItem(p, p.mode)));
-        $('#pub-summary').textContent = `Show ${pub.length} published projects`;
-
-        refreshCreditProjects();
-      }
-
-      /* ── Team & social links ────────────────────────────────────────── */
-      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-
-      function refreshPeopleDatalist() {
-        $('#people-list').innerHTML = Object.keys(peopleState)
-          .sort((a, b) => a.localeCompare(b))
-          .map((n) => `<option value="${esc(n)}">`).join('');
-      }
-
       function renderPeople() {
-        const names = Object.keys(peopleState).sort((a, b) => {
-          if (a === peopleOwner) return -1;
-          if (b === peopleOwner) return 1;
-          return a.localeCompare(b);
-        });
-        const box = $('#people');
-        box.innerHTML = '';
+        const names = Object.keys(peopleState).sort((a, b) =>
+          a === peopleOwner ? -1 : b === peopleOwner ? 1 : a.localeCompare(b));
+        const box = $('#people'); box.innerHTML = '';
         if (!names.length) { box.innerHTML = '<p class="empty">No people yet.</p>'; return; }
         for (const name of names) {
           const row = document.createElement('div');
           row.className = 'people-row';
-          const isOwner = name === peopleOwner;
-          row.innerHTML = `
-            <span class="pname${isOwner ? ' owner' : ''}" title="${esc(name)}">${esc(name)}</span>
-            <input class="purl" type="text" placeholder="https:// social link" value="${esc(peopleState[name])}" />
-            <button class="mini" type="button" title="Remove">remove</button>`;
-          const input = $('.purl', row);
-          input.addEventListener('input', () => { peopleState[name] = input.value.trim(); });
-          $('.mini', row).addEventListener('click', () => {
-            if (isOwner) return toast("Can't remove the site owner.", true);
-            delete peopleState[name];
-            renderPeople();
-            refreshPeopleDatalist();
+          const owner = name === peopleOwner;
+          row.innerHTML = `<span class="pname${owner ? ' owner' : ''}" title="${esc(name)}">${esc(name)}</span>
+            <input class="purl" placeholder="https://" value="${esc(peopleState[name])}" />
+            <button class="mini" type="button">remove</button>`;
+          row.querySelector('.purl').addEventListener('input', (e) => { peopleState[name] = e.target.value.trim(); });
+          row.querySelector('.mini').addEventListener('click', () => {
+            if (owner) return toast("Can't remove the site owner.", true);
+            delete peopleState[name]; renderPeople(); refreshDatalist();
           });
           box.appendChild(row);
         }
-        $('#people-count').textContent = names.length;
+        $('#people-count').textContent = `${names.length} people · ${Object.values(peopleState).filter(Boolean).length} linked`;
       }
-
-      function addPerson() {
-        const name = $('#np-name').value.trim();
-        const urlv = $('#np-url').value.trim();
-        if (!name) return toast('Enter a name first.', true);
-        peopleState[name] = urlv;
-        $('#np-name').value = '';
-        $('#np-url').value = '';
-        renderPeople();
-        refreshPeopleDatalist();
-        $('#np-name').focus();
-      }
-
-      async function savePeople() {
-        const btn = $('#save-people');
-        btn.disabled = true;
+      $('#add-person').addEventListener('click', () => {
+        const n = $('#np-name').value.trim(); if (!n) return toast('Enter a name.', true);
+        peopleState[n] = $('#np-url').value.trim();
+        $('#np-name').value = ''; $('#np-url').value = '';
+        renderPeople(); refreshDatalist(); $('#np-name').focus();
+      });
+      $('#save-people').addEventListener('click', async () => {
         try {
-          const res = await fetch('/admin/api/people', {
-            method: 'PUT', headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ owner: peopleOwner, people: peopleState }),
-          });
-          const dir = await res.json();
-          if (!res.ok) throw new Error(dir.error || 'Failed');
-          peopleState = dir.people; peopleOwner = dir.owner;
-          renderPeople(); refreshPeopleDatalist();
-          const withLinks = Object.values(peopleState).filter(Boolean).length;
-          $('#people-status').textContent = `${withLinks} of ${Object.keys(peopleState).length} have links`;
-          toast('Team links saved.');
+          const d = await jsend(`${API}/people`, 'PUT', { owner: peopleOwner, people: peopleState });
+          peopleState = d.people; peopleOwner = d.owner; renderPeople(); refreshDatalist();
+          toast('Team saved.');
         } catch (e) { toast(e.message, true); }
-        finally { btn.disabled = false; }
-      }
-
+      });
       async function loadPeople() {
+        try { const d = await jget(`${API}/people`); peopleState = d.people || {}; peopleOwner = d.owner || '';
+          renderPeople(); refreshDatalist(); } catch { $('#people').innerHTML = '<p class="empty">Could not load.</p>'; }
+      }
+
+      /* ───────── Design ───────── */
+      function fillDesign(d) {
+        designState = d;
+        $('#d-accent').value = d.accent; $('#d-accent-hex').value = d.accent;
+        $('#d-bg').value = d.bg; $('#d-bg-hex').value = d.bg;
+        $('#d-columns').value = d.columns; $('#d-columns-o').textContent = d.columns;
+        $('#d-marquee').value = d.marqueeSpeed; $('#d-marquee-o').textContent = d.marqueeSpeed + 's';
+        $('#d-fui').value = d.fuiOpacity; $('#d-fui-o').textContent = (+d.fuiOpacity).toFixed(3);
+        $('#d-fuiglow').checked = !!d.fuiGlow;
+        $('#d-intro').checked = !!d.introLoader;
+        $('#d-zoom').checked = !!d.cardHoverZoom;
+      }
+      const linkColor = (color, hex) => {
+        $(color).addEventListener('input', () => ($(hex).value = $(color).value));
+        $(hex).addEventListener('input', () => { if (/^#[0-9a-f]{6}$/i.test($(hex).value)) $(color).value = $(hex).value; });
+      };
+      linkColor('#d-accent', '#d-accent-hex');
+      linkColor('#d-bg', '#d-bg-hex');
+      $('#d-columns').addEventListener('input', (e) => ($('#d-columns-o').textContent = e.target.value));
+      $('#d-marquee').addEventListener('input', (e) => ($('#d-marquee-o').textContent = e.target.value + 's'));
+      $('#d-fui').addEventListener('input', (e) => ($('#d-fui-o').textContent = (+e.target.value).toFixed(3)));
+      $('#save-design').addEventListener('click', async () => {
         try {
-          const dir = await (await fetch('/admin/api/people')).json();
-          peopleState = dir.people || {}; peopleOwner = dir.owner || '';
-          renderPeople(); refreshPeopleDatalist();
-          const withLinks = Object.values(peopleState).filter(Boolean).length;
-          $('#people-status').textContent = `${withLinks} of ${Object.keys(peopleState).length} have links`;
-        } catch (e) { $('#people').innerHTML = '<p class="empty">Could not load team.</p>'; }
-      }
-
-      /* ── Project credits ────────────────────────────────────────────── */
-      function refreshCreditProjects() {
-        const sel = $('#credit-project');
-        const prev = sel.value;
-        const opts = projectsState.work.map(
-          (p) => `<option value="${esc(p.slug)}">${p.num} · ${esc(p.title)}${p.draft ? ' (draft)' : ''}</option>`
-        );
-        sel.innerHTML = '<option value="">— pick a Work project —</option>' + opts.join('');
-        if (prev) sel.value = prev;
-      }
-
-      function makeCreditLine(role = '', names = '') {
-        const line = document.createElement('div');
-        line.className = 'credit-line';
-        line.innerHTML = `
-          <input class="crole" type="text" placeholder="Role (e.g. CG Lead)" value="${esc(role)}" autocomplete="off" />
-          <input class="cnames" type="text" list="people-list" placeholder="Name(s), comma-separated" value="${esc(names)}" autocomplete="off" />
-          <button class="icon-btn rm" type="button" title="Remove">×</button>`;
-        $('.rm', line).addEventListener('click', () => line.remove());
-        return line;
-      }
-
-      function loadCreditsFor(slug) {
-        const box = $('#credit-lines');
-        box.innerHTML = '';
-        const p = projectsState.work.find((x) => x.slug === slug);
-        const credits = (p && p.credits) || [];
-        for (const c of credits) {
-          const m = String(c).match(/^(.*?)\s[—–-]\s(.*)$/);
-          box.appendChild(m ? makeCreditLine(m[1].trim(), m[2].trim()) : makeCreditLine('', c));
-        }
-        if (!credits.length) box.appendChild(makeCreditLine());
-      }
-
-      function collectCredits() {
-        return [...$('#credit-lines').children].map((line) => {
-          const role = $('.crole', line).value.trim();
-          const names = $('.cnames', line).value.split(/\s*,\s*/).map((s) => s.trim()).filter(Boolean).join(', ');
-          if (!names) return '';
-          return role ? `${role} — ${names}` : names;
-        }).filter(Boolean);
-      }
-
-      async function saveCredits() {
-        const slug = $('#credit-project').value;
-        if (!slug) return toast('Pick a project first.', true);
-        const credits = collectCredits();
-        const btn = $('#save-credits');
-        btn.disabled = true;
-        try {
-          const res = await fetch(`/admin/api/projects/${encodeURIComponent(slug)}/credits`, {
-            method: 'PUT', headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ credits }),
+          const d = await jsend(`${API}/design`, 'PUT', {
+            accent: $('#d-accent-hex').value.trim(), bg: $('#d-bg-hex').value.trim(),
+            columns: +$('#d-columns').value, marqueeSpeed: +$('#d-marquee').value,
+            fuiOpacity: +$('#d-fui').value, fuiGlow: $('#d-fuiglow').checked,
+            introLoader: $('#d-intro').checked, cardHoverZoom: $('#d-zoom').checked,
           });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || 'Failed');
-          render(data.projects);
-          // new names may have been auto-added to the directory
-          if (data.people) { peopleState = data.people; renderPeople(); refreshPeopleDatalist(); }
-          $('#credit-project').value = slug;
-          $('#credit-status').textContent =
-            `${credits.length} credit line${credits.length === 1 ? '' : 's'} saved` +
-            (data.addedPeople ? ` · +${data.addedPeople} new to team` : '');
-          toast('Credits saved.');
+          fillDesign(d);
+          $('#design-status').textContent = 'Saved — the site reloads itself';
+          toast('Design saved.');
         } catch (e) { toast(e.message, true); }
-        finally { btn.disabled = false; }
-      }
+      });
+      $('#reset-design').addEventListener('click', () => {
+        fillDesign({ accent:'#d98b2b', bg:'#0a0a0a', columns:4, marqueeSpeed:42, fuiOpacity:0.085,
+                     fuiGlow:true, introLoader:true, cardHoverZoom:true });
+        toast('Defaults loaded — press Save to apply.');
+      });
 
-      async function load() {
-        try {
-          const res = await fetch(API);
-          render(await res.json());
-        } catch (e) {
-          $('#drafts').innerHTML = '<p class="empty">Could not reach the dev server.</p>';
-        }
-      }
-
-      /* ── About portrait ─────────────────────────────────────────────── */
+      /* ───────── About portrait ───────── */
       function renderPortrait(info) {
         const slot = $('#portrait-slot');
         if (info.exists) {
-          slot.innerHTML = `<img src="${esc(info.url)}" alt="About portrait" />`;
+          slot.innerHTML = `<img src="${esc(info.url)}" alt="" />`;
           $('#portrait-remove').style.display = '';
           $('#portrait-pick').textContent = 'Replace photo';
         } else {
-          slot.innerHTML = '<div class="portrait-empty">No portrait yet</div>';
+          slot.innerHTML = '<div class="portrait-empty">No portrait</div>';
           $('#portrait-remove').style.display = 'none';
           $('#portrait-pick').textContent = 'Upload photo';
         }
       }
-
-      async function loadPortrait() {
-        try {
-          renderPortrait(await (await fetch('/admin/api/about-image')).json());
-        } catch { /* dev server hiccup — leave the empty state */ }
-      }
-
-      async function uploadPortrait(file) {
-        if (!file) return;
-        if (!/^image\/(jpeg|png|webp)$/.test(file.type))
-          return toast('Use a JPEG, PNG or WebP image.', true);
-        $('#portrait-status').textContent = 'Uploading…';
-        const dataUrl = await new Promise((res, rej) => {
-          const r = new FileReader();
-          r.onload = () => res(r.result);
-          r.onerror = rej;
-          r.readAsDataURL(file);
-        });
-        try {
-          const res = await fetch('/admin/api/about-image', {
-            method: 'POST', headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ dataUrl, name: file.name }),
-          });
-          const info = await res.json();
-          if (!res.ok) throw new Error(info.error || 'Upload failed');
-          renderPortrait(info);
-          $('#portrait-status').textContent = `Saved as ${info.file}`;
-          toast('Portrait uploaded.');
-        } catch (e) {
-          $('#portrait-status').textContent = '';
-          toast(e.message, true);
-        }
-      }
-
       $('#portrait-pick').addEventListener('click', () => $('#portrait-file').click());
-      $('#portrait-file').addEventListener('change', (e) => {
-        uploadPortrait(e.target.files[0]);
-        e.target.value = '';
+      $('#portrait-file').addEventListener('change', async (e) => {
+        const f = e.target.files[0]; e.target.value = '';
+        if (!f) return;
+        $('#portrait-status').textContent = 'Uploading…';
+        try {
+          const info = await jsend(`${API}/about-image`, 'POST', { dataUrl: await readFileAsDataURL(f), name: f.name });
+          renderPortrait(info); $('#portrait-status').textContent = 'Saved as ' + info.file; toast('Portrait uploaded.');
+        } catch (err) { $('#portrait-status').textContent = ''; toast(err.message, true); }
       });
       $('#portrait-remove').addEventListener('click', async () => {
         if (!confirm('Remove the About portrait?')) return;
-        const info = await (await fetch('/admin/api/about-image', { method: 'DELETE' })).json();
-        renderPortrait(info);
-        $('#portrait-status').textContent = '';
-        toast('Portrait removed.');
+        const r = await fetch(`${API}/about-image`, { method: 'DELETE' });
+        renderPortrait(await r.json()); $('#portrait-status').textContent = ''; toast('Removed.');
       });
 
-      $('#add-row').addEventListener('click', () => addRow());
-      $('#create').addEventListener('click', create);
-
-      // Team & social links
-      $('#add-person').addEventListener('click', addPerson);
-      $('#np-url').addEventListener('keydown', (e) => { if (e.key === 'Enter') addPerson(); });
-      $('#np-name').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#np-url').focus(); });
-      $('#save-people').addEventListener('click', savePeople);
-
-      // Project credits
-      $('#credit-project').addEventListener('change', (e) => {
-        if (e.target.value) loadCreditsFor(e.target.value);
-        else $('#credit-lines').innerHTML = '';
-        $('#credit-status').textContent = '';
-      });
-      $('#add-credit').addEventListener('click', () => {
-        if (!$('#credit-project').value) return toast('Pick a project first.', true);
-        $('#credit-lines').appendChild(makeCreditLine());
-      });
-      $('#save-credits').addEventListener('click', saveCredits);
-
-      addRow();
-      load();
-      loadPeople();
-      loadPortrait();
+      /* ───────── Boot ───────── */
+      (async function boot() {
+        addRow(false);
+        try { projectsState = await jget(`${API}/projects`); renderList(); }
+        catch { $('#plist').innerHTML = '<p class="empty">Could not reach the dev server.</p>'; }
+        loadPeople();
+        try { fillDesign(await jget(`${API}/design`)); } catch { /* keep form defaults */ }
+        try { renderPortrait(await jget(`${API}/about-image`)); } catch { /* ignore */ }
+      })();
     </script>
   </body>
 </html>

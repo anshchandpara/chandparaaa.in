@@ -74,13 +74,39 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
 ## Current design state (as of this session)
 - Hero wordmark = **"Chandparaaa"** (per-letter scatter-in intro, "aaa" settles last; hover =
   colour-invert + glassy distortion + gravity sag). Custom cursor = **inverted triangle** + dot.
-- Work masonry = **"All work" with infinite scroll**: every published project (19; drafts
-  excluded), first 6 then +6 per IntersectionObserver sentinel (700px rootMargin). Layout is
+- Work masonry = **modular, responsive, infinite scroll**: every published project (19; drafts
+  excluded). **Columns step 4 → 3 → 2 → 1** at 1440/1024/640px (`useColumns` in `Work.jsx`,
+  rAF-throttled resize; `COLUMNS=4` in Home is the cap). Ratios are a modular set
+  `['4/5','1/1','3/4','4/5','1/1']` — 5 steps, coprime with 3 and 4 so rows never sync up.
+  Caption type + scrim scale down per density via `.work__grid[data-cols='3'|'4']`.
+  **Sort control** in the section head (`SORTS` in `workCards.js`): Index (curated `num`
+  order) / Newest / Oldest / A–Z / Type. Ratios are applied by *display position*
+  (`withRatios`) so the modular rhythm survives any sort. Undated projects (raat-khatam,
+  union-day-yas-mall, savi-bb, dico-battery have no `year`) always sort **last** in both
+  year directions — never "oldest". Re-sorting keeps the loaded card count; every card
+  remounts (losing their reveal flag), so the reveal re-runs for all of them.
+- **Card reveal is a plain rAF-throttled scroll position check** (`Work.jsx`), deliberately
+  NOT ScrollTrigger and NOT IntersectionObserver. Both only react to a *crossing*: a card that
+  goes from below the fold to above it in one jump — fast scroll, anchor jump, re-sort,
+  appended batch, column change — never crosses and stayed **permanently invisible** (this was
+  the "cards aren't loading" bug). The check simply reveals anything with
+  `top < innerHeight * 0.92`, however it got there; cards are flagged `data-fr-done` and the
+  listener detaches once nothing is pending. Note a full re-sort restaggers 19 cards
+  (0.05 stagger) so it takes ~600ms to finish — mid-stagger snapshots look like stuck cards
+  but aren't; always re-measure after ≥1s.
+  First 8 cards, then +`cols*2` per IntersectionObserver sentinel (700px rootMargin). Layout is
   **fixed round-robin flex columns** (`.work__col`, `i % cols`) — NOT CSS multicolumn, which
   rebalances/reshuffles on append. Reveal batches register per-append (`data-fr-init` guard;
   triggers killed only on unmount). Still full-bleed, zero-gutter, captions overlaid. Foot
   link relabelled "Archive" → about-page archive. `featured` flags no longer drive the grid
   (still in data, unused).
+- **Card treatment (text-first, image-on-hover):** each `.fcard` is a dark tile (`--bg-2`,
+  inset 0.5px hairline so butting tiles separate) showing `num` + big `fcard__title` filling the
+  box. On hover/focus-visible the `fcard__reveal` layer (image or `CardCanvas` shader + scrim)
+  fades in with a settling zoom, `fcard__cover` fades out, and a small `fcard__caption`
+  (title+meta) fades in over the scrim. Two title elements by design (big cover + small caption)
+  for a clean cross-fade. Titles scale down at `[data-cols='3'|'4']`. No per-project accent on
+  the tile now — monochrome index → colour on reveal.
 - **Two-page IA (July 2026 split):** Home = Hero (loop) + Selected Work masonry + footer only.
   **About is its own page at `?page=about`**: About (01) → Clients → Archive (02) → Contact
   (`id="contact"` kept, `AboutContact` named export in `About.jsx`). Routing extended in
@@ -145,9 +171,26 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   from **`src/data/people.json`** (`{owner, people:{name→url}}`) + keeps `parseCredit`. A name
   with a non-empty URL already renders as a `target="_blank"` link in project-page credits
   (`ProjectPage.jsx`); the JSON just makes the directory editable by the /admin form.
-- **Authoring form (dev-only):** `http://localhost:5173/admin` — Vite plugin (`apply:'serve'`) in
+- **Studio hub (dev-only):** `http://localhost:5173/admin` — Vite plugin (`apply:'serve'`) in
   `tools/vite-admin-plugin.js` + `tools/admin.html`; never ships to `dist`; needs `npm run dev`.
-  Four areas, all writing straight into the data files:
+  **Three tabs:**
+  - **Projects** — grid of every project (cover thumb + live/draft dot). Click one to open the
+    full editor: title, subtitle, category, client, year, platform, role, Vimeo id, description,
+    credits (with autocomplete + auto-registration of new names), draft/featured toggles, and an
+    **image manager** (drag-drop or click upload → auto `sips` optimize to ≤2000px q82 JPEG and
+    sequential `NNN.jpg` naming; set any image as cover; delete — clears `image` if it pointed
+    there). Plus the create-drafts rows.
+  - **Team** — name → URL directory (`people.json`).
+  - **Design** — writes `src/data/design.json` (see below) + the About portrait uploader.
+  API: `GET/PUT /admin/api/project/:slug`, `GET/POST /admin/api/project/:slug/media`,
+  `DELETE …/media/:file`, `GET/PUT /admin/api/design`, plus the older projects/people/credits
+  /about-image routes.
+- **Design settings (`src/data/design.json` + `src/lib/design.js`):** accent, bg, columns (2–4
+  cap), marqueeSpeed, fuiOpacity, fuiGlow, introLoader, cardHoverZoom. `applyDesign()` runs in
+  `main.jsx` and pushes `--accent`, `--bg`, `--fui-opacity`, `--card-zoom` onto `:root`; the
+  rest are read by `Home` (columns, loader), `PlatformMarquee` (speed), `FuiGrid` (glow).
+  Server clamps every value on PUT. Defaults live in `design.js`, not the JSON.
+  Legacy note — the older four areas, all writing straight into the data files:
   - **New slots / Drafts:** create draft projects by title (+ optional meta, Work or Lab) →
     `projects.json` with unique slug, next `num`/`code`, `featured:false`, `draft:true`, empty
     content. List/rename/delete drafts; refuses to touch published projects.
@@ -218,19 +261,33 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
 2. **icc-womens-t20-2024 stills:** no video/image master found anywhere in Website Master
    (only a CoWork HTML page) — needs media from the user.
 3. **Vimeo IDs** pending from user for title sequences, the Tivvra/Dico/Raat-Khatam films, showreel.
-4. **Draft content located, not yet imported:** `MVs/Monsoon Season Hanumankind` →
+4. **T7 drive (`/Volumes/T7/_Projects Archive 21-23/`)** — 2021-23 project archive. Imported as
+   drafts (2026-07-26): `kyra-itc-farmlite` (4), `storm-plus` (7), `tasc` (8) from each
+   project's curated `_STILLS`/`_Stills`/`_stills` folder. **Client / role / credits are blank
+   and years are inferred from file mtimes — user must confirm before publishing.** Note
+   `KYRA X ITC/_STILLS/KYRA_Static.png` has a Redshift render-stats bar burned into the
+   bottom — excluded; the `BUGFIX_v*` renders are clean.
+   Still on the drive, unimported: **InvisibleWoman** (title sequence, `SE01.mp4` + curated
+   `IW_stills for insta`), **LML Electric** (`LML_MAIN FILM.mp4` 482MB), **Ultrahuman**
+   (`RingInternalForming.mp4`), Boat, Shark Tank, Wave Boss, House Of Brands (someone else's
+   masters film), KYRA X BudX, Tonic Studios, Decoupled, Archive_2019-2021.
+5. **Draft content located, not yet imported:** `MVs/Monsoon Season Hanumankind` →
    monsoon-season-mixtape draft; `MVs/hASHISHBHAI` → hashishbhai-dhanji-rasla draft;
    `_BTS/*.mp4` (8 clips) → bts-captures lab item; `Edit/Showreel2023…` + Reel Edit 2026
    project → reel-edit-2026 lab item. varun-grover-comedy-special draft: no master found yet.
-5. Optional: fill collaborator URLs in `people.js`; shrink the hero loop to ~4–5 MB
+6. Optional: fill collaborator URLs in `people.js`; shrink the hero loop to ~4–5 MB
    (re-encode from the iCloud master, not the optimized copy). Newer loop masters exist at
    `Edit/Website Home Loop 02/03.mp4` — ask user which they want.
-6. Dead code: `src/components/Contact.jsx` + `Contact.css` are orphaned (Contact was folded
+7. Dead code: `src/components/Contact.jsx` + `Contact.css` are orphaned (Contact was folded
    into About; not imported anywhere). Safe to delete when convenient.
 
 ## Preview/verification gotchas (headless browser)
 - rAF is throttled → GSAP intros, WebGL card shaders, the hero `<video>`, and CSS transitions
   freeze mid-state. **Verify via DOM (`preview_eval`) more than screenshots.**
+- **The preview pane is often `document.hidden === true`** (backgrounded), which *pauses* rAF
+  entirely — GSAP tweens never advance, so elements read `opacity: 0` forever and look like a
+  bug. Check `document.visibilityState` before trusting any tween-dependent measurement;
+  prefer asserting end-states set with `gsap.set` over ones reached by `gsap.to`.
 - Screenshots reset scroll to top; hide above-fold sections via `preview_eval` to capture below-fold,
   and force-reveal `[data-rv]`/`[data-fcard]` (`opacity:1; transform:none`).
 - The SPA route **drifts** to a project page between tool calls; set `location.href = origin + '/'`

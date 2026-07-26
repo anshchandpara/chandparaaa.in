@@ -10,7 +10,9 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = path.resolve(__dirname, '../src/data/projects.json');
 const PEOPLE_FILE = path.resolve(__dirname, '../src/data/people.json');
+const DESIGN_FILE = path.resolve(__dirname, '../src/data/design.json');
 const ABOUT_DIR = path.resolve(__dirname, '../src/media/about');
+const PROJECT_MEDIA = path.resolve(__dirname, '../src/media/projects');
 const HTML_FILE = path.resolve(__dirname, './admin.html');
 
 // Match the repo convention: 2-space indent, unicode preserved, trailing newline.
@@ -19,6 +21,61 @@ const readData = () => JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
 const writeData = (d) => writeJSON(DATA_FILE, d);
 const readPeople = () => JSON.parse(fs.readFileSync(PEOPLE_FILE, 'utf8'));
 const writePeople = (d) => writeJSON(PEOPLE_FILE, d);
+const readDesign = () => JSON.parse(fs.readFileSync(DESIGN_FILE, 'utf8'));
+const writeDesign = (d) => writeJSON(DESIGN_FILE, d);
+
+const IMG_RE = /\.(jpe?g|png|webp|gif)$/i;
+
+/** Media files for a project slug, sorted (mirrors src/lib/images.js). */
+const mediaFor = (slug) => {
+  const dir = path.join(PROJECT_MEDIA, slug);
+  if (!fs.existsSync(dir)) return [];
+  return fs
+    .readdirSync(dir)
+    .filter((f) => IMG_RE.test(f))
+    .sort()
+    .map((f) => ({
+      file: f,
+      url: `/src/media/projects/${slug}/${encodeURIComponent(f)}`,
+      size: fs.statSync(path.join(dir, f)).size,
+    }));
+};
+
+/** Next free 3-digit name in a project's media dir, e.g. 012.jpg */
+const nextMediaName = (dir, ext) => {
+  let max = 0;
+  if (fs.existsSync(dir)) {
+    for (const f of fs.readdirSync(dir)) {
+      const m = f.match(/^(\d{3})\./);
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    }
+  }
+  return `${String(max + 1).padStart(3, '0')}.${ext}`;
+};
+
+// Optimize to the repo's convention: JPEG q82, max 2000px, never upscaled.
+const optimizeInto = (tmpFile, outFile) => {
+  try {
+    const dims = execFileSync('sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', tmpFile], {
+      encoding: 'utf8',
+    });
+    const w = +(dims.match(/pixelWidth: (\d+)/)?.[1] || 0);
+    const h = +(dims.match(/pixelHeight: (\d+)/)?.[1] || 0);
+    const args = ['-s', 'format', 'jpeg', '-s', 'formatOptions', '82'];
+    if (Math.max(w, h) > 2000) args.push('-Z', '2000');
+    execFileSync('sips', [...args, tmpFile, '--out', outFile], { stdio: 'ignore' });
+    return true;
+  } catch {
+    fs.copyFileSync(tmpFile, outFile);
+    return false;
+  }
+};
+
+// Fields the project editor is allowed to write.
+const EDITABLE = [
+  'title', 'subtitle', 'category', 'client', 'platform', 'role',
+  'desc', 'video', 'image',
+];
 
 const slugify = (s) =>
   String(s)
@@ -107,7 +164,15 @@ const sendJSON = (res, code, obj) => {
   res.end(JSON.stringify(obj));
 };
 
-// Lightweight list for the form UI (title, draft flag, and credits for editing).
+// Lightweight list for the UI: title, draft flag, credits, and a cover thumb
+// (the designated hero if set, else the first sorted image).
+const thumbFor = (slug, image) => {
+  const files = mediaFor(slug);
+  if (!files.length) return '';
+  const want = (image || '').split('/').pop();
+  return (files.find((f) => f.file === want) || files[0]).url;
+};
+
 const listProjects = (data) => ({
   work: data.work.map((p) => ({
     slug: p.slug,
@@ -115,8 +180,15 @@ const listProjects = (data) => ({
     num: p.num,
     draft: !!p.draft,
     credits: p.credits || [],
+    thumb: thumbFor(p.slug, p.image),
   })),
-  lab: data.lab.map((x) => ({ slug: x.slug, title: x.title, code: x.code, draft: !!x.draft })),
+  lab: data.lab.map((x) => ({
+    slug: x.slug,
+    title: x.title,
+    code: x.code,
+    draft: !!x.draft,
+    thumb: thumbFor(x.slug, x.image),
+  })),
 });
 
 const makeWorkDraft = (item, slug, num) => ({
@@ -332,6 +404,132 @@ export default function adminPlugin() {
               people: dir.people,
               addedPeople: added,
             });
+          }
+
+          // ── Full record for the project editor ──
+          if (req.method === 'GET' && /^\/api\/project\/[^/]+$/.test(url)) {
+            const slug = decodeURIComponent(url.split('/')[3]);
+            const data = readData();
+            const entry =
+              data.work.find((p) => p.slug === slug) || data.lab.find((x) => x.slug === slug);
+            if (!entry) return sendJSON(res, 404, { error: 'Not found.' });
+            return sendJSON(res, 200, { entry, media: mediaFor(slug) });
+          }
+
+          // ── Update project fields (allowlisted) + draft/featured toggles ──
+          if (req.method === 'PUT' && /^\/api\/project\/[^/]+$/.test(url)) {
+            const slug = decodeURIComponent(url.split('/')[3]);
+            const patch = await readBody(req);
+            const data = readData();
+            const entry =
+              data.work.find((p) => p.slug === slug) || data.lab.find((x) => x.slug === slug);
+            if (!entry) return sendJSON(res, 404, { error: 'Not found.' });
+
+            for (const k of EDITABLE) {
+              if (k in patch) entry[k] = String(patch[k] ?? '').trim();
+            }
+            if ('year' in patch) {
+              const y = parseInt(patch.year, 10);
+              entry.year = Number.isFinite(y) && y > 1900 ? y : null;
+            }
+            if ('draft' in patch) {
+              if (patch.draft) entry.draft = true;
+              else delete entry.draft;
+            }
+            if ('featured' in patch) entry.featured = !!patch.featured;
+            if (Array.isArray(patch.credits)) {
+              entry.credits = patch.credits.map((c) => String(c).trim()).filter(Boolean);
+              const dir2 = readPeople();
+              let added2 = 0;
+              for (const c of entry.credits)
+                for (const name of namesFromCredit(c))
+                  if (!(name in dir2.people)) {
+                    dir2.people[name] = '';
+                    added2 += 1;
+                  }
+              if (added2) writePeople(dir2);
+            }
+            writeData(data);
+            return sendJSON(res, 200, { entry, media: mediaFor(slug), projects: listProjects(data) });
+          }
+
+          // ── Project media: list / upload / delete / set hero ──
+          if (req.method === 'GET' && /^\/api\/project\/[^/]+\/media$/.test(url)) {
+            return sendJSON(res, 200, { media: mediaFor(decodeURIComponent(url.split('/')[3])) });
+          }
+
+          if (req.method === 'POST' && /^\/api\/project\/[^/]+\/media$/.test(url)) {
+            const slug = decodeURIComponent(url.split('/')[3]);
+            const { files = [] } = await readBody(req);
+            if (!files.length) return sendJSON(res, 400, { error: 'No files sent.' });
+
+            const dir = path.join(PROJECT_MEDIA, slug);
+            fs.mkdirSync(dir, { recursive: true });
+            const saved = [];
+            for (const f of files) {
+              const m = String(f.dataUrl || '').match(
+                /^data:image\/(jpeg|jpg|png|webp|gif);base64,(.+)$/
+              );
+              if (!m) continue;
+              const srcExt = m[1] === 'jpeg' ? 'jpg' : m[1];
+              const bytes = Buffer.from(m[2], 'base64');
+              if (bytes.length > 60 * 1024 * 1024) continue;
+              const tmp = path.join(dir, `.tmp-${Date.now()}-${saved.length}.${srcExt}`);
+              fs.writeFileSync(tmp, bytes);
+              // GIFs keep their frames; everything else is optimized to JPEG.
+              const out =
+                srcExt === 'gif'
+                  ? path.join(dir, nextMediaName(dir, 'gif'))
+                  : path.join(dir, nextMediaName(dir, 'jpg'));
+              if (srcExt === 'gif') fs.copyFileSync(tmp, out);
+              else optimizeInto(tmp, out);
+              fs.unlinkSync(tmp);
+              saved.push(path.basename(out));
+            }
+            return sendJSON(res, 200, { saved, media: mediaFor(slug) });
+          }
+
+          if (req.method === 'DELETE' && /^\/api\/project\/[^/]+\/media\/[^/]+$/.test(url)) {
+            const parts = url.split('/');
+            const slug = decodeURIComponent(parts[3]);
+            const file = decodeURIComponent(parts[5]);
+            if (!IMG_RE.test(file) || file.includes('..'))
+              return sendJSON(res, 400, { error: 'Bad filename.' });
+            const target = path.join(PROJECT_MEDIA, slug, file);
+            if (fs.existsSync(target)) fs.unlinkSync(target);
+            // Clear the designated hero if it pointed at the deleted file.
+            const data = readData();
+            const entry = data.work.find((p) => p.slug === slug);
+            if (entry && entry.image && entry.image.split('/').pop() === file) {
+              entry.image = '';
+              writeData(data);
+            }
+            return sendJSON(res, 200, { media: mediaFor(slug) });
+          }
+
+          // ── Design settings ──
+          if (req.method === 'GET' && url === '/api/design') {
+            return sendJSON(res, 200, readDesign());
+          }
+          if (req.method === 'PUT' && url === '/api/design') {
+            const patch = await readBody(req);
+            const cur = readDesign();
+            const num = (v, lo, hi, dflt) => {
+              const n = Number(v);
+              return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : dflt;
+            };
+            const next = {
+              accent: /^#[0-9a-f]{6}$/i.test(patch.accent || '') ? patch.accent : cur.accent,
+              bg: /^#[0-9a-f]{6}$/i.test(patch.bg || '') ? patch.bg : cur.bg,
+              columns: Math.round(num(patch.columns, 2, 4, cur.columns)),
+              marqueeSpeed: Math.round(num(patch.marqueeSpeed, 10, 120, cur.marqueeSpeed)),
+              fuiOpacity: num(patch.fuiOpacity, 0, 0.4, cur.fuiOpacity),
+              fuiGlow: !!patch.fuiGlow,
+              introLoader: !!patch.introLoader,
+              cardHoverZoom: !!patch.cardHoverZoom,
+            };
+            writeDesign(next);
+            return sendJSON(res, 200, next);
           }
 
           next();

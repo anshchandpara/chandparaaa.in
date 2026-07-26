@@ -1,0 +1,10 @@
+{
+  "accent": "#d98b2b",
+  "bg": "#0a0a0a",
+  "columns": 4,
+  "marqueeSpeed": 42,
+  "fuiOpacity": 0.085,
+  "fuiGlow": true,
+  "introLoader": true,
+  "cardHoverZoom": true
+}

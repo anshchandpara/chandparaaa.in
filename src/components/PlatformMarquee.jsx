@@ -1,4 +1,5 @@
 import { PLATFORMS } from '../lib/platforms';
+import { DESIGN } from '../lib/design';
 import './PlatformMarquee.css';
 
 /**
@@ -27,7 +28,7 @@ export default function PlatformMarquee() {
 
   return (
     <section className="pmq" data-screen-label="Platforms" aria-label="Streaming platforms">
-      <div className="pmq__track">
+      <div className="pmq__track" style={{ animationDuration: `${DESIGN.marqueeSpeed}s` }}>
         {strip(false)}
         {strip(true)}
       </div>

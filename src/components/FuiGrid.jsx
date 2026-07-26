@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { DESIGN } from '../lib/design';
 import './FuiGrid.css';
 
 /**
@@ -49,7 +50,7 @@ export default function FuiGrid() {
   return (
     <div ref={ref} className="fui" aria-hidden="true">
       <div className="fui__base" />
-      <div className="fui__glow" />
+      {DESIGN.fuiGlow && <div className="fui__glow" />}
     </div>
   );
 }
