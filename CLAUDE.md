@@ -100,13 +100,15 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   triggers killed only on unmount). Still full-bleed, zero-gutter, captions overlaid. Foot
   link relabelled "Archive" → about-page archive. `featured` flags no longer drive the grid
   (still in data, unused).
-- **Card treatment (text-first, image-on-hover):** each `.fcard` is a dark tile (`--bg-2`,
-  inset 0.5px hairline so butting tiles separate) showing `num` + big `fcard__title` filling the
-  box. On hover/focus-visible the `fcard__reveal` layer (image or `CardCanvas` shader + scrim)
-  fades in with a settling zoom, `fcard__cover` fades out, and a small `fcard__caption`
-  (title+meta) fades in over the scrim. Two title elements by design (big cover + small caption)
-  for a clean cross-fade. Titles scale down at `[data-cols='3'|'4']`. No per-project accent on
-  the tile now — monochrome index → colour on reveal.
+- **Card treatment (frosted glass → clear on hover):** each `.fcard` shows its image always
+  present but **blurred** (`.fcard__img` `filter: blur(18px) saturate brightness(.82)`, scaled
+  1.14 to hide blur edges) under a **frosted pane** (`.fcard__glass` — glassy white sheen +
+  inset top highlight, darkening to the base for title legibility, light `backdrop-filter:
+  saturate`). `num` + big `fcard__title` sit on the glass. On hover/focus-visible: glass
+  opacity→0, image filter→none + settle zoom, `fcard__cover` fades out, and `fcard__scrim` +
+  small `fcard__caption` fade in. Image-less cards frost the `CardCanvas` shader (`.fcard__gl`)
+  the same way. Two title elements (big cover + small caption) for the cross-fade. Titles scale
+  down at `[data-cols='3'|'4']`. (Superseded the earlier dark-tile text index.)
 - **Two-page IA (July 2026 split):** Home = Hero (loop) + Selected Work masonry + footer only.
   **About is its own page at `?page=about`**: About (01) → Clients → Archive (02) → Contact
   (`id="contact"` kept, `AboutContact` named export in `About.jsx`). Routing extended in

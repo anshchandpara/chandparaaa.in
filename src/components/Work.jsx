@@ -41,24 +41,23 @@ function ProjectCard({ card }) {
     <article data-fcard className="fcard">
       <a href={card.href} data-cursor data-cursor-label="View" className="fcard__link">
         <div className="fcard__media" style={{ aspectRatio: card.ar }}>
-          {/* Reveal layer — flooded in on hover. */}
-          <div className="fcard__reveal">
-            {showImg ? (
-              <img
-                className="fcard__img"
-                src={card.img}
-                alt={card.title}
-                loading="lazy"
-                decoding="async"
-                onError={() => setImgFailed(true)}
-              />
-            ) : (
-              <CardCanvas color={card.accent} />
-            )}
-            <div className="fcard__scrim" />
-          </div>
+          {/* Image sits under a frosted-glass panel; hover clears the glass. */}
+          {showImg ? (
+            <img
+              className="fcard__img"
+              src={card.img}
+              alt={card.title}
+              loading="lazy"
+              decoding="async"
+              onError={() => setImgFailed(true)}
+            />
+          ) : (
+            <CardCanvas color={card.accent} />
+          )}
+          <div className="fcard__glass" />
+          <div className="fcard__scrim" />
 
-          {/* Default state — the title fills the box. */}
+          {/* Default state — the title fills the box, over the frosted glass. */}
           <div className="fcard__cover">
             <span className="fcard__num">{card.num}</span>
             <div className="fcard__cover-foot">
