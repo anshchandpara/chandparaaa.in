@@ -78,6 +78,14 @@
   border-radius: 2px;
   margin-bottom: clamp(60px, 9vh, 110px);
 }
+/* Full-bleed hero (self-hosted loop): break out of the padded container to the
+   full viewport width, capped so it never exceeds the screen. */
+.pd__hero--bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-radius: 0;
+  max-height: 88vh;
+}
 .pd__hero-video {
   position: absolute;
   inset: 0;
@@ -130,6 +138,64 @@
   color: var(--fg-2);
   margin: 0;
   max-width: 54ch;
+}
+
+/* Hero loop (self-hosted video) — fills the hero slot like the image does. */
+.pd__hero-loop {
+  object-fit: cover;
+}
+
+/* "Watch the film" CTA (YouTube link) */
+.pd__watch {
+  margin: clamp(-30px, -3vw, -20px) 0 clamp(60px, 9vh, 110px);
+}
+.pd__watch-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 26px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+.pd__watch-link:hover {
+  border-color: var(--accent);
+}
+.pd__watch-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.pd__watch-title {
+  font-family: var(--f-display);
+  font-weight: 500;
+  font-size: clamp(16px, 1.6vw, 22px);
+  letter-spacing: -0.01em;
+}
+.pd__watch-link svg {
+  width: 18px;
+  height: 18px;
+  color: var(--fg-3);
+  transition: color 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.pd__watch-link:hover svg {
+  color: var(--accent);
+  transform: translate(2px, -2px);
+}
+
+/* Before/after compare sliders */
+.pd__compares {
+  margin-bottom: clamp(70px, 10vh, 130px);
+}
+.pd__compares-label {
+  margin: 0 0 18px;
+}
+.pd__compares .cmp {
+  margin-bottom: 20px;
+}
+.pd__compares .cmp:last-child {
+  margin-bottom: 0;
 }
 
 /* Gallery (real images) */

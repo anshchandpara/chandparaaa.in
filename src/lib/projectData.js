@@ -24,6 +24,7 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       image: p.image || '',
       gallery: p.gallery || [],
       video: p.video || '', // Vimeo ID — plays the title sequence as the hero
+      youtube: p.youtube || '', // full YouTube URL — "Watch the film" link
       draft: !!p.draft,
     })),
     ...data.lab.map((x) => ({

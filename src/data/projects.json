@@ -531,19 +531,21 @@
     {
       "slug": "monsoon-season-mixtape",
       "num": "20",
-      "title": "Monsoon Season Mixtape",
-      "category": "Music Video",
+      "title": "Monsoon Season",
+      "category": "Title Sequence",
       "client": "Hanumankind",
       "year": 2025,
       "platform": "YouTube",
       "role": "Title Designer",
       "featured": false,
       "draft": true,
-      "desc": "",
+      "desc": "Title design for Hanumankind's Monsoon Season mixtape — shot in a Kerala quarry, the titles are worn into the rock faces and cliff walls the crew leaps from, cutting between the climb, the jump, and the plunge into the pool below.",
       "credits": [],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "subtitle": "Mixtape",
+      "youtube": "https://www.youtube.com/watch?v=qQrlVJVcaPs"
     },
     {
       "slug": "varun-grover-comedy-special",
@@ -561,7 +563,8 @@
       "gallery": [],
       "image": "",
       "video": "",
-      "subtitle": ""
+      "subtitle": "",
+      "youtube": ""
     },
     {
       "slug": "hashishbhai-dhanji-rasla",
@@ -727,7 +730,14 @@
       "desc": "",
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "subtitle": "",
+      "category": "Experiment",
+      "client": "",
+      "platform": "",
+      "role": "",
+      "youtube": "",
+      "credits": []
     }
   ]
 }

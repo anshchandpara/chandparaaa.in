@@ -57,6 +57,17 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
 - **Project videos → Vimeo.** Each `projects.json` entry has a `"video"` field (numeric Vimeo ID)
   → embed hero above the stills. Agent can't upload; user provides IDs.
   Exception: the **hero background loop is self-hosted** (`public/hero-loop.mp4`, ~7.7 MB 1080p).
+- **Self-hosted project hero loop:** drop a `hero.mp4` (muted, web-optimized) into
+  `src/media/projects/<slug>/` and the project page leads with it as an autoplaying loop
+  (`lib/heroVideo.js` → `getHeroVideo`; `.pd__hero-loop` in ProjectPage; Vimeo `video` still
+  wins). Rendered **full-bleed** (`.pd__hero--bleed` = `100vw` + `calc(50% - 50vw)` breakout,
+  `max-height:88vh`; the -7px seen in the preview pane is only its classic scrollbar — macOS
+  overlay scrollbars make it a true 0). First use: monsoon-season-mixtape — the hand-painted-title **timelapse at 2× speed**
+  (`ffmpeg -vf "setpts=0.5*PTS,scale=1920:-2,fps=25" -crf 28`, 30s → **1.8 MB** at 1080p; a GIF
+  of the same would be 40–60 MB). Timelapses compress extremely well.
+- **YouTube "Watch the film" link:** optional `"youtube"` field (full URL) on a work entry →
+  `.pd__watch` CTA on the project page (opens in a new tab). Editable in the /admin project
+  editor (`f-youtube`, in the EDITABLE allowlist). Hidden when empty.
 - **Media pipeline:** optimize source frames to ~2000px JPEGs (`sips -s format jpeg
   -s formatOptions 82 -Z 2000 …`; only downscale, never upscale), name `001.jpg, 002.jpg …` in
   `src/media/projects/<slug>/`. `src/lib/images.js` globs them (jpg/png/webp/gif); first sorted (or
@@ -153,6 +164,20 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   near-invisible white base (~8.5% layer opacity) + an accent-gold copy revealed through a
   260px radial `mask-image` that follows the cursor (`--fui-x/--fui-y`, rAF-throttled
   mousemove, parks off-screen on mouseleave / touch devices). Compositor-only — no layout work.
+- **A/B compare slider (`Compare.jsx/.css` + `lib/compares.js`):** before/after VFX reveal on
+  project pages. Drop frame-matched passes into `src/media/projects/<slug>/compare/` named
+  `NN-clean.<ext>` (plate) + `NN-final.<ext>` (composite) — **stills (jpg/png/webp) OR loop
+  videos (mp4/webm)**. Sub-folder so `images.js` (globs one level deep) leaves them out of the
+  gallery. `getCompares(slug)` pairs them + flags `video`. ProjectPage renders a "Plate → Final"
+  section (between brief + gallery). Slider = composite base + clean plate clipped via
+  `clip-path: inset(0 (100-pos)% 0 0)`, gold handle, pointer-drag + click + ←/→ keys,
+  `touch-action:none`. **Video pairs**: two muted/loop/playsinline `<video>`s kept in lockstep
+  (composite is the timing master; a `timeupdate` handler pulls the plate's `currentTime` back if
+  drift > 0.05s) so footage matches across the seam. reduced-motion → no autoplay (static first
+  frame). **Passes MUST be frame-synced** — encode both from the same `-ss/-t` window at the same
+  fps. First use: monsoon-season-mixtape — 2 video sliders (Title MONSOON SEASON reveal + Side
+  Tings), 1080p H.264 loops (~3–4MB each, ~13MB total, page-scoped) from `Downloads/for ansh/`
+  `_Without BG` / `_only BG` clean plates vs composites.
 - **Lightbox (`Lightbox.jsx/.css`):** every still is clickable → full-screen carousel at native
   res (the ≤2000px optimized assets ARE the full-res files; no separate thumb pipeline).
   Wired on the project-page hero img + gallery frames (page-order list, hero offset handled;
@@ -273,10 +298,14 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
    `IW_stills for insta`), **LML Electric** (`LML_MAIN FILM.mp4` 482MB), **Ultrahuman**
    (`RingInternalForming.mp4`), Boat, Shark Tank, Wave Boss, House Of Brands (someone else's
    masters film), KYRA X BudX, Tonic Studios, Decoupled, Archive_2019-2021.
-5. **Draft content located, not yet imported:** `MVs/Monsoon Season Hanumankind` →
-   monsoon-season-mixtape draft; `MVs/hASHISHBHAI` → hashishbhai-dhanji-rasla draft;
-   `_BTS/*.mp4` (8 clips) → bts-captures lab item; `Edit/Showreel2023…` + Reel Edit 2026
-   project → reel-edit-2026 lab item. varun-grover-comedy-special draft: no master found yet.
+5. **Draft content:** ~~Monsoon Season~~ **DONE** (2026-07: 11 stills from
+   `Downloads/for ansh/` — Title_H.264 + Do Not Jump + 2 sky-fall PNGs → monsoon-season-mixtape;
+   meta = Hanumankind / Title Sequence / 2025 / YouTube; still draft). That folder also holds the
+   composited title films (`Title_H.264.mp4` 4K/33s, `Do Not Jump` 5120×2700, `Side Tings` 1080)
+   **+ element passes** (`_Without BG`, `_text Only`, `_only BG`) — candidates for a Vimeo embed.
+   Still not imported: `MVs/hASHISHBHAI` → hashishbhai-dhanji-rasla draft; `_BTS/*.mp4` (8 clips)
+   → bts-captures lab item; `Edit/Showreel2023…` + Reel Edit 2026 → reel-edit-2026 lab item.
+   varun-grover-comedy-special draft: no master found yet.
 6. Optional: fill collaborator URLs in `people.js`; shrink the hero loop to ~4–5 MB
    (re-encode from the iCloud master, not the optimized copy). Newer loop masters exist at
    `Edit/Website Home Loop 02/03.mp4` — ask user which they want.

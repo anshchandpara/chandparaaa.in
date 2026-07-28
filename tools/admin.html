@@ -376,6 +376,7 @@
             <div class="field"><label class="f">Your role</label><input id="f-role" value="${esc(e.role)}" /></div>
             <div class="field"><label class="f">Vimeo ID</label><input id="f-video" value="${esc(e.video)}" placeholder="numeric id" /></div>
           </div>
+          <div class="field"><label class="f">YouTube link (Watch the film)</label><input id="f-youtube" value="${esc(e.youtube || '')}" placeholder="https://youtu.be/…" /></div>
           <div class="field"><label class="f">Description</label><textarea id="f-desc" placeholder="What the project is, in a sentence or two.">${esc(e.desc)}</textarea></div>
 
           <h2 style="margin-top:24px">Credits</h2>
@@ -504,6 +505,7 @@
           category: $('#f-category').value, client: $('#f-client').value,
           year: $('#f-year').value, platform: $('#f-platform').value,
           role: $('#f-role').value, desc: $('#f-desc').value, video: $('#f-video').value,
+          youtube: $('#f-youtube').value,
           draft: $('#f-draft').checked, credits,
         };
         if (!isLab) body.featured = $('#f-featured').checked;

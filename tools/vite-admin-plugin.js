@@ -74,7 +74,7 @@ const optimizeInto = (tmpFile, outFile) => {
 // Fields the project editor is allowed to write.
 const EDITABLE = [
   'title', 'subtitle', 'category', 'client', 'platform', 'role',
-  'desc', 'video', 'image',
+  'desc', 'video', 'youtube', 'image',
 ];
 
 const slugify = (s) =>

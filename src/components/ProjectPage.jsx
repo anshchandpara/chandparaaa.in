@@ -8,6 +8,9 @@ import { useReveal } from '../hooks/useReveal';
 import { useMagnetic } from '../hooks/useMagnetic';
 import ProjectHeroCanvas from './ProjectHeroCanvas';
 import Lightbox from './Lightbox';
+import Compare from './Compare';
+import { getCompares } from '../lib/compares';
+import { getHeroVideo } from '../lib/heroVideo';
 import './ProjectPage.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -35,6 +38,9 @@ export default function ProjectPage({ slug }) {
   ];
   const lbOffset = !item.video && heroImg ? 1 : 0; // gallery index -> lbImages index
   const [lbIndex, setLbIndex] = useState(-1);
+
+  const compares = getCompares(slug); // before/after VFX pairs, if any
+  const heroVideo = getHeroVideo(slug); // self-hosted hero loop, if present
 
   const reduced =
     typeof window !== 'undefined' &&
@@ -201,7 +207,11 @@ export default function ProjectPage({ slug }) {
           ))}
         </dl>
 
-        <div ref={heroMediaRef} className="pd__hero" style={{ background: accent }}>
+        <div
+          ref={heroMediaRef}
+          className={`pd__hero${heroVideo && !item.video ? ' pd__hero--bleed' : ''}`}
+          style={{ background: accent }}
+        >
           {item.video ? (
             <iframe
               className="pd__hero-video"
@@ -209,6 +219,17 @@ export default function ProjectPage({ slug }) {
               src={`https://player.vimeo.com/video/${item.video}?title=0&byline=0&portrait=0&dnt=1&color=d98b2b`}
               allow="autoplay; fullscreen; picture-in-picture"
               loading="lazy"
+            />
+          ) : heroVideo ? (
+            <video
+              ref={heroImgRef}
+              className="pd__hero-img pd__hero-loop"
+              src={heroVideo}
+              muted
+              loop
+              playsInline
+              autoPlay
+              preload="auto"
             />
           ) : heroImg ? (
             <img
@@ -232,6 +253,34 @@ export default function ProjectPage({ slug }) {
           <p className="eyebrow">Brief</p>
           <p className="pd__desc">{item.desc || 'Project notes coming soon.'}</p>
         </div>
+
+        {item.youtube && (
+          <div className="pd__watch" data-rv>
+            <a
+              href={item.youtube}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pd__watch-link"
+              data-cursor
+              data-magnetic
+            >
+              <span className="pd__watch-eyebrow">Watch</span>
+              <span className="pd__watch-title">The full film on YouTube</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+                <path d="M7 17L17 7M17 7H8M17 7v9" />
+              </svg>
+            </a>
+          </div>
+        )}
+
+        {compares.length > 0 && (
+          <div className="pd__compares" data-rv>
+            <p className="eyebrow pd__compares-label">Plate → Final · drag to compare</p>
+            {compares.map((c, i) => (
+              <Compare key={i} before={c.before} after={c.after} video={c.video} />
+            ))}
+          </div>
+        )}
 
         {galleryImgs.length > 0 ? (
           <div className="pd__gallery">
