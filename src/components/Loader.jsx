@@ -53,7 +53,7 @@ export default function Loader({ onDone }) {
       </div>
       <div className="loader__mid">
         <span className="loader__num">{num}</span>
-        <span className="loader__role">Director · Title Designer</span>
+        <span className="loader__role">Creative Director · Title Designer</span>
       </div>
       <div className="loader__track">
         <div ref={barRef} className="loader__bar" />

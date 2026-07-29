@@ -70,22 +70,30 @@
   margin: 0;
 }
 
+/* ---------------------------------------------------------------------------
+   Full-bleed media. Every media block on a project page breaks out of the
+   padded text column to the full viewport width — same edge-to-edge, zero-
+   gutter language as the home masonry. Only type stays in the column.
+   --------------------------------------------------------------------------- */
+.pd__hero,
+.pd__gallery,
+.pd__slots,
+.pd__compares .cmp {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-radius: 0;
+}
+
 /* Hero media */
 .pd__hero {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 2px;
+  max-height: 88vh;
   margin-bottom: clamp(60px, 9vh, 110px);
 }
-/* Full-bleed hero (self-hosted loop): break out of the padded container to the
-   full viewport width, capped so it never exceeds the screen. */
-.pd__hero--bleed {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  border-radius: 0;
-  max-height: 88vh;
-}
+/* (kept for clarity — every hero is full-bleed now) */
+.pd__hero--bleed { max-height: 88vh; }
 .pd__hero-video {
   position: absolute;
   inset: 0;
@@ -192,24 +200,21 @@
   margin: 0 0 18px;
 }
 .pd__compares .cmp {
-  margin-bottom: 20px;
-}
-.pd__compares .cmp:last-child {
-  margin-bottom: 0;
+  margin-bottom: 0; /* sliders stack flush, like the gallery frames */
 }
 
-/* Gallery (real images) */
+/* Gallery (real images) — edge-to-edge, frames butt flush (no gutters). */
 .pd__gallery {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 28px;
+  gap: 0;
   margin-bottom: clamp(70px, 10vh, 130px);
 }
 .pd__frame {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-radius: 2px;
+  border-radius: 0;
   background: var(--bg-2);
 }
 .pd__frame--wide { grid-column: 1 / -1; }
@@ -225,7 +230,7 @@
 .pd__slots {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 28px;
+  gap: 0;
   margin-bottom: clamp(70px, 10vh, 130px);
 }
 .pd__slot {

@@ -54,7 +54,7 @@ export default function About() {
         </div>
         <div className="about__body" data-rv>
           <p>
-            Ansh Chandpara is a director and title designer working across film, streaming,
+            Ansh Chandpara is a creative director and title designer working across film, streaming,
             and brand. His practice sits at the intersection of motion, typography, and
             cinematic storytelling.
           </p>

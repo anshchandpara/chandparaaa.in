@@ -13,6 +13,18 @@ const modules = import.meta.glob('../media/projects/*/compare/*.{jpg,jpeg,png,we
 
 const isVideo = (url) => /\.(mp4|webm)(\?|$)/i.test(url);
 
+/**
+ * Per-project wording for the compare section. Defaults suit a shot VFX
+ * breakdown (filmed plate → composite); CG projects comparing a work-in-
+ * progress render against the final override it.
+ */
+const LABELS = {
+  asur: { before: 'WIP', after: 'Final', heading: 'WIP → Final' },
+};
+const DEFAULT_LABELS = { before: 'Plate', after: 'Final', heading: 'Plate → Final' };
+
+export const getCompareLabels = (slug) => LABELS[slug] || DEFAULT_LABELS;
+
 const bySlug = {};
 for (const [path, url] of Object.entries(modules)) {
   const m = path.match(/projects\/([^/]+)\/compare\/([^/]+)$/);

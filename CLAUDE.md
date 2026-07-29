@@ -1,6 +1,6 @@
 # CLAUDE.md — Ansh Chandpara Portfolio
 
-Cinematic dark portfolio for **Ansh Chandpara — Director · Title Designer · Filmmaker**.
+Cinematic dark portfolio for **Ansh Chandpara — Creative Director · Title Designer · Filmmaker**.
 **React + Vite.** `README.md` is the authoritative reference for the file tree, design tokens, and
 the imagery / video / credits / location systems — read it before making changes.
 
@@ -129,6 +129,37 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   (opacity-only — transform would break the fixed nav). **Loader plays once per session**
   (`sessionStorage acIntroPlayed`). Lab-mode home is just the hero (masonry is work-only).
   About-page "Projects" stat counts published (non-draft) work only.
+- **Project-page media is full-bleed everywhere** (`ProjectPage.css`): `.pd__hero`,
+  `.pd__gallery`, `.pd__slots` and `.pd__compares .cmp` all break out of the padded `.pd`
+  column with `width:100vw; margin-left:calc(50% - 50vw)`; gallery/slot gaps are **0** and
+  radii **0**, so frames butt flush — the same edge-to-edge, zero-gutter language as the home
+  masonry. Type (title, meta, brief, credits, eyebrows) stays inset in the column. Hero keeps
+  `max-height:88vh`. Applies to every hero type (still / self-hosted loop / Vimeo / shader).
+- **Asur page rebuilt (2026-07)** from `Titles CG/Asur WEBSITE/`: **hero is an animated GIF**
+  (`001.gif`, the burning-ghat comp from `Ghat_comp_v2_1.mov` — 600px/9fps/2.4s, 2.3 MB; it also
+  becomes the homepage masonry card, so it's deliberately smaller than a full-size loop).
+  16 gallery items alternating **GIF loop → still** (7 GIFs: ghat, mask, DNA, opening, clay
+  bridge-top, bridge angle, bridge collapse; ~8 MB total).
+  **1 A/B slider**: `Ghat_WIP_02` (daylight, pre-fire) → `Ghat_fire` (night, burning).
+  *Only* verified-aligned pair in the folder — `Ghat_WIP_01`(clay)↔`Ghat_v2`, the Mask v1↔v2 and
+  the Grid↔GridIron pairs all failed a `blend=all_mode=difference` check (doubled geometry =
+  different camera/rotation), so they'd ghost on the wipe and were left as plain stills.
+  All the Bridge_* clips are grey-clay previz with no textured counterpart.
+- **Per-project compare labels** (`LABELS` in `lib/compares.js` → `getCompareLabels(slug)`):
+  default is `Plate → Final` (shot VFX breakdown, e.g. monsoon); **asur overrides to
+  `WIP → Final`** since it compares two CG renders, not a filmed plate.
+- **ISBL page enriched (2026-07):** gallery renumbered `001…019` in two movements —
+  **colour section `001–013`** (stills with the 4 GIF loops woven in), then a **grayscale block
+  `014–019`** (hero `001.jpg` is the original cover; `image`/`gallery` fields cleared so the
+  folder glob drives everything). Sources: the
+  22 per-shot ProRes masters in Website Master `Events /ISBL/`.
+  **4 GIFs** (burnout, wheelies, traffic lights, DNA) built two-pass with
+  `palettegen(max_colors=64–80,stats_mode=diff)` + `paletteuse(dither=bayer:bayer_scale=4)`
+  at **460px / 10fps / ~2.2s → ~0.7–1.3 MB each, 4 MB total** (a first pass at 620px/12fps/128
+  colours came out 12.8 MB — too heavy; the repo convention warns about GIF bloat).
+  **6 grayscales** via `format=gray,eq=contrast=1.12` at 2000px. Note `Exhaust_v1.mov` is
+  near-black across its whole duration (frames came out 1.6–8 KB) — unusable as a still;
+  `Visor`/`FootCLose`/`opening_dolly` have the best tonal range.
 - **Lab-mode hero cover** = Ansh's own ornamental pencil drawing
   (`src/media/lab/lab-cover.jpg`, imported in `Hero.jsx` as `LAB_IMG`) — **replaced the stock
   Unsplash studio photo**; no stock imagery remains anywhere in `src/`. Styled

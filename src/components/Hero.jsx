@@ -17,7 +17,7 @@ const TAIL = 3; // the trailing "aaa" — these settle in last
 
 const COPY = {
   work: {
-    eyebrow: 'Director · Title Designer · Filmmaker',
+    eyebrow: 'Creative Director · Title Designer · Filmmaker',
     sub: 'Selected work across title design, film, music videos, and brand storytelling.',
     cta: 'View work',
   },

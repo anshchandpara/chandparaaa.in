@@ -9,7 +9,7 @@ import { useMagnetic } from '../hooks/useMagnetic';
 import ProjectHeroCanvas from './ProjectHeroCanvas';
 import Lightbox from './Lightbox';
 import Compare from './Compare';
-import { getCompares } from '../lib/compares';
+import { getCompares, getCompareLabels } from '../lib/compares';
 import { getHeroVideo } from '../lib/heroVideo';
 import './ProjectPage.css';
 
@@ -40,6 +40,7 @@ export default function ProjectPage({ slug }) {
   const [lbIndex, setLbIndex] = useState(-1);
 
   const compares = getCompares(slug); // before/after VFX pairs, if any
+  const cmpLabels = getCompareLabels(slug);
   const heroVideo = getHeroVideo(slug); // self-hosted hero loop, if present
 
   const reduced =
@@ -275,9 +276,18 @@ export default function ProjectPage({ slug }) {
 
         {compares.length > 0 && (
           <div className="pd__compares" data-rv>
-            <p className="eyebrow pd__compares-label">Plate → Final · drag to compare</p>
+            <p className="eyebrow pd__compares-label">
+              {cmpLabels.heading} · drag to compare
+            </p>
             {compares.map((c, i) => (
-              <Compare key={i} before={c.before} after={c.after} video={c.video} />
+              <Compare
+                key={i}
+                before={c.before}
+                after={c.after}
+                video={c.video}
+                labelBefore={cmpLabels.before}
+                labelAfter={cmpLabels.after}
+              />
             ))}
           </div>
         )}
@@ -366,7 +376,7 @@ export default function ProjectPage({ slug }) {
 
       <footer className="foot">
         <span>© 2026 Chandparaaa</span>
-        <span>Director · Title Designer · Filmmaker</span>
+        <span>Creative Director · Title Designer · Filmmaker</span>
         <span>{CURRENT_LOCATION.city}, {CURRENT_LOCATION.country}</span>
       </footer>
 

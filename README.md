@@ -1,6 +1,6 @@
 # Ansh Chandpara — Portfolio
 
-Cinematic, editorial portfolio site for **Ansh Chandpara — Director · Title Designer · Filmmaker**, recreated in **React + Vite** from the design handoff.
+Cinematic, editorial portfolio site for **Ansh Chandpara — Creative Director · Title Designer · Filmmaker**, recreated in **React + Vite** from the design handoff.
 
 ## Run
 
