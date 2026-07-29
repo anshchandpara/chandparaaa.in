@@ -454,8 +454,10 @@
       "gallery": [
         "Content/website_images_Optim/13_Asur/JYAS1PJcfHOQH8Qj8hLrTk2PNtI.jpg"
       ],
-      "image": "Content/website_images_Optim/13_Asur/JYAS1PJcfHOQH8Qj8hLrTk2PNtI.jpg",
-      "video": ""
+      "image": "001.jpg",
+      "video": "",
+      "subtitle": "",
+      "youtube": ""
     },
     {
       "slug": "britannia-winkin-cow",
@@ -557,13 +559,13 @@
       "role": "CG Generalist, Title Designer",
       "featured": false,
       "draft": true,
-      "desc": "",
+      "desc": "Title design for Varun Grover’s stand-up special.",
       "credits": [],
       "gallery": [],
       "image": "",
       "video": "",
       "subtitle": "",
-      "youtube": ""
+      "youtube": "https://www.youtube.com/watch?v=O-sdocGbdRg&t=2686s"
     },
     {
       "slug": "hashishbhai-dhanji-rasla",

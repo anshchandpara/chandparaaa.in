@@ -21,6 +21,16 @@
   z-index: 0;
 }
 .hero__media--img { filter: saturate(1) contrast(1.05) brightness(0.66) grayscale(0.12); }
+
+/* Lab cover — a drawing, not a photo: `contain` keeps the whole sheet and its
+   torn deckle edges visible (the scan is already matted on black, so it blends
+   into the page), and it's dimmed far less than a photo so the pencil linework
+   survives under the veil. */
+.hero__media--art {
+  object-fit: contain;
+  background: var(--bg);
+  filter: contrast(1.06) brightness(0.78) grayscale(0.15);
+}
 .hero__media--placeholder { background: var(--bg); }
 .hero__media--video {
   background: var(--bg);

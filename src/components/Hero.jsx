@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useMagnetic } from '../hooks/useMagnetic';
 import LocationMap from './LocationMap';
+// Lab-mode cover — Ansh's own ornamental drawing (replaces a stock photo).
+import LAB_IMG from '../media/lab/lab-cover.jpg';
 import './Hero.css';
 
 // Hero background loop — a short, muted, self-hosted clip (optimized to ~1080p).
@@ -12,9 +14,6 @@ const HERO_POSTER = `${import.meta.env.BASE_URL}hero-poster.jpg`;
 const WORDMARK = 'Chandparaaa';
 const LETTERS = WORDMARK.split('');
 const TAIL = 3; // the trailing "aaa" — these settle in last
-
-const LAB_IMG =
-  'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=2000&q=80';
 
 const COPY = {
   work: {
@@ -205,9 +204,9 @@ export default function Hero({ mode = 'work', play = true }) {
         </video>
       ) : (
         <img
-          className="hero__media hero__media--img"
+          className="hero__media hero__media--art"
           src={LAB_IMG}
-          alt="Lab environment — studio workspace"
+          alt="Ornamental symmetry study — pencil on handmade paper"
           loading="eager"
           decoding="async"
         />

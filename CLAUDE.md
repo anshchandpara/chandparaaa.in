@@ -129,6 +129,13 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   (opacity-only — transform would break the fixed nav). **Loader plays once per session**
   (`sessionStorage acIntroPlayed`). Lab-mode home is just the hero (masonry is work-only).
   About-page "Projects" stat counts published (non-draft) work only.
+- **Lab-mode hero cover** = Ansh's own ornamental pencil drawing
+  (`src/media/lab/lab-cover.jpg`, imported in `Hero.jsx` as `LAB_IMG`) — **replaced the stock
+  Unsplash studio photo**; no stock imagery remains anywhere in `src/`. Styled
+  `.hero__media--art`: `object-fit: contain` (the scan is already matted on black, so the torn
+  deckle edges float seamlessly on the page bg) + `brightness(.78)` — dimmed far less than the
+  photo treatment so the pencil linework survives under the veil. Source:
+  `Downloads/Texturelabs_Paper_368L.jpg` (4240×3239 → 2400px, 1.1 MB).
 - Location = collapsible "Pune, India" chip → Leaflet/CARTO mini-map (`src/lib/location.js`).
 - 19 work projects; 11 featured (incl. `ekam`, new `dico-battery`). Product Films was deleted.
 - **Brand strings:** nav brand (both navs) = **"Ansh Chandpara"** (user reverted it from the
