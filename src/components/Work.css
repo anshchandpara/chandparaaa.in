@@ -145,7 +145,8 @@
   display: block;
   object-fit: cover;
   transform: scale(1.14);
-  filter: blur(15px) saturate(1.15) brightness(0.82);
+  /* Covers rest monotone behind the frost; hover restores full colour. */
+  filter: blur(15px) grayscale(1) contrast(1.06) brightness(0.86);
   transition: transform 0.6s var(--ease), filter 0.55s var(--ease);
   will-change: transform, filter;
 }
@@ -154,7 +155,7 @@
 .fcard__link:hover .fcard__gl,
 .fcard__link:focus-visible .fcard__gl {
   transform: scale(var(--card-zoom, 1.03));
-  filter: blur(0) saturate(1) brightness(1);
+  filter: blur(0) grayscale(0) contrast(1) brightness(1);
 }
 
 /* The frosted pane: a glassy tint + top sheen highlight, darkening toward the

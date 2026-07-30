@@ -2,10 +2,11 @@ import data from '../data/projects.json';
 import { getAccent } from './accents';
 import { getHero, baseName } from './images';
 
-// Modular ratio set — three related portrait/square modules rather than a wide
-// spread, so a dense 3–4-up grid reads as a system. Five steps (coprime with 3
-// and 4 columns) keeps the stagger from lining up into identical rows.
-const WORK_AR = ['4 / 5', '1 / 1', '3 / 4', '4 / 5', '1 / 1'];
+// Modular ratio set — portrait/square modules punctuated by wide 21:9 letterbox
+// cards, which compact the columns and break up the vertical rhythm. Seven
+// steps (coprime with 2, 3 and 4 columns) so the stagger never lines up into
+// identical rows at any density.
+const WORK_AR = ['4 / 5', '21 / 9', '1 / 1', '3 / 4', '21 / 9', '4 / 5', '1 / 1'];
 
 export function getWorkCards() {
   return data.work

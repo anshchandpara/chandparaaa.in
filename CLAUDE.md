@@ -88,7 +88,9 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
 - Work masonry = **modular, responsive, infinite scroll**: every published project (19; drafts
   excluded). **Columns step 4 → 3 → 2 → 1** at 1440/1024/640px (`useColumns` in `Work.jsx`,
   rAF-throttled resize; `COLUMNS=4` in Home is the cap). Ratios are a modular set
-  `['4/5','1/1','3/4','4/5','1/1']` — 5 steps, coprime with 3 and 4 so rows never sync up.
+  `['4/5','21/9','1/1','3/4','21/9','4/5','1/1']` — **7 steps, coprime with 2/3/4 columns** so
+  no two columns share a ratio sequence at any density; the two **21:9 letterbox** cards per
+  cycle compact the columns and break the vertical rhythm (at 4-up: 360×154 vs 360×450 tall).
   Caption type + scrim scale down per density via `.work__grid[data-cols='3'|'4']`.
   **Sort control** in the section head (`SORTS` in `workCards.js`): Index (curated `num`
   order) / Newest / Oldest / A–Z / Type. Ratios are applied by *display position*
@@ -111,8 +113,11 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   triggers killed only on unmount). Still full-bleed, zero-gutter, captions overlaid. Foot
   link relabelled "Archive" → about-page archive. `featured` flags no longer drive the grid
   (still in data, unused).
-- **Card treatment (frosted glass → clear on hover):** each `.fcard` shows its image always
-  present but **blurred** (`.fcard__img` `filter: blur(18px) saturate brightness(.82)`, scaled
+- **Card treatment (monotone frosted glass → colour on hover):** each `.fcard` shows its image
+  always present but **blurred + fully desaturated** (`.fcard__img`
+  `filter: blur(15px) grayscale(1) contrast(1.06) brightness(.86)` → hover
+  `blur(0) grayscale(0) contrast(1) brightness(1)`, so the grid reads as a monochrome index and
+  only the hovered card blooms into colour), scaled
   1.14 to hide blur edges) under a **frosted pane** (`.fcard__glass` — glassy white sheen +
   inset top highlight, darkening to the base for title legibility, light `backdrop-filter:
   saturate`). `num` + big `fcard__title` sit on the glass. On hover/focus-visible: glass
