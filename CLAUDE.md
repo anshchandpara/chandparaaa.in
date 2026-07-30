@@ -129,6 +129,23 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   (opacity-only — transform would break the fixed nav). **Loader plays once per session**
   (`sessionStorage acIntroPlayed`). Lab-mode home is just the hero (masonry is work-only).
   About-page "Projects" stat counts published (non-draft) work only.
+- **Gallery video loops (better than GIF):** `images.js` now globs `mp4|webm` too and exports
+  `isVideoSrc(url)`; `projectData` flags each gallery entry `video`, ProjectPage renders a muted
+  /loop/playsinline `<video>`, and the Lightbox does the same (and skips `new Image()` preload
+  for them). **`getHero` skips videos** so masonry cards/thumbnails always resolve to a still,
+  and **`hero.<mp4|webm>` is excluded from the glob** (it's reserved for the page hero via
+  `heroVideo.js` — otherwise it renders twice).
+  **Why:** GIF caps at 256 colours, so smooth gradients band badly. Mars measured:
+  GIF 6.0 MB @640px (visible banding even at 256 colours + `sierra2_4a`) vs **h264 1.8 MB
+  @1280px, clean** — 3× smaller at 2× the resolution. If a GIF *is* required, never use
+  `dither=bayer` on gradients (that ordered pattern was the banding the user spotted) — use
+  `palettegen=max_colors=256:stats_mode=full` + `paletteuse=dither=sierra2_4a`.
+  **There are now zero GIFs in `src/media` — every loop on the site is h264.** Asur (7 loops:
+  hero.mp4 burning ghat + 6 gallery, 8.3 MB GIF → 6.0 MB video at 1280–1600px) and ISBL
+  (4 loops, 4.0 MB @460px → 2.0 MB @1280px) were both converted. Encode recipe:
+  `-an -vf "scale='min(W,iw)':-2,fps=25" -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p
+  -movflags +faststart` (`min(W,iw)` never upscales). Asur's `Opening.2.1` title card needs
+  crf 26 — glowing text + particles on black is expensive (3.6 MB at crf 23).
 - **Project-page media is full-bleed everywhere** (`ProjectPage.css`): `.pd__hero`,
   `.pd__gallery`, `.pd__slots` and `.pd__compares .cmp` all break out of the padded `.pd`
   column with `width:100vw; margin-left:calc(50% - 50vw)`; gallery/slot gaps are **0** and

@@ -1,20 +1,29 @@
 /**
- * Real project imagery in src/media/projects/<slug>/. Vite hashes + bundles
- * each file; the glob enumerates them so galleries build automatically.
- * `.gif` is included — GIFs flow through the same pipeline (hero thumbnail,
- * card, and gallery) and animate natively in <img>.
+ * Real project media in src/media/projects/<slug>/. Vite hashes + bundles each
+ * file; the glob enumerates them so galleries build automatically.
+ * `.gif` flows through as a normal still (animates natively in <img>).
+ * `.mp4`/`.webm` are **silent gallery loops** — far better than a GIF for
+ * smooth gradients (no 256-colour banding, a fraction of the weight). They sit
+ * in filename order alongside the stills; `getHero` skips them so masonry
+ * cards and thumbnails always resolve to a real image.
  */
-const modules = import.meta.glob('../media/projects/*/*.{jpg,jpeg,png,webp,gif}', {
+const modules = import.meta.glob('../media/projects/*/*.{jpg,jpeg,png,webp,gif,mp4,webm}', {
   eager: true,
   query: '?url',
   import: 'default',
 });
+
+/** True for a bundled URL that points at a video file. */
+export const isVideoSrc = (url) => /\.(mp4|webm)(\?|#|$)/i.test(url || '');
 
 const bySlug = {};
 for (const [path, url] of Object.entries(modules)) {
   const m = path.match(/projects\/([^/]+)\/([^/]+)$/);
   if (!m) continue;
   const [, slug, file] = m;
+  // `hero.mp4`/`hero.webm` is reserved for the page hero (lib/heroVideo.js) —
+  // keep it out of the gallery so it isn't shown twice.
+  if (/^hero\.(mp4|webm)$/i.test(file)) continue;
   (bySlug[slug] ||= []).push({ file, url });
 }
 for (const k in bySlug) bySlug[k].sort((a, b) => a.file.localeCompare(b.file));
@@ -39,8 +48,9 @@ export function getImages(slug, preferred) {
   return arr.map((x) => x.url);
 }
 
+/** First still for a slug — skips gallery loops, so cards never get a video. */
 export function getHero(slug, preferred) {
-  return getImages(slug, preferred)[0] || '';
+  return getImages(slug, preferred).find((url) => !isVideoSrc(url)) || '';
 }
 
 /** Basename of a legacy projects.json image path, or null. */

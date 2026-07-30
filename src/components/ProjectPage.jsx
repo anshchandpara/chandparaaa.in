@@ -300,13 +300,27 @@ export default function ProjectPage({ slug }) {
                 className={`pd__frame${gi.wide ? ' pd__frame--wide' : ''}`}
                 data-rv
               >
-                <img
-                  src={gi.src}
-                  alt={gi.alt}
-                  data-cursor
-                  data-cursor-label="Expand"
-                  onClick={() => setLbIndex(lbOffset + i)}
-                />
+                {gi.video ? (
+                  <video
+                    src={gi.src}
+                    muted
+                    loop
+                    playsInline
+                    autoPlay
+                    preload="metadata"
+                    data-cursor
+                    data-cursor-label="Expand"
+                    onClick={() => setLbIndex(lbOffset + i)}
+                  />
+                ) : (
+                  <img
+                    src={gi.src}
+                    alt={gi.alt}
+                    data-cursor
+                    data-cursor-label="Expand"
+                    onClick={() => setLbIndex(lbOffset + i)}
+                  />
+                )}
               </div>
             ))}
           </div>

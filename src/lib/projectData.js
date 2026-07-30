@@ -1,6 +1,6 @@
 import data from '../data/projects.json';
 import { getAccent } from './accents';
-import { getImages, baseName } from './images';
+import { getImages, baseName, isVideoSrc } from './images';
 
 /**
  * Flatten work + lab into a single ordered list of detail-page records.
@@ -63,14 +63,19 @@ export function getProject(slug) {
       : item;
   const accent = getAccent(item.slug);
 
-  // Real imagery: designated hero first, the rest become the gallery.
+  // Real media: the designated hero leads, the rest become the gallery. The
+  // still hero is used for the <img> hero slot (gallery loops can't fill it),
+  // and everything else — stills, GIFs and video loops — follows below.
   const imgs = getImages(item.slug, baseName(item.image));
-  const heroImg = imgs[0] || '';
-  const galleryImgs = imgs.slice(1).map((src, i) => ({
-    src,
-    alt: `${item.title || 'Frame'} — frame ${i + 1}`,
-    wide: i === 0,
-  }));
+  const heroImg = imgs.find((url) => !isVideoSrc(url)) || '';
+  const galleryImgs = imgs
+    .filter((url) => url !== heroImg)
+    .map((src, i) => ({
+      src,
+      video: isVideoSrc(src),
+      alt: `${item.title || 'Frame'} — frame ${i + 1}`,
+      wide: i === 0,
+    }));
 
   return { item, next, accent, heroImg, galleryImgs };
 }

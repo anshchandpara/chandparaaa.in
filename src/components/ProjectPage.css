@@ -218,7 +218,8 @@
   background: var(--bg-2);
 }
 .pd__frame--wide { grid-column: 1 / -1; }
-.pd__frame img {
+.pd__frame img,
+.pd__frame video {
   position: absolute;
   inset: 0;
   width: 100%;

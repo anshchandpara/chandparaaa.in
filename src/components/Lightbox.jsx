@@ -49,10 +49,11 @@ export default function Lightbox({ images, index, onClose, onNavigate }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, count]);
 
-  // Preload neighbours.
+  // Preload neighbouring stills (videos stream themselves).
   useEffect(() => {
     if (count < 2) return;
     [images[(index + 1) % count], images[(index - 1 + count) % count]].forEach((im) => {
+      if (/\.(mp4|webm)(\?|#|$)/i.test(im.src)) return;
       const pre = new Image();
       pre.src = im.src;
     });
@@ -83,7 +84,20 @@ export default function Lightbox({ images, index, onClose, onNavigate }) {
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
     >
-      <img key={img.src} className="lb__img" src={img.src} alt={img.alt || ''} draggable="false" />
+      {/\.(mp4|webm)(\?|#|$)/i.test(img.src) ? (
+        <video
+          key={img.src}
+          className="lb__img"
+          src={img.src}
+          muted
+          loop
+          playsInline
+          autoPlay
+          controls={false}
+        />
+      ) : (
+        <img key={img.src} className="lb__img" src={img.src} alt={img.alt || ''} draggable="false" />
+      )}
 
       <button ref={closeRef} className="lb__close" onClick={onClose} data-cursor aria-label="Close">
         ×
