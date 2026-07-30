@@ -245,6 +245,13 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
     **image manager** (drag-drop or click upload → auto `sips` optimize to ≤2000px q82 JPEG and
     sequential `NNN.jpg` naming; set any image as cover; delete — clears `image` if it pointed
     there). Plus the create-drafts rows.
+  - **Order** — drag-to-reorder (or ↑↓) list of every work project = the site's default
+    running order. Works because the masonry's `index` sort has **no comparator**, so it renders
+    `data.work` in array order; `PUT /admin/api/order` rewrites that array and **renumbers `num`
+    to 01…N** so the printed index stays contiguous. Unlisted slugs keep their relative position
+    (defensive). Drafts hold a slot but stay hidden on the live site. Has a dirty flag + Revert;
+    `reconcileOrder()` keeps the list in step with adds/deletes **without** discarding a pending
+    arrangement.
   - **Team** — name → URL directory (`people.json`).
   - **Design** — writes `src/data/design.json` (see below) + the About portrait uploader.
   API: `GET/PUT /admin/api/project/:slug`, `GET/POST /admin/api/project/:slug/media`,

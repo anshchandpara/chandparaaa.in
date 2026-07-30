@@ -127,6 +127,27 @@
       .icon-btn { flex: none; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--line); background: none; color: var(--muted); cursor: pointer; font-size: 17px; }
       .icon-btn:hover { color: var(--danger); border-color: var(--danger); }
 
+      /* Order rows */
+      .orow {
+        display: flex; align-items: center; gap: 12px; padding: 8px 12px; margin-bottom: 6px;
+        border: 1px solid var(--line); border-radius: 9px; background: var(--panel);
+        cursor: grab; user-select: none;
+      }
+      .orow:hover { border-color: var(--muted); }
+      .orow.dragging { opacity: .4; }
+      .orow.over { border-color: var(--accent); }
+      .orow .grip { color: var(--muted); font-size: 14px; line-height: 1; flex: none; letter-spacing: -2px; }
+      .orow .pos {
+        flex: none; width: 30px; font-size: 12px; color: var(--accent);
+        font-variant-numeric: tabular-nums; text-align: right;
+      }
+      .orow .thumb { width: 40px; height: 30px; object-fit: cover; border-radius: 3px; background: var(--panel-2); flex: none; }
+      .orow .nm { flex: 1; min-width: 0; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .orow .tag { flex: none; font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--accent); color: var(--accent); border-radius: 999px; padding: 2px 7px; }
+      .orow .mv { flex: none; background: none; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); cursor: pointer; width: 26px; height: 24px; font-size: 11px; line-height: 1; }
+      .orow .mv:hover:not(:disabled) { color: var(--text); border-color: var(--muted); }
+      .orow .mv:disabled { opacity: .3; cursor: default; }
+
       /* Team rows */
       .people-row { display: flex; align-items: center; gap: 12px; padding: 7px 2px; border-bottom: 1px solid var(--line); }
       .people-row .pname { flex: none; width: 200px; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -166,6 +187,7 @@
 
       <div class="tabs">
         <button class="tab is-active" data-tab="projects">Projects</button>
+        <button class="tab" data-tab="order">Order</button>
         <button class="tab" data-tab="team">Team</button>
         <button class="tab" data-tab="design">Design</button>
       </div>
@@ -188,6 +210,23 @@
           <button class="btn" id="add-row" type="button">+ Add row</button>
           <button class="btn primary" id="create" type="button">Create drafts</button>
           <span class="hint" id="new-count"></span>
+        </div>
+      </section>
+
+      <!-- ───────── ORDER ───────── -->
+      <section class="panel" id="tab-order">
+        <h2>Display order <span class="hint" id="order-count"></span></h2>
+        <p class="lede">
+          This is the running order the site shows by default (the grid's
+          <b>Index</b> sort) — drag a row, or use ↑↓. Position <b>01</b> leads the homepage.
+          Drafts stay hidden on the live site but keep their slot here. Saving renumbers the
+          printed index to match.
+        </p>
+        <div id="orderList"></div>
+        <div class="actions">
+          <button class="btn primary" id="save-order" type="button">Save order</button>
+          <button class="btn" id="reset-order" type="button">Revert</button>
+          <span class="hint" id="order-status"></span>
         </div>
       </section>
 
@@ -339,6 +378,27 @@
         }
         const drafts = list.filter((p) => p.draft).length;
         $('#pcount').textContent = `${list.length} total · ${drafts} draft${drafts === 1 ? '' : 's'}`;
+        reconcileOrder();
+      }
+
+      /* Keep the Order tab in step with the data without discarding a pending
+         arrangement: retain the slugs the user has arranged, append anything
+         new, drop anything deleted. */
+      function reconcileOrder() {
+        const live = projectsState.work.map((p) => p.slug);
+        if (!orderSlugs.length) {
+          orderSlugs = live.slice();
+          orderSaved = live.slice();
+        } else {
+          orderSlugs = orderSlugs.filter((s) => live.includes(s));
+          for (const s of live) if (!orderSlugs.includes(s)) orderSlugs.push(s);
+          orderSaved = orderSaved.filter((s) => live.includes(s));
+          for (const s of live) if (!orderSaved.includes(s)) orderSaved.push(s);
+        }
+        if ($('#orderList')) {
+          renderOrder();
+          markOrderDirty();
+        }
       }
 
       /* ───────── Editor ───────── */
@@ -553,6 +613,91 @@
           rowsEl.innerHTML = ''; addRow(false); count();
           toast(`Created ${d.created.length} draft${d.created.length === 1 ? '' : 's'}.`);
         } catch (e) { toast(e.message, true); }
+      });
+
+      /* ───────── Display order ───────── */
+      let orderSlugs = [];   // working copy (work projects only)
+      let orderSaved = [];   // last-saved order, for Revert
+
+      function renderOrder() {
+        const byId = new Map(projectsState.work.map((p) => [p.slug, p]));
+        const box = $('#orderList');
+        box.innerHTML = '';
+        orderSlugs.forEach((slug, i) => {
+          const p = byId.get(slug);
+          if (!p) return;
+          const row = document.createElement('div');
+          row.className = 'orow';
+          row.draggable = true;
+          row.dataset.slug = slug;
+          row.innerHTML = `
+            <span class="grip" aria-hidden="true">⋮⋮</span>
+            <span class="pos">${String(i + 1).padStart(2, '0')}</span>
+            ${p.thumb ? `<img class="thumb" src="${esc(p.thumb)}" alt="" />` : '<span class="thumb"></span>'}
+            <span class="nm">${esc(p.title)}</span>
+            ${p.draft ? '<span class="tag">Draft</span>' : ''}
+            <button class="mv up" type="button" title="Move up" ${i === 0 ? 'disabled' : ''}>↑</button>
+            <button class="mv dn" type="button" title="Move down" ${i === orderSlugs.length - 1 ? 'disabled' : ''}>↓</button>`;
+
+          const move = (from, to) => {
+            if (to < 0 || to >= orderSlugs.length) return;
+            orderSlugs.splice(to, 0, orderSlugs.splice(from, 1)[0]);
+            renderOrder();
+            markOrderDirty();
+          };
+          row.querySelector('.up').addEventListener('click', (e) => { e.stopPropagation(); move(i, i - 1); });
+          row.querySelector('.dn').addEventListener('click', (e) => { e.stopPropagation(); move(i, i + 1); });
+
+          row.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', slug);
+            e.dataTransfer.effectAllowed = 'move';
+            row.classList.add('dragging');
+          });
+          row.addEventListener('dragend', () => row.classList.remove('dragging'));
+          row.addEventListener('dragover', (e) => { e.preventDefault(); row.classList.add('over'); });
+          row.addEventListener('dragleave', () => row.classList.remove('over'));
+          row.addEventListener('drop', (e) => {
+            e.preventDefault();
+            row.classList.remove('over');
+            const from = orderSlugs.indexOf(e.dataTransfer.getData('text/plain'));
+            const to = orderSlugs.indexOf(slug);
+            if (from > -1 && to > -1 && from !== to) move(from, to);
+          });
+          box.appendChild(row);
+        });
+        $('#order-count').textContent = `${orderSlugs.length} projects`;
+      }
+
+      const markOrderDirty = () => {
+        const dirty = orderSlugs.join() !== orderSaved.join();
+        $('#order-status').textContent = dirty ? 'unsaved changes' : '';
+      };
+
+      function syncOrderFromState() {
+        orderSlugs = projectsState.work.map((p) => p.slug);
+        orderSaved = orderSlugs.slice();
+        renderOrder();
+        markOrderDirty();
+      }
+
+      $('#save-order').addEventListener('click', async () => {
+        const btn = $('#save-order');
+        btn.disabled = true;
+        try {
+          const d = await jsend(`${API}/order`, 'PUT', { slugs: orderSlugs, renumber: true });
+          projectsState = d.projects;
+          syncOrderFromState();
+          renderList();
+          $('#order-status').textContent = 'Saved — the site reloads itself';
+          toast('Order saved.');
+        } catch (e) { toast(e.message, true); }
+        finally { btn.disabled = false; }
+      });
+      $('#reset-order').addEventListener('click', () => {
+        orderSlugs = orderSaved.slice();
+        renderOrder();
+        markOrderDirty();
+        toast('Reverted to the saved order.');
       });
 
       /* ───────── Team ───────── */

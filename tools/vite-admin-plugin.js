@@ -507,6 +507,38 @@ export default function adminPlugin() {
             return sendJSON(res, 200, { media: mediaFor(slug) });
           }
 
+          // ── Display order ──
+          // The masonry's default "Index" sort has no comparator, so it renders
+          // data.work in array order. Reordering that array here therefore
+          // controls the live running order; `num` is renumbered to match so the
+          // printed index reads 01…N.
+          if (req.method === 'PUT' && url === '/api/order') {
+            const { slugs = [], renumber = true } = await readBody(req);
+            if (!Array.isArray(slugs) || !slugs.length)
+              return sendJSON(res, 400, { error: 'slugs must be a non-empty array.' });
+
+            const data = readData();
+            const pool = new Map(data.work.map((p) => [p.slug, p]));
+            const ordered = [];
+            for (const s of slugs) {
+              const p = pool.get(s);
+              if (p) {
+                ordered.push(p);
+                pool.delete(s);
+              }
+            }
+            // Anything the client didn't send keeps its original relative order.
+            for (const p of data.work) if (pool.has(p.slug)) ordered.push(p);
+
+            data.work = ordered;
+            if (renumber)
+              ordered.forEach((p, i) => {
+                p.num = String(i + 1).padStart(2, '0');
+              });
+            writeData(data);
+            return sendJSON(res, 200, { projects: listProjects(data) });
+          }
+
           // ── Design settings ──
           if (req.method === 'GET' && url === '/api/design') {
             return sendJSON(res, 200, readDesign());
