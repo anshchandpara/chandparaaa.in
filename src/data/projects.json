@@ -607,7 +607,6 @@
       "platform": "YouTube",
       "role": "CG Generalist, Title Designer",
       "featured": false,
-      "draft": true,
       "desc": "Title design for Varun Grover’s stand-up special.",
       "credits": [],
       "gallery": [],
@@ -626,13 +625,13 @@
       "platform": "YouTube",
       "role": "Creative Director, Color, Title Design",
       "featured": false,
-      "draft": true,
       "desc": "",
       "credits": [],
       "gallery": [],
       "image": "",
       "video": "",
-      "subtitle": ""
+      "subtitle": "",
+      "draft": true
     },
     {
       "slug": "kyra-itc-farmlite",
@@ -645,12 +644,12 @@
       "platform": "",
       "role": "",
       "featured": false,
-      "draft": true,
       "desc": "CG commercial for ITC's Sunfeast Farmlite Active range — a photoreal kitchen environment built around the Oats Almonds, Raisins and Chocolate cartons, with a digital presenter.",
       "credits": [],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "draft": true
     },
     {
       "slug": "storm-plus",
@@ -662,13 +661,13 @@
       "platform": "",
       "role": "",
       "featured": false,
-      "draft": true,
       "desc": "Product CG for the Storm Plus smartwatch — studio lighting studies across colourways and straps, with rendered UI states for calls, messages and activity.",
       "credits": [],
       "gallery": [],
       "image": "",
       "video": "",
-      "subtitle": ""
+      "subtitle": "",
+      "draft": true
     },
     {
       "slug": "tasc",
@@ -680,13 +679,13 @@
       "platform": "Live Event",
       "role": "Design Lead, CG",
       "featured": false,
-      "draft": true,
       "desc": "Ultra-wide stage and environment renders for TASC — an arched, screen-led architectural set with patterned panels and layered light.",
       "credits": [],
       "gallery": [],
       "image": "",
       "video": "",
-      "subtitle": ""
+      "subtitle": "",
+      "draft": true
     },
     {
       "slug": "sketches-live",
