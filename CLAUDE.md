@@ -275,6 +275,16 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   from **`src/data/people.json`** (`{owner, people:{name→url}}`) + keeps `parseCredit`. A name
   with a non-empty URL already renders as a `target="_blank"` link in project-page credits
   (`ProjectPage.jsx`); the JSON just makes the directory editable by the /admin form.
+- **Studio runs without Claude.** `Studio.command` at the repo root is a double-click launcher:
+  puts `~/.local/bin` on PATH, `npm install` on first run, picks a free port (5173+, honoured by
+  `vite.config.js` via `process.env.PORT`), starts the dev server, opens `/admin`, and kills the
+  server when the window closes. The Studio's **Publish bar** runs `tools/ship.sh` via
+  `POST /admin/api/publish` — so the whole edit → publish loop needs no terminal.
+  **Publish state is on disk** (`/tmp/chandparaaa-publish.{json,log}`), and the child is
+  `detached` writing straight to that log: `ship.sh` switches git branches, which makes Vite
+  reload this plugin mid-run and previously wiped the in-memory job (the publish still
+  completed — only the UI status was lost). `GET /api/publish` also falls back to the log's own
+  end markers ("Live at" / "failed") to resolve a job whose child handle was lost.
 - **Studio hub (dev-only):** `http://localhost:5173/admin` — Vite plugin (`apply:'serve'`) in
   `tools/vite-admin-plugin.js` + `tools/admin.html`; never ships to `dist`; needs `npm run dev`.
   **Three tabs:**

@@ -12,6 +12,16 @@ npm run build    # production build → dist/
 npm run preview  # preview the build
 ```
 
+## The Studio app (no terminal needed)
+
+Double-click **`Studio.command`** in this folder. It starts the local server and opens the
+Studio, where you can edit projects, upload images, reorder the grid, tweak design settings —
+and hit **Publish** to push it all live to chandparaaa.in. Keep that window open while you
+work; closing it stops the server.
+
+> First launch: macOS may block it. Right-click → **Open** → **Open** once, and it'll be
+> trusted from then on. (Or drag it to your Dock for one-click access.)
+
 ## Publishing (local first, then live)
 
 The site is live at **[chandparaaa.in](https://chandparaaa.in)** via GitHub Pages. Work happens
