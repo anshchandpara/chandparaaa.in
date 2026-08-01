@@ -56,7 +56,12 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
 ## Conventions / decisions
 - **Project videos → Vimeo.** Each `projects.json` entry has a `"video"` field (numeric Vimeo ID)
   → embed hero above the stills. Agent can't upload; user provides IDs.
-  Exception: the **hero background loop is self-hosted** (`public/hero-loop.mp4`, ~7.7 MB 1080p).
+  Exception: the **hero background loop is self-hosted** — `public/hero-loop.mp4`, now
+  **2560×1440 / 8.7 MB** (crf 28, `preset veryslow`) re-encoded from the 4K master
+  `Website Master/Edit/Website Home Loop 03.mp4`; poster regenerated to match at 2560px.
+  Upgraded from 1080p/7.7 MB: +78% pixels for +1 MB, visibly crisper on retina where the
+  old 1080p was being upscaled. (crf 26 = 12.8 MB and 1080p/crf 22 = 13.9 MB were both
+  worse value; `veryslow` bought ~4 MB over `slow` at the same crf.)
 - **Self-hosted project hero loop:** drop a `hero.mp4` (muted, web-optimized) into
   `src/media/projects/<slug>/` and the project page leads with it as an autoplaying loop
   (`lib/heroVideo.js` → `getHeroVideo`; `.pd__hero-loop` in ProjectPage; Vimeo `video` still
@@ -151,6 +156,18 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   `-an -vf "scale='min(W,iw)':-2,fps=25" -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p
   -movflags +faststart` (`min(W,iw)` never upscales). Asur's `Opening.2.1` title card needs
   crf 26 — glowing text + particles on black is expensive (3.6 MB at crf 23).
+- **Letterbox header backdrop (`.pd__backdrop`):** a full-bleed band
+  (`clamp(380px,56vh,660px)`) of the project's own frame behind the eyebrow/title/meta.
+  **True tilt-shift** = two stacked copies — `.pd__backdrop-blur` (blur 26px, brightness .42)
+  under `.pd__backdrop-sharp`, the sharp one revealed through a horizontal
+  `mask-image` gradient band so focus falls off above and below — plus a two-axis
+  `.pd__backdrop-veil` for legibility that dissolves the band into `--bg`. Header elements get
+  `position:relative; z-index:1` to sit above it (`.pd` is the positioning context).
+  **Frame choice matters:** with a video hero it uses `heroImg` (the still hero isn't rendered
+  anywhere else on those pages, so this also stops that frame going unused); otherwise it takes
+  a **mid-gallery still** — using the hero itself stacked a blurred copy directly above the
+  identical sharp hero, which read as a duplication bug. Skipped entirely when a project has no
+  imagery (shader-hero pages).
 - **Project-page media is full-bleed everywhere** (`ProjectPage.css`): `.pd__hero`,
   `.pd__gallery`, `.pd__slots` and `.pd__compares .cmp` all break out of the padded `.pd`
   column with `width:100vw; margin-left:calc(50% - 50vw)`; gallery/slot gaps are **0** and

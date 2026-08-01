@@ -43,6 +43,15 @@ export default function ProjectPage({ slug }) {
   const cmpLabels = getCompareLabels(slug);
   const heroVideo = getHeroVideo(slug); // self-hosted hero loop, if present
 
+  // Frame for the letterbox header backdrop. With a video hero the still hero
+  // isn't rendered anywhere else, so it's the natural pick; otherwise take a
+  // mid-gallery still so the band doesn't just repeat the hero underneath it.
+  const backdropImg = (() => {
+    if (heroVideo) return heroImg;
+    const stills = galleryImgs.filter((g) => !g.video).map((g) => g.src);
+    return stills.length ? stills[Math.floor(stills.length / 2)] : heroImg;
+  })();
+
   const reduced =
     typeof window !== 'undefined' &&
     window.matchMedia &&
@@ -189,6 +198,17 @@ export default function ProjectPage({ slug }) {
       </svg>
 
       <main ref={revealRef} className="pd" data-screen-label="Project detail">
+        {/* Letterbox backdrop behind the header — the project's own key frame,
+            tilt-shifted (sharp band, blurred above/below) and veiled so the
+            title stays legible. Skipped when a project has no imagery. */}
+        {backdropImg && (
+          <div className="pd__backdrop" aria-hidden="true">
+            <img className="pd__backdrop-blur" src={backdropImg} alt="" />
+            <img className="pd__backdrop-sharp" src={backdropImg} alt="" />
+            <div className="pd__backdrop-veil" />
+          </div>
+        )}
+
         <p className="eyebrow" data-rv style={{ marginBottom: 20 }}>
           {item.num} — {item.category}
         </p>
