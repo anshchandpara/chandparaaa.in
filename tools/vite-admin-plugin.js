@@ -26,8 +26,35 @@ const writeDesign = (d) => writeJSON(DESIGN_FILE, d);
 
 const IMG_RE = /\.(jpe?g|png|webp|gif)$/i;
 
-// In-memory state for the one-at-a-time publish job (see /api/publish).
-let publishJob = { running: false, log: '', ok: null, startedAt: 0 };
+// Publish job state lives on DISK, not in memory: ship.sh switches git
+// branches, which makes Vite reload this plugin mid-run and would otherwise
+// wipe the job (the publish itself keeps going — only the status was lost).
+const PUB_STATE = '/tmp/chandparaaa-publish.json';
+const PUB_LOG = '/tmp/chandparaaa-publish.log';
+
+const readPub = () => {
+  try {
+    return JSON.parse(fs.readFileSync(PUB_STATE, 'utf8'));
+  } catch {
+    return { running: false, ok: null, startedAt: 0 };
+  }
+};
+const writePub = (o) => {
+  try {
+    fs.writeFileSync(PUB_STATE, JSON.stringify(o));
+  } catch {
+    /* best effort */
+  }
+};
+const readPubLog = () => {
+  try {
+    return fs.readFileSync(PUB_LOG, 'utf8');
+  } catch {
+    return '';
+  }
+};
+// eslint-disable-next-line no-control-regex
+const ANSI_RE = /\[[0-9;]*m/g;
 
 /** Media files for a project slug, sorted (mirrors src/lib/images.js). */
 const mediaFor = (slug) => {
@@ -546,43 +573,49 @@ export default function adminPlugin() {
           // Long-running (~40–70s: build + push + Actions deploy), so it's
           // kicked off once and the UI polls /api/publish for progress.
           if (req.method === 'POST' && url === '/api/publish') {
-            if (publishJob.running)
+            const cur = readPub();
+            // stale guard: a job older than 10 min can't still be alive
+            if (cur.running && Date.now() - (cur.startedAt || 0) < 10 * 60 * 1000)
               return sendJSON(res, 409, { error: 'A publish is already running.' });
+
             const { message } = await readBody(req);
             const repo = path.resolve(__dirname, '..');
-            publishJob = { running: true, log: '', ok: null, startedAt: Date.now() };
+            fs.writeFileSync(PUB_LOG, '');
+            const startedAt = Date.now();
+            writePub({ running: true, ok: null, startedAt });
+
+            // Detached, writing to its own log file, so the run outlives the
+            // Vite reload that ship.sh's branch switching triggers.
+            const out = fs.openSync(PUB_LOG, 'a');
             const child = spawn('bash', ['tools/ship.sh', String(message || 'Studio update')], {
               cwd: repo,
-              // node lives in ~/.local/bin (no Homebrew) — the launcher sets this
-              // too, but a plain `npm run dev` shell may not have it.
+              detached: true,
+              stdio: ['ignore', out, out],
+              // node lives in ~/.local/bin (no Homebrew)
               env: { ...process.env, PATH: `${process.env.HOME}/.local/bin:${process.env.PATH}` },
             });
-            const append = (b) => {
-              publishJob.log += b.toString();
-              if (publishJob.log.length > 60000) publishJob.log = publishJob.log.slice(-60000);
-            };
-            child.stdout.on('data', append);
-            child.stderr.on('data', append);
-            child.on('close', (code) => {
-              publishJob.running = false;
-              publishJob.ok = code === 0;
-            });
+            child.on('close', (code) => writePub({ running: false, ok: code === 0, startedAt }));
             child.on('error', (e) => {
-              publishJob.running = false;
-              publishJob.ok = false;
-              publishJob.log += `\nFailed to start: ${e.message}`;
+              fs.appendFileSync(PUB_LOG, `\nFailed to start: ${e.message}\n`);
+              writePub({ running: false, ok: false, startedAt });
             });
+            child.unref();
             return sendJSON(res, 200, { started: true });
           }
 
           if (req.method === 'GET' && url === '/api/publish') {
-            // strip ANSI colour so the log reads cleanly in the browser
-            const clean = publishJob.log.replace(/\[[0-9;]*m/g, '');
-            return sendJSON(res, 200, {
-              running: publishJob.running,
-              ok: publishJob.ok,
-              log: clean,
-            });
+            const st = readPub();
+            const log = readPubLog().replace(ANSI_RE, '');
+            // If the plugin reloaded mid-run the child handle is gone, so fall
+            // back to the log's own end markers to resolve the job.
+            let running = st.running;
+            let ok = st.ok;
+            if (running && /Live at|Build failed|Deploy failed|Failed to start/.test(log)) {
+              running = false;
+              ok = /Live at/.test(log);
+              writePub({ running: false, ok, startedAt: st.startedAt });
+            }
+            return sendJSON(res, 200, { running, ok, log });
           }
 
           // ── Design settings ──
