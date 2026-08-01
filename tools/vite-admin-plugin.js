@@ -4,7 +4,7 @@
 // of the production build, so nothing here ships to dist.
 import fs from 'node:fs';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,6 +25,9 @@ const readDesign = () => JSON.parse(fs.readFileSync(DESIGN_FILE, 'utf8'));
 const writeDesign = (d) => writeJSON(DESIGN_FILE, d);
 
 const IMG_RE = /\.(jpe?g|png|webp|gif)$/i;
+
+// In-memory state for the one-at-a-time publish job (see /api/publish).
+let publishJob = { running: false, log: '', ok: null, startedAt: 0 };
 
 /** Media files for a project slug, sorted (mirrors src/lib/images.js). */
 const mediaFor = (slug) => {
@@ -537,6 +540,49 @@ export default function adminPlugin() {
               });
             writeData(data);
             return sendJSON(res, 200, { projects: listProjects(data) });
+          }
+
+          // ── Publish (runs tools/ship.sh) ──
+          // Long-running (~40–70s: build + push + Actions deploy), so it's
+          // kicked off once and the UI polls /api/publish for progress.
+          if (req.method === 'POST' && url === '/api/publish') {
+            if (publishJob.running)
+              return sendJSON(res, 409, { error: 'A publish is already running.' });
+            const { message } = await readBody(req);
+            const repo = path.resolve(__dirname, '..');
+            publishJob = { running: true, log: '', ok: null, startedAt: Date.now() };
+            const child = spawn('bash', ['tools/ship.sh', String(message || 'Studio update')], {
+              cwd: repo,
+              // node lives in ~/.local/bin (no Homebrew) — the launcher sets this
+              // too, but a plain `npm run dev` shell may not have it.
+              env: { ...process.env, PATH: `${process.env.HOME}/.local/bin:${process.env.PATH}` },
+            });
+            const append = (b) => {
+              publishJob.log += b.toString();
+              if (publishJob.log.length > 60000) publishJob.log = publishJob.log.slice(-60000);
+            };
+            child.stdout.on('data', append);
+            child.stderr.on('data', append);
+            child.on('close', (code) => {
+              publishJob.running = false;
+              publishJob.ok = code === 0;
+            });
+            child.on('error', (e) => {
+              publishJob.running = false;
+              publishJob.ok = false;
+              publishJob.log += `\nFailed to start: ${e.message}`;
+            });
+            return sendJSON(res, 200, { started: true });
+          }
+
+          if (req.method === 'GET' && url === '/api/publish') {
+            // strip ANSI colour so the log reads cleanly in the browser
+            const clean = publishJob.log.replace(/\[[0-9;]*m/g, '');
+            return sendJSON(res, 200, {
+              running: publishJob.running,
+              ok: publishJob.ok,
+              log: clean,
+            });
           }
 
           // ── Design settings ──

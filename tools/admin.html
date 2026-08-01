@@ -31,6 +31,25 @@
       h1 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px; margin: 0; letter-spacing: -0.02em; }
       .head .live { font-size: 12.5px; color: var(--muted); }
       .head .live b { color: var(--ok); font-weight: 400; }
+      /* Publish bar */
+      .pubbar {
+        display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+        margin: 18px 0 0; padding: 14px 16px;
+        border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel);
+      }
+      .pubbar input { flex: 1; min-width: 220px; }
+      .pub-state { font-size: 12.5px; color: var(--muted); }
+      .pub-state.ok { color: var(--ok); }
+      .pub-state.err { color: var(--danger); }
+      .pub-state.busy { color: var(--accent); }
+      .mini-toggle { padding: 7px 12px; font-size: 12px; }
+      .publog {
+        margin: 10px 0 0; padding: 12px 14px; max-height: 260px; overflow: auto;
+        background: #0d0d0d; border: 1px solid var(--line); border-radius: 8px;
+        font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--muted); white-space: pre-wrap; word-break: break-word;
+      }
+
       .tabs { display: flex; gap: 4px; margin: 26px 0 30px; border-bottom: 1px solid var(--line); }
       .tab {
         background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted);
@@ -182,8 +201,17 @@
     <div class="wrap">
       <div class="head">
         <h1>Studio</h1>
-        <span class="live">Editing locally · publish with <b>npm run ship</b></span>
+        <span class="live">Changes are local until you publish</span>
       </div>
+
+      <!-- Publish bar: runs tools/ship.sh, no terminal needed -->
+      <div class="pubbar">
+        <input id="pub-msg" type="text" placeholder="What changed? (optional)" autocomplete="off" />
+        <button class="btn primary" id="pub-go" type="button">Publish to chandparaaa.in</button>
+        <span class="pub-state" id="pub-state"></span>
+        <button class="btn mini-toggle" id="pub-toggle" type="button" hidden>log</button>
+      </div>
+      <pre class="publog" id="pub-log" hidden></pre>
 
       <div class="tabs">
         <button class="tab is-active" data-tab="projects">Projects</button>
@@ -813,6 +841,61 @@
         renderPortrait(await r.json()); $('#portrait-status').textContent = ''; toast('Removed.');
       });
 
+      /* ───────── Publish ───────── */
+      let pubTimer = 0;
+      const pubState = (txt, cls) => {
+        const el = $('#pub-state'); el.textContent = txt; el.className = 'pub-state ' + (cls || '');
+      };
+      $('#pub-toggle').addEventListener('click', () => {
+        const l = $('#pub-log'); l.hidden = !l.hidden;
+        $('#pub-toggle').textContent = l.hidden ? 'log' : 'hide log';
+      });
+
+      async function pollPublish() {
+        try {
+          const d = await jget(`${API}/publish`);
+          const log = $('#pub-log');
+          log.textContent = d.log || '';
+          log.scrollTop = log.scrollHeight;
+          $('#pub-toggle').hidden = !d.log;
+          if (d.running) {
+            pubState('Publishing… (build → deploy, ~1 min)', 'busy');
+            return;
+          }
+          clearInterval(pubTimer); pubTimer = 0;
+          $('#pub-go').disabled = false;
+          if (d.ok) {
+            pubState('✓ Live at chandparaaa.in', 'ok');
+            toast('Published.');
+          } else {
+            pubState('✗ Publish failed — open the log', 'err');
+            log.hidden = false; $('#pub-toggle').textContent = 'hide log';
+            toast('Publish failed.', true);
+          }
+        } catch (e) {
+          clearInterval(pubTimer); pubTimer = 0;
+          $('#pub-go').disabled = false;
+          pubState('✗ ' + e.message, 'err');
+        }
+      }
+
+      $('#pub-go').addEventListener('click', async () => {
+        const btn = $('#pub-go');
+        btn.disabled = true;
+        pubState('Starting…', 'busy');
+        $('#pub-log').textContent = '';
+        try {
+          await jsend(`${API}/publish`, 'POST', { message: $('#pub-msg').value.trim() });
+          $('#pub-msg').value = '';
+          if (pubTimer) clearInterval(pubTimer);
+          pubTimer = setInterval(pollPublish, 1500);
+          pollPublish();
+        } catch (e) {
+          btn.disabled = false;
+          pubState('✗ ' + e.message, 'err');
+        }
+      });
+
       /* ───────── Boot ───────── */
       (async function boot() {
         addRow(false);
@@ -821,6 +904,11 @@
         loadPeople();
         try { fillDesign(await jget(`${API}/design`)); } catch { /* keep form defaults */ }
         try { renderPortrait(await jget(`${API}/about-image`)); } catch { /* ignore */ }
+        // resume the status line if a publish is mid-flight (e.g. page reloaded)
+        try {
+          const d = await jget(`${API}/publish`);
+          if (d.running) { $('#pub-go').disabled = true; pubTimer = setInterval(pollPublish, 1500); pollPublish(); }
+        } catch { /* ignore */ }
       })();
     </script>
   </body>
