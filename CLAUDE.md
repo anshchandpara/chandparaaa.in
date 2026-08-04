@@ -62,6 +62,14 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   Upgraded from 1080p/7.7 MB: +78% pixels for +1 MB, visibly crisper on retina where the
   old 1080p was being upscaled. (crf 26 = 12.8 MB and 1080p/crf 22 = 13.9 MB were both
   worse value; `veryslow` bought ~4 MB over `slow` at the same crf.)
+  **Keyframes MUST be forced at the scene cuts.** Modern ffmpeg passes `sc_threshold=0`
+  to libx264, killing scene-cut detection — the first 1440p encode had only **4 keyframes
+  for 10 hard cuts**, so the encoder predicted *across* each cut and smeared/blocked for a
+  few frames (this was the reported "glitch at the car bridge frame" — the bridge→cars cut
+  at 2.08/2.16s). `-x264opts scenecut=40` did NOT take. The fix that works:
+  detect cuts on the master (`select='gt(scene,0.25)',showinfo`) then encode with
+  `-g 50 -force_key_frames "0,<cut,list>"` → 16 keyframes, every cut covered, same 8.9 MB.
+  Re-check after any re-encode: compare `select=eq(pict_type\,I)` times against the cut list.
 - **Self-hosted project hero loop:** drop a `hero.mp4` (muted, web-optimized) into
   `src/media/projects/<slug>/` and the project page leads with it as an autoplaying loop
   (`lib/heroVideo.js` → `getHeroVideo`; `.pd__hero-loop` in ProjectPage; Vimeo `video` still
