@@ -25,6 +25,14 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       gallery: p.gallery || [],
       video: p.video || '', // Vimeo ID — plays the title sequence as the hero
       youtube: p.youtube || '', // full YouTube URL — "Watch the film" link
+      // Text breaks between gallery frames: [{ after: <n frames>, label?, text }]
+      notes: (p.notes || [])
+        .map((n) => ({
+          after: Number.isFinite(+n.after) ? Math.max(0, +n.after) : 0,
+          label: (n.label || '').trim(),
+          text: (n.text || '').trim(),
+        }))
+        .filter((n) => n.text),
       draft: !!p.draft,
     })),
     ...data.lab.map((x) => ({
@@ -42,6 +50,8 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       image: '',
       gallery: [],
       video: x.video || '',
+      youtube: x.youtube || '',
+      notes: [],
       draft: !!x.draft,
     })),
   ];

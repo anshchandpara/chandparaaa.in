@@ -82,7 +82,19 @@
       "image": "",
       "video": "",
       "subtitle": "",
-      "youtube": ""
+      "youtube": "",
+      "notes": [
+        {
+          "after": 2,
+          "label": "Approach",
+          "text": "The ghats were built as a full CG set so the fire could be art-directed shot by shot — every flame placed rather than simulated once and left alone."
+        },
+        {
+          "after": 6,
+          "label": "Process",
+          "text": "Grey clay renders came first. Lighting and texture were only committed once the camera moves and cut points were locked."
+        }
+      ]
     },
     {
       "slug": "the-railway-men",

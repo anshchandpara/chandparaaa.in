@@ -140,6 +140,14 @@
       .drop { border: 1px dashed var(--line); border-radius: 8px; padding: 16px; text-align: center; color: var(--muted); font-size: 13px; cursor: pointer; }
       .drop:hover, .drop.over { border-color: var(--accent); color: var(--text); }
 
+      /* Text break rows */
+      .note-row { border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; margin-bottom: 9px; background: var(--panel-2); }
+      .note-head { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+      .note-head .f { flex: none; }
+      .note-head .nafter { flex: none; width: 66px; text-align: center; }
+      .note-head .nlabel { flex: 1; }
+      .note-row textarea { min-height: 64px; }
+
       /* Credits rows */
       .credit-line { display: flex; gap: 8px; margin-bottom: 7px; }
       .credit-line input.crole { flex: none; width: 190px; }
@@ -467,6 +475,14 @@
           <div class="field"><label class="f">YouTube link (Watch the film)</label><input id="f-youtube" value="${esc(e.youtube || '')}" placeholder="https://youtu.be/…" /></div>
           <div class="field"><label class="f">Description</label><textarea id="f-desc" placeholder="What the project is, in a sentence or two.">${esc(e.desc)}</textarea></div>
 
+          <h2 style="margin-top:24px">Text breaks <span class="hint">large notes between images</span></h2>
+          <p class="lede" style="margin:-4px 0 12px">
+            “After” = how many images to show before the note appears. 0 puts it above the
+            first image; a number past the end puts it at the bottom of the gallery.
+          </p>
+          <div id="note-rows"></div>
+          <button class="btn" id="add-note" type="button" style="margin-top:4px">+ Text break</button>
+
           <h2 style="margin-top:24px">Credits</h2>
           <div id="credit-lines"></div>
           <button class="btn" id="add-credit" type="button" style="margin-top:4px">+ Credit line</button>
@@ -482,6 +498,25 @@
             ${isLab ? '' : `<label class="switch"><input type="checkbox" id="f-featured" ${e.featured ? 'checked' : ''} /> Featured</label>`}
             <span class="hint" id="ed-status"></span>
           </div>`;
+
+        // text breaks
+        const nbox = $('#note-rows');
+        const addNote = (after = '', label = '', text = '') => {
+          const row = document.createElement('div');
+          row.className = 'note-row';
+          row.innerHTML = `
+            <div class="note-head">
+              <label class="f" style="margin:0">After</label>
+              <input class="nafter" type="text" inputmode="numeric" value="${esc(after)}" placeholder="0" />
+              <input class="nlabel" placeholder="Label (optional, e.g. Process)" value="${esc(label)}" />
+              <button class="icon-btn" type="button">×</button>
+            </div>
+            <textarea class="ntext" placeholder="The insight or note…">${esc(text)}</textarea>`;
+          row.querySelector('.icon-btn').addEventListener('click', () => row.remove());
+          nbox.appendChild(row);
+        };
+        (e.notes || []).forEach((n) => addNote(n.after ?? '', n.label || '', n.text || ''));
+        $('#add-note').addEventListener('click', () => addNote());
 
         // credits
         const cbox = $('#credit-lines');
@@ -594,6 +629,11 @@
           year: $('#f-year').value, platform: $('#f-platform').value,
           role: $('#f-role').value, desc: $('#f-desc').value, video: $('#f-video').value,
           youtube: $('#f-youtube').value,
+          notes: $$('#note-rows .note-row').map((r) => ({
+            after: r.querySelector('.nafter').value,
+            label: r.querySelector('.nlabel').value,
+            text: r.querySelector('.ntext').value,
+          })).filter((n) => n.text.trim()),
           draft: $('#f-draft').checked, credits,
         };
         if (!isLab) body.featured = $('#f-featured').checked;

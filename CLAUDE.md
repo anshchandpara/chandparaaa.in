@@ -164,6 +164,15 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   `-an -vf "scale='min(W,iw)':-2,fps=25" -c:v libx264 -crf 23 -preset slow -pix_fmt yuv420p
   -movflags +faststart` (`min(W,iw)` never upscales). Asur's `Opening.2.1` title card needs
   crf 26 — glowing text + particles on black is expensive (3.6 MB at crf 23).
+- **Text breaks (`.pd__note`):** large display-type notes between gallery frames, for insights
+  about the work. Data = optional `"notes": [{ after, label?, text }]` on a work entry; `after`
+  is *how many gallery frames precede it* (0 = above the first frame, any value >= the frame
+  count falls to the end of the grid). Rendered inside the gallery grid with
+  `grid-column: 1 / -1`, so a break spans the full-bleed row while the type is pulled back to a
+  `30ch` centred column (`clamp(22px, 2.9vw, 42px)`, Inter 300, `text-wrap: balance`); optional
+  accent `label` sits above as an eyebrow. Editable in the Studio project editor ("Text breaks");
+  server clamps `after` and drops empty rows (`notes` key removed entirely when none remain).
+  First use: asur (Approach / Process).
 - **Letterbox header backdrop (`.pd__backdrop`):** a full-bleed band
   (`clamp(380px,56vh,660px)`) of the project's own frame behind the eyebrow/title/meta.
   **True tilt-shift** = two stacked copies — `.pd__backdrop-blur` (blur 26px, brightness .42)

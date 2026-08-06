@@ -46,6 +46,19 @@ export default function ProjectPage({ slug }) {
   // Frame for the letterbox header backdrop. With a video hero the still hero
   // isn't rendered anywhere else, so it's the natural pick; otherwise take a
   // mid-gallery still so the band doesn't just repeat the hero underneath it.
+  // Text breaks, bucketed by the gallery index they sit before. Anything
+  // positioned beyond the last frame is rendered after the grid.
+  const notesByIndex = new Map();
+  const trailingNotes = [];
+  for (const n of item.notes || []) {
+    if (n.after >= galleryImgs.length) trailingNotes.push(n);
+    else {
+      const arr = notesByIndex.get(n.after) || [];
+      arr.push(n);
+      notesByIndex.set(n.after, arr);
+    }
+  }
+
   const backdropImg = (() => {
     if (heroVideo) return heroImg;
     const stills = galleryImgs.filter((g) => !g.video).map((g) => g.src);
@@ -315,8 +328,16 @@ export default function ProjectPage({ slug }) {
         {galleryImgs.length > 0 ? (
           <div className="pd__gallery">
             {galleryImgs.map((gi, i) => (
+              <Fragment key={gi.src}>
+                {/* Text breaks land *before* the frame at their index, so
+                    `after: 2` reads as "after the first two frames". */}
+                {notesByIndex.get(i)?.map((n, ni) => (
+                  <aside className="pd__note" key={`n${i}-${ni}`} data-rv>
+                    {n.label && <p className="eyebrow pd__note-label">{n.label}</p>}
+                    <p className="pd__note-text">{n.text}</p>
+                  </aside>
+                ))}
               <div
-                key={gi.src}
                 className={`pd__frame${gi.wide ? ' pd__frame--wide' : ''}`}
                 data-rv
               >
@@ -342,6 +363,14 @@ export default function ProjectPage({ slug }) {
                   />
                 )}
               </div>
+              </Fragment>
+            ))}
+            {/* Any notes positioned past the last frame land at the end. */}
+            {trailingNotes.map((n, ni) => (
+              <aside className="pd__note" key={`nt${ni}`} data-rv>
+                {n.label && <p className="eyebrow pd__note-label">{n.label}</p>}
+                <p className="pd__note-text">{n.text}</p>
+              </aside>
             ))}
           </div>
         ) : (

@@ -274,6 +274,40 @@
   margin-bottom: 0; /* sliders stack flush, like the gallery frames */
 }
 
+/* Text break between gallery frames — spans the full grid, but the type is
+   pulled back into a readable column so it breathes against the full-bleed
+   media above and below. */
+.pd__note {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: clamp(56px, 9vw, 130px) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.pd__note-label {
+  margin: 0 0 clamp(16px, 2vw, 26px);
+  color: var(--accent);
+}
+
+.pd__note-text {
+  margin: 0;
+  max-width: 30ch;
+  font-family: var(--f-sans);
+  font-weight: 300;
+  font-size: clamp(22px, 2.9vw, 42px);
+  line-height: 1.32;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+@media (max-width: 640px) {
+  .pd__note-text { max-width: none; }
+}
+
 /* Gallery (real images) — edge-to-edge, frames butt flush (no gutters). */
 .pd__gallery {
   display: grid;

@@ -467,6 +467,16 @@ export default function adminPlugin() {
               else delete entry.draft;
             }
             if ('featured' in patch) entry.featured = !!patch.featured;
+            if (Array.isArray(patch.notes)) {
+              entry.notes = patch.notes
+                .map((n) => ({
+                  after: Math.max(0, parseInt(n.after, 10) || 0),
+                  label: String(n.label ?? '').trim(),
+                  text: String(n.text ?? '').trim(),
+                }))
+                .filter((n) => n.text);
+              if (!entry.notes.length) delete entry.notes;
+            }
             if (Array.isArray(patch.credits)) {
               entry.credits = patch.credits.map((c) => String(c).trim()).filter(Boolean);
               const dir2 = readPeople();
