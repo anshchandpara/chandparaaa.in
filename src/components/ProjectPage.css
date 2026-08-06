@@ -274,6 +274,13 @@
   margin-bottom: 0; /* sliders stack flush, like the gallery frames */
 }
 
+/* Standalone breaks (projects with no gallery to host them). */
+.pd__notes-solo {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-bottom: clamp(70px, 10vh, 130px);
+}
+
 /* Text break between gallery frames — spans the full grid, but the type is
    pulled back into a readable column so it breathes against the full-bleed
    media above and below. */

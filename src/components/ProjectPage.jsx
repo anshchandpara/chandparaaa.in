@@ -388,6 +388,19 @@ export default function ProjectPage({ slug }) {
           </div>
         )}
 
+        {/* Projects with no imagery have no gallery grid to host the breaks,
+            so render them on their own. */}
+        {galleryImgs.length === 0 && (item.notes || []).length > 0 && (
+          <div className="pd__notes-solo">
+            {item.notes.map((n, ni) => (
+              <aside className="pd__note" key={`ns${ni}`} data-rv>
+                {n.label && <p className="eyebrow pd__note-label">{n.label}</p>}
+                <p className="pd__note-text">{n.text}</p>
+              </aside>
+            ))}
+          </div>
+        )}
+
         {item.credits.length > 0 && (
           <div className="pd__credits" data-rv>
             <p className="eyebrow pd__credits-label">Credits</p>

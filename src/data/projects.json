@@ -59,7 +59,19 @@
       ],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 4,
+          "label": "Concept",
+          "text": "Three products, one world. Each spot drops its hero into the same streaking light tunnel, so the campaign reads as a set rather than three separate films."
+        },
+        {
+          "after": 10,
+          "label": "Craft",
+          "text": "The environment does the selling — debris, refraction and speed built around a product that never distorts."
+        }
+      ]
     },
     {
       "slug": "asur",
@@ -118,7 +130,19 @@
       ],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 5,
+          "label": "Concept",
+          "text": "A race between two moving things: the gas leaving the plant and the train heading toward it."
+        },
+        {
+          "after": 13,
+          "label": "Craft",
+          "text": "High contrast throughout — the palette stays almost monochrome so the fire and the warning lights carry all the colour."
+        }
+      ]
     },
     {
       "slug": "monsoon-season-mixtape",
@@ -136,7 +160,19 @@
       "image": "",
       "video": "",
       "subtitle": "Mixtape",
-      "youtube": "https://www.youtube.com/watch?v=qQrlVJVcaPs"
+      "youtube": "https://www.youtube.com/watch?v=qQrlVJVcaPs",
+      "notes": [
+        {
+          "after": 4,
+          "label": "Approach",
+          "text": "The type belongs to the place. Titles are worn into the rock faces and cliff walls the crew actually leap from."
+        },
+        {
+          "after": 9,
+          "label": "Detail",
+          "text": "Every card had to survive being carved into stone, weathered, and read in a single pass."
+        }
+      ]
     },
     {
       "slug": "mindscapes",
@@ -164,7 +200,14 @@
       ],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 3,
+          "label": "Approach",
+          "text": "Aged paper as the through-line — each episode gets a paper-crafted motif drawn from its own story."
+        }
+      ]
     },
     {
       "slug": "lootere",
@@ -189,7 +232,14 @@
       ],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 2,
+          "label": "Concept",
+          "text": "Pirates as hunter-gatherers: cargo ships stalked like prey across open water. Eat or be eaten."
+        }
+      ]
     },
     {
       "slug": "hunter",
@@ -225,7 +275,14 @@
         "Content/website_images_Optim/08_Hunter/y6pe23hmIOx9cWII9uyFUbgQLg.jpg"
       ],
       "image": "Content/website_images_Optim/08_Hunter/27E3xz1kPmkw1gwVMF5X1j3Ghk.jpg",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 3,
+          "label": "Approach",
+          "text": "Graphic-novel language for a cop who lives on both sides of the law — noir contrast, hard ink, no middle ground."
+        }
+      ]
     },
     {
       "slug": "equals",
@@ -257,7 +314,14 @@
         "Content/website_images_Optim/11_Equals/zGGpE7fYNixRfh2nxIex3zDM1qA.jpg"
       ],
       "image": "Content/website_images_Optim/11_Equals/091Dpb2eJasPvX8bL8UTW2F030.jpg",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 2,
+          "label": "Story",
+          "text": "A traveller finds songwriting in the landscape, then converges with the community that has been singing it all along."
+        }
+      ]
     },
     {
       "slug": "raat-khatam",
@@ -311,7 +375,19 @@
         "Content/website_images_Optim/02_Ekam/snhv5XchsTphu8p8rXZXjIMx2t4.jpg"
       ],
       "image": "Content/website_images_Optim/02_Ekam/7fZWasSOeFa8sN4LR3WeIqcRV4.jpg",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 3,
+          "label": "Craft",
+          "text": "World-building carried the whole prologue — particle streams, floating forests, glowing rivers, nebulae."
+        },
+        {
+          "after": 7,
+          "label": "Approach",
+          "text": "Each episode needed its own outline while still belonging to one continuous world."
+        }
+      ]
     },
     {
       "slug": "uv-automotive-f77",
@@ -333,7 +409,19 @@
       ],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 4,
+          "label": "Story",
+          "text": "The film traces backwards — from global presence, through factories and charging infrastructure, to the F77 itself."
+        },
+        {
+          "after": 10,
+          "label": "Craft",
+          "text": "Fully CG. The reveal had to land as the payoff of a journey, not the start of one."
+        }
+      ]
     },
     {
       "slug": "union-day-yas-mall",
@@ -389,7 +477,19 @@
       ],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 6,
+          "label": "Approach",
+          "text": "Built for speed and aggression — India's first league-format superbike championship needed a visual language with the same nerve."
+        },
+        {
+          "after": 14,
+          "label": "Craft",
+          "text": "The monochrome studies strip the bikes back to form and light, before the livery and colour arrive."
+        }
+      ]
     },
     {
       "slug": "dico-battery",
@@ -434,7 +534,14 @@
       ],
       "gallery": [],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 2,
+          "label": "Approach",
+          "text": "Broadcast package built around the athletes — bold shapes, vivid colour, transitions cut to the rhythm of the game."
+        }
+      ]
     },
     {
       "slug": "murder-mubarak",
@@ -469,7 +576,19 @@
         "Content/website_images_Optim/15_Murder_Mubarak/ppbfwxiDKmcVPF6zleW0j4NMfm4.jpg"
       ],
       "image": "Content/website_images_Optim/15_Murder_Mubarak/05GmyySB08Q1483emB0KWOta4k.jpg",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 3,
+          "label": "Concept",
+          "text": "Delhi high society with something sinister underneath — opulence styled until it curdles."
+        },
+        {
+          "after": 7,
+          "label": "Detail",
+          "text": "Character slates play as theatrical cards: each suspect introduced, and quietly implicated."
+        }
+      ]
     },
     {
       "slug": "tivvra",
@@ -504,7 +623,19 @@
         "Content/website_images_Optim/17_Tivvra/rF9sMxvSwICDfKtlpNp9fwFvpo.jpg"
       ],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 5,
+          "label": "Approach",
+          "text": "Engineered, sharp, fast — CG, kinetic type and live action cut to feel like one continuous move."
+        },
+        {
+          "after": 12,
+          "label": "Craft",
+          "text": "The helmet is the hero in every frame; the typography exists to keep pace with it."
+        }
+      ]
     },
     {
       "slug": "spring-health",
@@ -536,7 +667,14 @@
         "Content/website_images_Optim/12_Spring_Health/y2qBR2O25wMhnxsgFRvq7tNqSK0.jpg"
       ],
       "image": "Content/website_images_Optim/12_Spring_Health/926F2MStnVpT2yPYNM2dH6KHG70.jpg",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 3,
+          "label": "Concept",
+          "text": "Leaf-inspired forms and gentle typography, layered between nature and interface — a brand reveal that stays soft-spoken."
+        }
+      ]
     },
     {
       "slug": "britannia-winkin-cow",
@@ -571,7 +709,19 @@
         "Content/website_images_Optim/16_Britannia_Winkin_Cow/hYS7y8Qg3JZs4tEHTYYXtyx0oog.jpg"
       ],
       "image": "",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 6,
+          "label": "Approach",
+          "text": "Ten seconds each. Product renders, liquid simulation and flavour elements composited into high-polish spots with no room to waste a frame."
+        },
+        {
+          "after": 14,
+          "label": "Craft",
+          "text": "The liquid had to look drinkable before it looked impressive."
+        }
+      ]
     },
     {
       "slug": "lakk-nu-hila",
@@ -607,7 +757,14 @@
         "Content/website_images_Optim/14_Lakk_nu_Hila/yx6dGmeb2lQcmZnH88i7PQLVeU.jpg"
       ],
       "image": "Content/website_images_Optim/14_Lakk_nu_Hila/5rMVUpgigukGygvb6mvGcEoE.jpg",
-      "video": ""
+      "video": "",
+      "notes": [
+        {
+          "after": 4,
+          "label": "Concept",
+          "text": "Pop surrealism meets Punjabi swag — maximalist environments and character animation built to overwhelm on purpose."
+        }
+      ]
     },
     {
       "slug": "varun-grover-comedy-special",
