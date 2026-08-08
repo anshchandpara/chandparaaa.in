@@ -145,6 +145,26 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   to the **bottom**, and the **Work · Lab panel** centred in the slack between them
   (`.landing__mid { flex: 1 }` — optically centred between the anchors, ~2px off raw viewport
   centre because the brand and role rows differ in height).
+  **Split 50/50, each choice previewing its own world:** the site hero loop behind Work, the
+  **Monsoon Season title timelapse** behind Lab (via the existing `getHeroVideo(
+  'monsoon-season-mixtape')` glob — no new import). Grid and veil stay single full-width layers
+  so the FUI grid runs unbroken across the seam, and `.landing__seam` continues the panel's
+  hairline down the whole screen in the same `--line` token.
+  - **The panel's separator must land exactly on the media seam** — that alignment is the whole
+    reason for the layout, and it's why the split is static (a seam that moved on hover would
+    break it). Hover is expressed by *lighting the half* instead: opacity `.35 → .55`,
+    `grayscale(.45) → 0`.
+  - **Two gotchas that cost real time getting that alignment right:**
+    **(1)** "Work" is wider than "Lab", so a content-sized panel puts the separator ~7px off
+    centre. `flex: 1 1 0` does **not** fix it — the panel is intrinsically sized, so there's no
+    free space for `flex-grow` to distribute. **Grid `1fr 1fr` does**, because fr tracks equalise
+    under intrinsic sizing. **(2)** `.landing__mid` is **absolutely centred on the gate**, not
+    flowed between the brand and role rows — those differ in height (21px vs 16px), which threw
+    the separator off by 6px once everything stacked on mobile. Both axes now measure 0.
+  - **The two sources are wildly mismatched in luminance** — the hero loop is dark footage, the
+    Monsoon timelapse is paint on *white paper*, which at the same opacity reads twice as bright
+    and lets the Lab half dominate. `.landing__half--lab` carries `brightness(0.5)` (0.7 hot) to
+    sit the pair level. Re-check this if either clip is ever swapped.
   The panel is a **small segmented control** (~182×39px): one pane of dark glass
   (`rgba(11,11,11,.5)` + `backdrop-filter: blur(18px)`), a `--line` hairline border, and the two
   choices split by a single `border-left` hairline — flat, no fills, in the site's own hairline
@@ -175,6 +195,19 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
     linear breathe reads mechanical, like a blinking indicator.
     The panel's `overflow: hidden` clips each glow to its own half, so the light reads as
     coming from inside the control rather than haloing the whole thing.
+  - **Typewriter glitch (`src/lib/glitch.js`):** on hover the label decodes through special
+    characters (`!<>-_\/[]{}=+*^?#$%&@`) and resolves left-to-right, plus stray glyphs flicker
+    around the panel. Raw rAF, like `Loader.jsx`. Two things to preserve:
+    glyphs re-roll on a **~45ms cadence, not per frame** (at 60fps they blur into noise and read
+    as a flicker, not as type); and `scramble()` returns a **cancel** function that snaps to the
+    final text — call it on mouseleave/unmount or a fast in-out leaves a button reading `#$%@`.
+    The button keeps a real `aria-label` and the mutating span is `aria-hidden`, so the churn
+    isn't re-announced every roll. The stray-glyph layer is a **sibling of the panel**, never a
+    child — the panel clips its overflow and would eat it.
+  - **Guard the mount focus, not just `:focus-visible`.** The gate focuses its first button for
+    a11y, and **Chrome matches `:focus-visible` on that programmatic focus** — so testing for it
+    alone still fires the hover path and the gate opens with Work lit, mid-scramble, stuck there.
+    `readyRef` (set on the rAF after mount) is what actually gates it.
   - **Neumorphism was tried and rejected (2026-08).** Raised plates with paired light/dark
     shadows were built first, then abandoned — worth recording so it isn't re-attempted. Soft UI
     assumes the control and its surround are the same material; here the ground is *moving

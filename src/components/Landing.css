@@ -26,6 +26,24 @@
   pointer-events: none;
 }
 
+/* --- The split: each choice previews its own world --- */
+/* 50/50 and static. The panel's separator is centred on this seam and the two
+   are meant to read as one line, so the boundary must never move — hover is
+   expressed by lighting the half, not by resizing it. */
+
+.landing__halves {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.landing__half {
+  position: relative;
+  flex: 1 1 50%;
+  min-width: 0;
+  overflow: hidden;
+}
+
 .landing__media {
   position: absolute;
   inset: 0;
@@ -33,13 +51,44 @@
   height: 100%;
   object-fit: cover;
   opacity: 0.35;
+  filter: grayscale(0.45);
+  transition: opacity 0.45s var(--ease), filter 0.45s var(--ease);
+}
+
+/* Hovering a choice lights its own half. */
+.landing__half.is-hot .landing__media {
+  opacity: 0.55;
+  filter: grayscale(0);
+}
+
+/* The two sources are wildly mismatched in luminance: the hero loop is dark
+   footage, the Monsoon timelapse is paint on WHITE paper, which at the same
+   opacity reads roughly twice as bright and makes the Lab half dominate the
+   composition. Knock it back so the pair sits level. */
+.landing__half--lab .landing__media {
+  filter: grayscale(0.45) brightness(0.5);
+}
+.landing__half--lab.is-hot .landing__media {
+  filter: grayscale(0) brightness(0.7);
+}
+
+/* Continues the panel's separator across the full height, same token. */
+.landing__seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--line);
 }
 
 .landing__grid {
   position: absolute;
   inset: 0;
   background-image: var(--fui-tile);
-  background-size: 128px 128px;
+  /* Finer than the site-wide backdrop (128px) — tune by eye. */
+  background-size: var(--landing-grid, 72px) var(--landing-grid, 72px);
   opacity: var(--landing-grid-opacity, 0.2);
   mix-blend-mode: difference;
 }
@@ -73,11 +122,58 @@
 
 /* Middle row takes the slack, so the panel sits centred regardless of the
    brand/role line heights. */
+/* Centred on the GATE, not on the slack between the brand and role rows.
+   Those two rows differ in height (21px vs 16px), so flowing the panel between
+   them lands its separator a few px off the media seam — invisible on the
+   horizontal axis but a clear 6px miss once everything stacks on mobile.
+   Absolute centring inside `.landing__stack` (itself inset:0) makes the
+   separator meet the seam exactly on both axes at every size. */
 .landing__mid {
-  flex: 1;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  /* inset:0 resolves against the stack's PADDING box, so the gate margin has
+     to be restated here or a full-width panel runs to the screen edge. */
+  padding: 0 clamp(20px, 4vw, 72px);
+  box-sizing: border-box;
+  pointer-events: none; /* don't cover the brand/role hover targets */
+}
+
+.landing__panel {
+  pointer-events: auto;
+}
+
+/* --- Stray glitch glyphs around the panel --- */
+/* Sibling of the panel, not a child — the panel clips its own overflow to
+   contain the breathing glow, which would eat these too. */
+
+.landing__glitch {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(560px, 78vw);
+  height: 220px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.landing__gly {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--f-display);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--fg-3);
+  opacity: 0.35;
+  transition: opacity 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+/* Glyphs on the hovered side lead; the far side stays as faint interference. */
+.landing__gly.is-hot {
+  color: var(--accent);
+  opacity: 0.85;
 }
 
 /* --- Type: brand and role mirror the loader's scale --- */
@@ -107,7 +203,13 @@
    from inside the panel. */
 
 .landing__panel {
-  display: flex;
+  /* Grid, not flex, specifically to equalise the two halves. "Work" is wider
+     than "Lab", so content-sized columns put the separator ~7px off the media
+     seam. `flex: 1 1 0` does NOT fix it — the panel is intrinsically sized, so
+     there is no free space for flex-grow to distribute. Grid `1fr` tracks do
+     equalise under intrinsic sizing, which puts the separator dead centre. */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: stretch;
   border-radius: clamp(9px, 1vw, 13px);
   border: 1px solid var(--line);
@@ -204,14 +306,29 @@
 }
 
 @media (max-width: 640px) {
-  /* Panel keeps its frame; the choices stack and the hairline turns. */
+  /* Panel keeps its frame; the choices stack and the hairline turns. The
+     halves turn with it, so the seam still meets the panel's separator. */
   .landing__panel {
-    flex-direction: column;
-    align-self: stretch;
+    grid-template-columns: 1fr;
+    /* NOT align-self:stretch — `.landing__mid` is a row-direction flex parent,
+       so that stretches the panel VERTICALLY and the separator drifts. */
+    width: 100%;
   }
   .landing__choice + .landing__choice {
     border-left: 0;
     border-top: 1px solid var(--line);
+  }
+  .landing__halves {
+    flex-direction: column;
+  }
+  .landing__seam {
+    top: 50%;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 1px;
+    transform: translateY(-50%);
   }
 }
 
