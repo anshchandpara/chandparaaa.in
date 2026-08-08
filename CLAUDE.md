@@ -138,6 +138,54 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   small `fcard__caption` fade in. Image-less cards frost the `CardCanvas` shader (`.fcard__gl`)
   the same way. Two title elements (big cover + small caption) for the cross-fade. Titles scale
   down at `[data-cols='3'|'4']`. (Superseded the earlier dark-tile text index.)
+- **Landing gate (`Landing.jsx/.css`, 2026-08):** the front door. Between the intro loader and
+  Home: the hero loop at **35%** under the FUI grid in **`mix-blend-mode: difference`**.
+  **Three rows, same `clamp(20px,4vw,72px)` padding as the loader** so the brand lands on the
+  loader's own baseline behind it: brand (13px) pinned to the **top** margin, role eyebrow (10px)
+  to the **bottom**, and the **Work · Lab panel** centred in the slack between them
+  (`.landing__mid { flex: 1 }` — optically centred between the anchors, ~2px off raw viewport
+  centre because the brand and role rows differ in height).
+  The panel is a **small segmented control** (~182×39px): one pane of dark glass
+  (`rgba(11,11,11,.5)` + `backdrop-filter: blur(18px)`), a `--line` hairline border, and the two
+  choices split by a single `border-left` hairline — flat, no fills, in the site's own hairline
+  language. Type is `clamp(13px,1.25vw,18px)` uppercase at `.16em` — deliberately **control
+  scale, not display scale**; the tracking carries it rather than size. Choosing sets Work/Lab
+  mode (the same `useMode` state the nav pills drive) and fades the gate out to reveal the Home
+  already mounted behind it. ≤640px the panel stretches and the hairline turns horizontal.
+  - **Layer order is load-bearing:** media → grid (difference) → veil → `.landing__stack`
+    (z-index 1, *normal* blend). Put the grid above the stack and the type inverts into mush.
+    `.landing` carries **`isolation: isolate`** so the blend can't reach the page behind it, and
+    sits at **z-index 8000** — under the Loader (9000) so the loader's slide-up *reveals* it,
+    over nav (50) / lightbox (90).
+  - **The gate rides `acIntroPlayed`** — no second storage key. It shows only when the loader
+    does: cold entry, once per session, and skipped under reduced motion or with `introLoader`
+    off. Own toggle `landingGate` in /admin → Design.
+  - **`Home.jsx` must decide `loader`/`gate` ONCE, in a lazy `useState` initializer** (the `entry`
+    object). They were plain render-time expressions at first and it broke: the loader writes
+    `acIntroPlayed` when it finishes → re-render → `introAlreadyPlayed()` now true → `showGate`
+    flips false → **the gate is ripped off screen the instant the loader ends.** The old code got
+    away with re-reading storage because `showLoader` was only ever paired with `!introDone`.
+  - `Hero` gets `play={introDone && gateDone}` — the wordmark scatter must wait for the choice or
+    it plays out unseen behind the gate and you arrive at an already-settled title.
+  - **Breathing glow** = blurred accent radial on `.landing__choice::before`, animating
+    opacity + transform only (never `box-shadow` spread — that repaints every frame). The Lab
+    button carries `animation-delay: -1.8s`, a half-cycle offset so the two never pulse in
+    lockstep. Hover/focus kills the animation and locks it at full rather than letting it drift.
+    **This is the one easing exception on the site** (`ease-in-out`, not `--ease: linear`) — a
+    linear breathe reads mechanical, like a blinking indicator.
+    The panel's `overflow: hidden` clips each glow to its own half, so the light reads as
+    coming from inside the control rather than haloing the whole thing.
+  - **Neumorphism was tried and rejected (2026-08).** Raised plates with paired light/dark
+    shadows were built first, then abandoned — worth recording so it isn't re-attempted. Soft UI
+    assumes the control and its surround are the same material; here the ground is *moving
+    video*, so the relief had nothing consistent to read against and the values had to be pushed
+    to cartoon levels (`0.10` light lift, `0.16` inset highlight vs the textbook `0.04`) just to
+    register — and still flattened out on bright frames. Adding a shared backing panel fixed the
+    ground problem but made the whole thing heavy and un-site-like. **The flat panel is the
+    answer**; it says the same thing in the site's own hairline language.
+- **FUI tile is a shared token:** the grid SVG data-URI lives in `global.css:root` as
+  **`--fui-tile`** (white) and **`--fui-tile-accent`** (gold). `FuiGrid.css` and `Landing.css`
+  both consume it — don't paste the string a fourth time.
 - **Two-page IA (July 2026 split):** Home = Hero (loop) + Selected Work masonry + footer only.
   **About is its own page at `?page=about`**: About (01) → Clients → Archive (02) → Contact
   (`id="contact"` kept, `AboutContact` named export in `About.jsx`). Routing extended in
@@ -223,6 +271,36 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
   deckle edges float seamlessly on the page bg) + `brightness(.78)` — dimmed far less than the
   photo treatment so the pencil linework survives under the veil. Source:
   `Downloads/Texturelabs_Paper_368L.jpg` (4240×3239 → 2400px, 1.1 MB).
+- **Lab media lives in `src/media/projects/<slug>/`, NOT `src/media/lab/`.** `images.js` globs
+  `../media/projects/*/*` only, and `projectData.js` flattens work + lab into one slug namespace,
+  so a lab item's folder must sit alongside the work projects. (`src/media/lab/` holds just
+  `lab-cover.jpg`, which `Hero.jsx` imports directly.) Lab entries hard-code `image:''` and
+  `gallery:[]` in `projectData.js`, so the folder glob is the *only* thing driving their media —
+  filename order is the gallery order and the first non-video file is the hero.
+- **Lab: BTS Screen Captures (2026-08-07)** — `bts-captures` populated from Website Master
+  `_BTS/` (8 OBS-style screen recordings, 2560×1440/30fps, **12.9 GB, 5h46m total**).
+  **16 items, 6.6 MB**: 13 stills + 3 loops, interleaved (`005/007/010.mp4`). Mostly Cinema 4D +
+  Octane on the **Mindscapes** build (every render-farm job is `MSD_*`) — a bust growing green
+  X-Particles spline hair — plus clip 2's white folded-plane world, and `016.jpg` catching
+  `NMS_wip_03[1].mp4` on screen. Hero `001.jpg` = the green thread head rendering live in Octane.
+  - **⚠️ Clips 5 and 6 were deliberately EXCLUDED — they contain client-confidential material.**
+    `2025-08-23 15-07-06.mp4` is a full **Google AI "Anniversary Flow" pitch deck** with readable
+    slide content; `2025-08-24 20-48-15.mp4` mixes browser windows and a Google "AI Mode" screen
+    with the *Nothing Makes Sense* edit. **The repo is public — do not import these without the
+    user clearing them.** The other 6 clips were checked frame-by-frame at full res: no email,
+    no credentials, no third-party confidential content.
+  - Stills: `-ss <t> -i <clip> -frames:v 1 -q:v 2` at native 2560px, then the repo pipeline
+    (`sips -s format jpeg -s formatOptions 82 -Z 2000`).
+  - Loops: **6s at exactly 1280×720** — an exact half of the 2560×1440 source, so UI text
+    downscales cleanly. `-vf "scale=1280:720,setsar=1,fps=25" -crf 23 -preset slow` → ~0.35–0.45
+    MB each. Note `scale='min(1400,iw)':-2` produced 1400×788 with **SAR 1576:1575**, which makes
+    the browser report `videoWidth` 1401 — harmless, but prefer exact 16:9 targets here.
+  - **Finding usable moments needs a motion scan, not guesswork** — these are hours of a mostly
+    static screen, and hand-picked windows came back near-dead (mean tblend diff ~0.001–0.01).
+    Scan short windows instead: `-ss <t> -t 2 -vf "scale=240:-2,fps=12,tblend=all_mode=difference,
+    signalstats,metadata=print:key=lavfi.signalstats.YAVG"` averaged per window, sampled every
+    150s, then sort descending. Real peaks scored 0.5–2.2 and were all genuine (viewport orbits,
+    a render refining, scrolling a material library).
 - Location = collapsible "Pune, India" chip → Leaflet/CARTO mini-map (`src/lib/location.js`).
 - 19 work projects; 11 featured (incl. `ekam`, new `dico-battery`). Product Films was deleted.
 - **Brand strings:** nav brand (both navs) = **"Ansh Chandpara"** (user reverted it from the
@@ -414,14 +492,19 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
    meta = Hanumankind / Title Sequence / 2025 / YouTube; still draft). That folder also holds the
    composited title films (`Title_H.264.mp4` 4K/33s, `Do Not Jump` 5120×2700, `Side Tings` 1080)
    **+ element passes** (`_Without BG`, `_text Only`, `_only BG`) — candidates for a Vimeo embed.
-   Still not imported: `MVs/hASHISHBHAI` → hashishbhai-dhanji-rasla draft; `_BTS/*.mp4` (8 clips)
-   → bts-captures lab item; `Edit/Showreel2023…` + Reel Edit 2026 → reel-edit-2026 lab item.
-   varun-grover-comedy-special draft: no master found yet.
+   ~~`_BTS/*.mp4` → bts-captures~~ **DONE** (see "Lab: BTS Screen Captures" below).
+   Still not imported: `MVs/hASHISHBHAI` → hashishbhai-dhanji-rasla draft — **the source folder
+   is now EMPTY** (checked 2026-08-07), so this needs media from the user;
+   `Edit/Showreel2023_FORL&F_01.mp4` (1.67 GB) + Reel Edit 2026 → reel-edit-2026 lab item
+   (still has no media). varun-grover-comedy-special: no master found, but `_BTS` clip 7
+   (`2025-08-30 01-43-46.mp4` @ ~15:00) plays **`NMS_wip_03[1].mp4`** on screen — a WIP of that
+   title sequence, if a still/loop is ever wanted from it.
 6. Optional: fill collaborator URLs in `people.js`; shrink the hero loop to ~4–5 MB
    (re-encode from the iCloud master, not the optimized copy). Newer loop masters exist at
    `Edit/Website Home Loop 02/03.mp4` — ask user which they want.
-7. Dead code: `src/components/Contact.jsx` + `Contact.css` are orphaned (Contact was folded
-   into About; not imported anywhere). Safe to delete when convenient.
+7. ~~Dead code: `src/components/Contact.jsx` + `Contact.css`~~ **DONE** (deleted 2026-08-07;
+   verified zero imports — `AboutPage.jsx` uses the `AboutContact` named export from
+   `About.jsx`. The dead file also held a stale `hello@anshchandpara.com` and `href="#"` socials).
 
 ## Preview/verification gotchas (headless browser)
 - rAF is throttled → GSAP intros, WebGL card shaders, the hero `<video>`, and CSS transitions
@@ -435,3 +518,11 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
 - The SPA route **drifts** to a project page between tool calls; set `location.href = origin + '/'`
   and re-check `location.search` before asserting state.
 - `console_logs` keeps a **stale buffer** across reloads — trust a fresh `npm run build` over it.
+- **The hero wordmark stays invisible on a warm reload in `npm run dev` — dev-only, not a bug.**
+  `main.jsx` wraps the app in `<StrictMode>`, which double-invokes effects on mount. Hero's
+  scatter effect guards with `playedRef`: pass 1 sets the flag and builds the timeline, cleanup
+  kills it, pass 2 hits the guard and returns early — so the letters sit scattered at
+  `opacity: 0` forever. It only bites when `play` is already true at mount (a warm session, i.e.
+  `acIntroPlayed` set); on a cold load `play` flips false→true later and the effect runs cleanly.
+  **Production is unaffected** — StrictMode doesn't double-invoke in a build. Confirm with
+  `npm run build && npx vite preview --port 4173` rather than "fixing" it in dev.

@@ -22,17 +22,17 @@
   background-size: 128px 128px;
 }
 
-/* white tile: minor grid + major rules + centre cross */
+/* white tile: minor grid + major rules + centre cross (--fui-tile, global.css) */
 .fui__base {
   opacity: var(--fui-opacity, 0.085);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cg fill='none' stroke='white'%3E%3Cpath stroke-opacity='.5' d='M64 0v256M128 0v256M192 0v256M0 64h256M0 128h256M0 192h256'/%3E%3Cpath stroke-opacity='.9' d='M.5 0v256M0 .5h256'/%3E%3Cpath stroke-opacity='1' d='M121 128h14M128 121v14'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: var(--fui-tile);
 }
 
 /* gold tile, same geometry — only visible inside the cursor mask */
 .fui__glow {
   opacity: 0.32;
   background-color: rgba(217, 139, 43, 0.04); /* faint haze under the lines */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cg fill='none' stroke='%23d98b2b'%3E%3Cpath stroke-opacity='.5' d='M64 0v256M128 0v256M192 0v256M0 64h256M0 128h256M0 192h256'/%3E%3Cpath stroke-opacity='.9' d='M.5 0v256M0 .5h256'/%3E%3Cpath stroke-opacity='1' d='M121 128h14M128 121v14'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: var(--fui-tile-accent);
   -webkit-mask-image: radial-gradient(
     circle 260px at var(--fui-x) var(--fui-y),
     rgba(0, 0, 0, 0.9),

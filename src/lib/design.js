@@ -16,6 +16,7 @@ const DEFAULTS = {
   fuiOpacity: 0.085,
   fuiGlow: true,
   introLoader: true,
+  landingGate: true,
   cardHoverZoom: true,
 };
 

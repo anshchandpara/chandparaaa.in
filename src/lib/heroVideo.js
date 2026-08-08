@@ -5,6 +5,14 @@
  * single filename (`hero.mp4`) so images.js doesn't glob it into the gallery.
  * Vimeo `video` still wins if both are set.
  */
+
+/**
+ * The site's own background loop, self-hosted in /public (2560×1440, ~8.7 MB —
+ * see CLAUDE.md for the encode recipe and the forced-keyframe gotcha). Shared by
+ * the home Hero and the Landing gate so both resolve to one cached request.
+ */
+export const HERO_VIDEO = `${import.meta.env.BASE_URL}hero-loop.mp4`;
+export const HERO_POSTER = `${import.meta.env.BASE_URL}hero-poster.jpg`;
 const modules = import.meta.glob('../media/projects/*/hero.{mp4,webm}', {
   eager: true,
   query: '?url',

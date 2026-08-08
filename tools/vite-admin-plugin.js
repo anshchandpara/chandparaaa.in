@@ -647,6 +647,7 @@ export default function adminPlugin() {
               fuiOpacity: num(patch.fuiOpacity, 0, 0.4, cur.fuiOpacity),
               fuiGlow: !!patch.fuiGlow,
               introLoader: !!patch.introLoader,
+              landingGate: !!patch.landingGate,
               cardHoverZoom: !!patch.cardHoverZoom,
             };
             writeDesign(next);

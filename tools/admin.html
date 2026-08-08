@@ -336,6 +336,7 @@
         <div class="grid3">
           <label class="switch"><input type="checkbox" id="d-fuiglow" /> Cursor glow on grid</label>
           <label class="switch"><input type="checkbox" id="d-intro" /> Intro loader</label>
+          <label class="switch"><input type="checkbox" id="d-gate" /> Work·Lab landing gate</label>
           <label class="switch"><input type="checkbox" id="d-zoom" /> Card hover zoom</label>
         </div>
 
@@ -822,6 +823,7 @@
         $('#d-fui').value = d.fuiOpacity; $('#d-fui-o').textContent = (+d.fuiOpacity).toFixed(3);
         $('#d-fuiglow').checked = !!d.fuiGlow;
         $('#d-intro').checked = !!d.introLoader;
+        $('#d-gate').checked = !!d.landingGate;
         $('#d-zoom').checked = !!d.cardHoverZoom;
       }
       const linkColor = (color, hex) => {
@@ -839,7 +841,8 @@
             accent: $('#d-accent-hex').value.trim(), bg: $('#d-bg-hex').value.trim(),
             columns: +$('#d-columns').value, marqueeSpeed: +$('#d-marquee').value,
             fuiOpacity: +$('#d-fui').value, fuiGlow: $('#d-fuiglow').checked,
-            introLoader: $('#d-intro').checked, cardHoverZoom: $('#d-zoom').checked,
+            introLoader: $('#d-intro').checked, landingGate: $('#d-gate').checked,
+            cardHoverZoom: $('#d-zoom').checked,
           });
           fillDesign(d);
           $('#design-status').textContent = 'Saved — the site reloads itself';
@@ -848,7 +851,7 @@
       });
       $('#reset-design').addEventListener('click', () => {
         fillDesign({ accent:'#d98b2b', bg:'#0a0a0a', columns:4, marqueeSpeed:42, fuiOpacity:0.085,
-                     fuiGlow:true, introLoader:true, cardHoverZoom:true });
+                     fuiGlow:true, introLoader:true, landingGate:true, cardHoverZoom:true });
         toast('Defaults loaded — press Save to apply.');
       });
 

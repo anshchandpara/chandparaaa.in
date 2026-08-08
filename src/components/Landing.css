@@ -1,0 +1,230 @@
+/* Landing gate — the front door. Hero loop at 35% under a difference-blended
+   FUI grid; brand pinned to the top margin, role line to the bottom, and a
+   small segmented control centred between them.
+
+   Stacking is load-bearing:
+     .landing__media  (video, 35%)          — bottom
+     .landing__grid   (mix-blend-mode: difference)
+     .landing__veil   (legibility wash)
+     .landing__stack  (z-index 1, NORMAL blend) — top
+   The grid must stay below the stack; blended type is illegible. `isolation`
+   keeps the difference blend from reaching the page mounted behind the gate,
+   and doubles as the backdrop root for the panel's backdrop-filter. */
+
+.landing {
+  position: fixed;
+  inset: 0;
+  z-index: 8000; /* under Loader (9000), over nav (50) + lightbox (90) */
+  background: var(--bg);
+  isolation: isolate;
+  transition: opacity 0.52s var(--ease), transform 0.52s var(--ease);
+}
+
+.landing.is-leaving {
+  opacity: 0;
+  transform: scale(1.035);
+  pointer-events: none;
+}
+
+.landing__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.landing__grid {
+  position: absolute;
+  inset: 0;
+  background-image: var(--fui-tile);
+  background-size: 128px 128px;
+  opacity: var(--landing-grid-opacity, 0.2);
+  mix-blend-mode: difference;
+}
+
+/* Pulls the centre down so the type holds against a bright frame of the loop. */
+.landing__veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(10, 10, 10, 0.72),
+    rgba(10, 10, 10, 0.32) 70%,
+    transparent
+  );
+}
+
+/* Three rows: brand / panel / role. Same padding as the loader, so the brand
+   lands on exactly the same baseline as `.loader__brand` behind it. */
+.landing__stack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(20px, 4vw, 72px);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Middle row takes the slack, so the panel sits centred regardless of the
+   brand/role line heights. */
+.landing__mid {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Type: brand and role mirror the loader's scale --- */
+
+.landing__brand {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+  transition: text-shadow 0.3s var(--ease);
+}
+
+.landing__role {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* --- The choice panel: one glass surface, split by a hairline --- */
+/* Flat and quiet on purpose — a single pane of dark glass over the loop, in
+   the same hairline language as the rest of the site. `overflow: hidden`
+   clips each choice's glow to its own half, so the light reads as coming
+   from inside the panel. */
+
+.landing__panel {
+  display: flex;
+  align-items: stretch;
+  border-radius: clamp(9px, 1vw, 13px);
+  border: 1px solid var(--line);
+  background: rgba(11, 11, 11, 0.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.landing__choice {
+  position: relative;
+  isolation: isolate;
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: clamp(12px, 1.2vw, 17px) clamp(26px, 2.9vw, 44px);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(13px, 1.25vw, 18px);
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+  transition: color 0.3s var(--ease), background-color 0.3s var(--ease),
+    text-shadow 0.3s var(--ease);
+}
+
+/* The separator — a single hairline, full height of the panel. */
+.landing__choice + .landing__choice {
+  border-left: 1px solid var(--line);
+}
+
+/* Breathing glow, clipped to each half by the panel's overflow. Compositor-only
+   (opacity + transform); never animate box-shadow spread, it repaints. */
+.landing__choice::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent) 46%, transparent),
+    transparent 80%
+  );
+  filter: blur(14px);
+  opacity: 0.26;
+  animation: landing-breathe 3.6s ease-in-out infinite alternate;
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+}
+
+/* Half-cycle offset so the two never pulse in lockstep. */
+.landing__panel .landing__choice:last-child::before {
+  animation-delay: -1.8s;
+}
+
+@keyframes landing-breathe {
+  from {
+    opacity: 0.26;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 0.72;
+    transform: scale(1.04);
+  }
+}
+
+/* --- Hover / focus --- */
+
+.landing__brand:hover,
+.landing__role:hover {
+  text-shadow: 0 0 0.7em color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.landing__choice:hover,
+.landing__choice:focus-visible {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.045);
+  outline: none;
+  text-shadow: 0 0 0.6em color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* Hovering locks the glow at full instead of letting it drift. */
+.landing__choice:hover::before,
+.landing__choice:focus-visible::before {
+  animation: none;
+  opacity: 0.85;
+  transform: scale(1.06);
+}
+
+.landing__choice:active {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 640px) {
+  /* Panel keeps its frame; the choices stack and the hairline turns. */
+  .landing__panel {
+    flex-direction: column;
+    align-self: stretch;
+  }
+  .landing__choice + .landing__choice {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing {
+    transition: none;
+  }
+  .landing__choice::before {
+    animation: none;
+    opacity: 0.45;
+    transform: none;
+  }
+  .landing__media {
+    display: none;
+  }
+}

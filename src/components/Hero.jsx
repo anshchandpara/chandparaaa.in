@@ -2,14 +2,12 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useMagnetic } from '../hooks/useMagnetic';
 import LocationMap from './LocationMap';
+// Hero background loop — muted, self-hosted in /public. Shared with the Landing
+// gate (lib/heroVideo.js) so both play the same cached file.
+import { HERO_VIDEO, HERO_POSTER } from '../lib/heroVideo';
 // Lab-mode cover — Ansh's own ornamental drawing (replaces a stock photo).
 import LAB_IMG from '../media/lab/lab-cover.jpg';
 import './Hero.css';
-
-// Hero background loop — a short, muted, self-hosted clip (optimized to ~1080p).
-// Lives in /public; swap the file to change it.
-const HERO_VIDEO = `${import.meta.env.BASE_URL}hero-loop.mp4`;
-const HERO_POSTER = `${import.meta.env.BASE_URL}hero-poster.jpg`;
 
 const WORDMARK = 'Chandparaaa';
 const LETTERS = WORDMARK.split('');

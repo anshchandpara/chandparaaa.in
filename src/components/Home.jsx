@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Loader from './Loader';
+import Landing from './Landing';
 import Nav from './Nav';
 import Hero from './Hero';
 import PlatformMarquee from './PlatformMarquee';
@@ -12,6 +13,7 @@ const INTRO_KEY = 'acIntroPlayed';
 
 // Props (configurable settings from the design handoff):
 const INTRO = DESIGN.introLoader; // show/skip the intro loader (/admin → Design)
+const GATE = DESIGN.landingGate; // show/skip the Work·Lab landing gate (same tab)
 // Masonry density cap on the widest screens (set in /admin → Design); the grid
 // steps down responsively (4 → 3 → 2 → 1) as the viewport narrows.
 const COLUMNS = DESIGN.columns;
@@ -32,9 +34,20 @@ const introAlreadyPlayed = () => {
 export default function Home() {
   const [mode, setMode] = useMode();
 
-  // The loader runs once per session — not on every return to home.
-  const showLoader = INTRO && !prefersReducedMotion && !introAlreadyPlayed();
-  const [introDone, setIntroDone] = useState(!showLoader);
+  // Decided ONCE, on mount. These must not be plain render-time expressions:
+  // the loader writes acIntroPlayed when it finishes, so re-reading storage on
+  // every render flips both to false mid-session and rips the gate off the
+  // screen the instant the loader ends.
+  const [entry] = useState(() => {
+    // The loader runs once per session — not on every return to home.
+    const loader = INTRO && !prefersReducedMotion && !introAlreadyPlayed();
+    // The gate rides the loader: cold entry only, and skipped wherever the
+    // loader is (reduced motion, or introLoader off). No second flag needed.
+    return { loader, gate: GATE && loader };
+  });
+
+  const [introDone, setIntroDone] = useState(!entry.loader);
+  const [gateDone, setGateDone] = useState(!entry.gate);
 
   const handleIntroDone = () => {
     setIntroDone(true);
@@ -45,12 +58,23 @@ export default function Home() {
     }
   };
 
+  // The gate is the big front-door version of the nav's Work/Lab toggle.
+  const handleChoose = (m) => {
+    setMode(m);
+    setGateDone(true);
+  };
+
   return (
     <>
-      {showLoader && !introDone && <Loader onDone={handleIntroDone} />}
+      {entry.loader && !introDone && <Loader onDone={handleIntroDone} />}
+      {/* Mounted from the start (not gated on introDone) so the loader's
+          slide-up *reveals* the gate rather than cutting to it. */}
+      {entry.gate && !gateDone && <Landing onChoose={handleChoose} />}
 
       <Nav mode={mode} onMode={setMode} />
-      <Hero mode={mode} play={introDone} />
+      {/* The wordmark scatter waits for the choice — otherwise it plays out
+          unseen behind the gate and you arrive at an already-settled title. */}
+      <Hero mode={mode} play={introDone && gateDone} />
 
       {mode === 'work' && (
         <>
