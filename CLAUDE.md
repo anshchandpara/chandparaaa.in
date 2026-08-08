@@ -528,8 +528,10 @@ Node is installed locally (no Homebrew/sudo): `~/.local/node`, symlinked onto `~
    ~~`_BTS/*.mp4` → bts-captures~~ **DONE** (see "Lab: BTS Screen Captures" below).
    Still not imported: `MVs/hASHISHBHAI` → hashishbhai-dhanji-rasla draft — **the source folder
    is now EMPTY** (checked 2026-08-07), so this needs media from the user;
-   `Edit/Showreel2023_FORL&F_01.mp4` (1.67 GB) + Reel Edit 2026 → reel-edit-2026 lab item
-   (still has no media). varun-grover-comedy-special: no master found, but `_BTS` clip 7
+   `Edit/Showreel2023_FORL&F_01.mp4` (1.67 GB) + Reel Edit 2026 → reel-edit-2026 lab item.
+   **Marked `draft: true` on 2026-08-08** at the user's request — it had no media at all, so it
+   was a bare title in the Lab archive. The entry is intact and `?p=reel-edit-2026` still
+   previews; drop media in `src/media/projects/reel-edit-2026/` and clear the flag to republish. varun-grover-comedy-special: no master found, but `_BTS` clip 7
    (`2025-08-30 01-43-46.mp4` @ ~15:00) plays **`NMS_wip_03[1].mp4`** on screen — a WIP of that
    title sequence, if a still/loop is ever wanted from it.
 6. Optional: fill collaborator URLs in `people.js`; shrink the hero loop to ~4–5 MB
