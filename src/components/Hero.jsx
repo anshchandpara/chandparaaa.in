@@ -7,11 +7,18 @@ import LocationMap from './LocationMap';
 import { HERO_VIDEO, HERO_POSTER } from '../lib/heroVideo';
 // Lab-mode cover — Ansh's own ornamental drawing (replaces a stock photo).
 import LAB_IMG from '../media/lab/lab-cover.jpg';
+import { scrambleLetters, randomGlyph } from '../lib/glitch';
 import './Hero.css';
 
 const WORDMARK = 'Chandparaaa';
 const LETTERS = WORDMARK.split('');
-const TAIL = 3; // the trailing "aaa" — these settle in last
+const TAIL = 3; // the trailing "aaa" — these resolve last
+
+// The glitch is LOCAL: each letter's intensity comes from its own distance to
+// the cursor, falling to 0 at this radius. Only letters inside it react.
+const RADIUS = 150;
+// Above this per-letter intensity the colour inverts.
+const HOT_AT = 0.5;
 
 const COPY = {
   work: {
@@ -28,10 +35,12 @@ const COPY = {
 
 export default function Hero({ mode = 'work', play = true }) {
   const lettersRef = useRef([]);
+  const ghostRef = useRef([]); // stroke-only ghost layer, desynced from the base
   const subRef = useRef(null);
   const wordRef = useRef(null);
   const playedRef = useRef(false);
-  const readyRef = useRef(false); // true once the scatter intro has settled
+  const readyRef = useRef(false); // true once the decode has resolved
+
   const ctaRef = useMagnetic();
   const copy = COPY[mode] ?? COPY.work;
 
@@ -44,143 +53,231 @@ export default function Hero({ mode = 'work', play = true }) {
     window.matchMedia &&
     window.matchMedia('(hover: none)').matches;
 
-  // Pre-state: scatter the letters into a jumble (or rest, if reduced motion).
+  // Pre-state: the wordmark holds POSITION and starts as unreadable glyphs.
+  // (This replaced a per-letter positional scatter — the reveal is now a decode,
+  // so nothing here may touch x/y/rotation.)
   useLayoutEffect(() => {
     const letters = lettersRef.current.filter(Boolean);
+    const ghosts = ghostRef.current.filter(Boolean);
     const sub = subRef.current;
 
     if (reduced) {
-      gsap.set(letters, { x: 0, y: 0, rotation: 0, opacity: 1 });
+      gsap.set(letters, { opacity: 1 });
       if (sub) gsap.set(sub, { opacity: 1, y: 0 });
       readyRef.current = true;
       return;
     }
 
-    const r = gsap.utils.random;
-    letters.forEach((el) =>
-      gsap.set(el, {
-        x: r(-280, 280),
-        y: r(-180, 180),
-        rotation: r(-55, 55),
-        opacity: 0,
-      })
-    );
+    gsap.set(letters, { opacity: 0 });
+    letters.forEach((el) => (el.textContent = randomGlyph()));
+    ghosts.forEach((el) => (el.textContent = randomGlyph()));
     if (sub) gsap.set(sub, { opacity: 0, y: 14 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Play once, when the loader is done: letters arrange into order, "aaa" last.
+  // Reveal: letters flicker up in place and decode, "aaa" resolving last.
   useEffect(() => {
     if (reduced || !play || playedRef.current) return undefined;
     playedRef.current = true;
 
     const letters = lettersRef.current.filter(Boolean);
-    const main = letters.slice(0, letters.length - TAIL);
-    const tail = letters.slice(-TAIL);
+    const ghosts = ghostRef.current.filter(Boolean);
     const sub = subRef.current;
+    const disp = document.getElementById('hero-disp');
+    const turb = document.getElementById('hero-turb');
+
+    // Resolve order: body in random order, then the trailing "aaa" one by one.
+    // The scatter is gone but this rhythm is the wordmark's signature.
+    const n = letters.length;
+    const body = gsap.utils.shuffle([...Array(Math.max(0, n - TAIL)).keys()]);
+    const tail = Array.from({ length: Math.min(TAIL, n) }, (_, i) => n - Math.min(TAIL, n) + i);
+    const order = [...body, ...tail];
 
     const tl = gsap.timeline();
-    // Body of the name snaps into place from random scatter, in random order.
-    tl.to(main, {
-      x: 0,
-      y: 0,
-      rotation: 0,
+    // Opacity only — no transform, or we're back to a scatter.
+    tl.to(letters, {
       opacity: 1,
-      duration: 0.7,
-      ease: 'expo.out',
-      stagger: { each: 0.05, from: 'random' },
+      duration: 0.16,
+      ease: 'none',
+      stagger: { each: 0.03, from: 'random' },
     });
-    // The trailing "aaa" settles in last, one after another.
-    tl.to(
-      tail,
-      {
-        x: 0,
-        y: 0,
-        rotation: 0,
-        opacity: 1,
-        duration: 0.85,
-        ease: 'expo.out',
-        stagger: 0.14,
-      },
-      '-=0.18'
-    );
-    if (sub) tl.to(sub, { opacity: 1, y: 0, duration: 0.4, ease: 'none' }, '-=0.35');
+    if (sub) tl.to(sub, { opacity: 1, y: 0, duration: 0.4, ease: 'none' }, '-=0.05');
 
-    // Gravity may engage once the letters have settled.
-    tl.eventCallback('onComplete', () => {
-      readyRef.current = true;
+    // One displacement pulse through the decode, settling to rest. Reuses the
+    // filter that is already attached to .hero__word.
+    let pulse;
+    if (disp && turb) {
+      gsap.set(turb, { attr: { baseFrequency: 0.009 } });
+      pulse = gsap.fromTo(
+        disp,
+        { attr: { scale: 7 } },
+        {
+          attr: { scale: 0 },
+          duration: 1.2,
+          ease: 'none',
+          onComplete: () => gsap.set(turb, { attr: { baseFrequency: 0.0001 } }),
+        }
+      );
+    }
+
+    const cancelBase = scrambleLetters(letters, WORDMARK, { duration: 1050, order });
+    // The ghost runs its own slower pass on a different order, so mid-decode the
+    // two layers disagree — that mismatch is what reads as a glitch.
+    const cancelGhost = scrambleLetters(ghosts, WORDMARK, {
+      duration: 1320,
+      rollEvery: 64,
+      order: gsap.utils.shuffle([...order]),
     });
-    const safety = setTimeout(() => {
+
+    const settled = setTimeout(() => {
       readyRef.current = true;
-    }, 2200);
+    }, 1400);
 
     return () => {
       tl.kill();
-      clearTimeout(safety);
+      pulse?.kill();
+      cancelBase();
+      cancelGhost();
+      clearTimeout(settled);
     };
   }, [play, reduced]);
 
-  // Hover: invert the colour, ramp up the glassy distortion, and let a subtle
-  // gravity pull the letters down.
+  // Hover: the glitch is LOCAL. Every letter gets its own `--g` from its own
+  // distance to the cursor, so a ~150px pocket of the wordmark glitches and
+  // inverts while the rest stays clean type. Nothing global is driven from
+  // here — in particular the SVG warp is left alone, since a whole-word warp
+  // would contradict the locality.
   useEffect(() => {
     const word = wordRef.current;
-    if (!word || touch) return undefined;
+    if (!word || touch || reduced) return undefined;
 
-    const disp = document.getElementById('hero-disp');
-    const turb = document.getElementById('hero-turb');
-    let wobble;
+    let raf = 0;
+    let pending = null;
+    let centres = [];
+    let measuredReady = false;
 
-    // Per-letter downward sag — a gentle catenary (middle droops most) so the
-    // whole word feels weighed down rather than uniformly shifted.
-    const gravity = (settle) => {
-      const letters = lettersRef.current.filter(Boolean);
-      const n = letters.length;
-      gsap.to(letters, {
-        y: (i) => (settle ? 6 + Math.sin((i / (n - 1)) * Math.PI) * 12 : 0),
-        rotation: (i) => (settle ? (i % 2 ? 1.5 : -1.5) : 0),
-        duration: settle ? 0.55 : 0.5,
-        ease: settle ? 'sine.in' : 'sine.out',
-        stagger: { each: 0.015, from: 'edges' },
+    // Letter centres, cached RELATIVE TO THE WORD. Measuring 11 rects per frame
+    // would force a synchronous layout on every mousemove; this way each frame
+    // costs one rect read for the word itself.
+    const measure = () => {
+      const wr = word.getBoundingClientRect();
+      if (!wr.width) return;
+      centres = lettersRef.current.map((el) => {
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2 - wr.left, y: r.top + r.height / 2 - wr.top };
       });
+      measuredReady = readyRef.current;
     };
 
-    const enter = () => {
-      word.classList.add('is-hot'); // CSS inverts the colour (mix-blend-mode)
-      if (reduced || !disp || !turb) return;
-      gsap.killTweensOf(disp);
-      gsap.to(disp, { attr: { scale: 3.3 }, duration: 0.6, ease: 'none' }); // +50% amplitude
-      gsap.set(turb, { attr: { baseFrequency: 0.006 } });
-      wobble?.kill();
-      wobble = gsap.to(turb, {
-        attr: { baseFrequency: 0.011 },
-        duration: 2.2,
-        ease: 'none',
-        repeat: -1,
-        yoyo: true,
+    const clear = () => {
+      lettersRef.current.forEach((el) => {
+        if (!el) return;
+        el.style.setProperty('--g', '0');
+        el.classList.remove('is-hot');
       });
-      if (readyRef.current) gravity(true);
-    };
-    const leave = () => {
-      word.classList.remove('is-hot');
-      if (reduced || !disp || !turb) return;
-      wobble?.kill();
-      wobble = null;
-      gsap.killTweensOf(disp);
-      gsap.to(disp, {
-        attr: { scale: 0 },
-        duration: 0.4,
-        ease: 'none',
-        onComplete: () => gsap.set(turb, { attr: { baseFrequency: 0.0001 } }),
-      });
-      if (readyRef.current) gravity(false);
+      ghostRef.current.forEach((el) => el && el.style.setProperty('--g', '0'));
     };
 
-    word.addEventListener('mouseenter', enter);
-    word.addEventListener('mouseleave', leave);
+    const apply = () => {
+      raf = 0;
+      const e = pending;
+      pending = null;
+      if (!e) return;
+
+      const wr = word.getBoundingClientRect();
+      if (!wr.width) return;
+      // Glyphs are not the same width as the real letters, so centres measured
+      // mid-decode are wrong — re-measure once the word has resolved.
+      if (!centres.length || (!measuredReady && readyRef.current)) measure();
+
+      const mx = e.clientX - wr.left;
+      const my = e.clientY - wr.top;
+
+      for (let i = 0; i < centres.length; i++) {
+        const c = centres[i];
+        const base = lettersRef.current[i];
+        if (!c || !base) continue;
+        const d = Math.hypot(mx - c.x, my - c.y);
+        const g = d >= RADIUS ? 0 : 1 - d / RADIUS;
+
+        base.style.setProperty('--g', g.toFixed(3));
+        const isHot = g > HOT_AT;
+        if (base.classList.contains('is-hot') !== isHot) base.classList.toggle('is-hot', isHot);
+
+        const gh = ghostRef.current[i];
+        if (gh) gh.style.setProperty('--g', g.toFixed(3));
+      }
+    };
+
+    const onMove = (e) => {
+      pending = e;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    const onLeave = () => {
+      pending = null;
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      clear();
+    };
+
+    measure();
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseleave', onLeave);
+    window.addEventListener('resize', measure);
     return () => {
-      word.removeEventListener('mouseenter', enter);
-      word.removeEventListener('mouseleave', leave);
-      wobble?.kill();
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseleave', onLeave);
+      window.removeEventListener('resize', measure);
+      if (raf) cancelAnimationFrame(raf);
+      clear();
+    };
+  }, [reduced, touch]);
+
+  // Live character churn while the cursor is close: a couple of letters drop to
+  // a glyph and snap back. Only after the decode has resolved, or it fights it.
+  useEffect(() => {
+    if (reduced || touch) return undefined;
+    const timers = new Set();
+
+    const id = setInterval(() => {
+      if (!readyRef.current || !wordRef.current) return;
+
+      // Only letters actually under the cursor's pocket are eligible — each
+      // one's own `--g`, not a word-wide intensity.
+      const near = [];
+      lettersRef.current.forEach((el, i) => {
+        if (!el) return;
+        const g = parseFloat(el.style.getPropertyValue('--g')) || 0;
+        if (g > 0.35) near.push({ i, g });
+      });
+      if (!near.length) return;
+
+      const letters = lettersRef.current;
+      const ghosts = ghostRef.current;
+      const hits = 1 + ((Math.random() * 2) | 0);
+      for (let k = 0; k < hits; k++) {
+        const pick = near[(Math.random() * near.length) | 0];
+        // Stronger intensity → likelier to actually fire.
+        if (Math.random() > pick.g) continue;
+        const i = pick.i;
+        const el = Math.random() < 0.5 ? letters[i] : ghosts[i];
+        if (!el) continue;
+        el.textContent = randomGlyph();
+        const t = setTimeout(() => {
+          el.textContent = LETTERS[i];
+          timers.delete(t);
+        }, 70 + Math.random() * 90);
+        timers.add(t);
+      }
+    }, 90);
+
+    return () => {
+      clearInterval(id);
+      timers.forEach(clearTimeout);
+      // Never leave the wordmark misspelled.
+      lettersRef.current.forEach((el, i) => el && (el.textContent = LETTERS[i]));
+      ghostRef.current.forEach((el, i) => el && (el.textContent = LETTERS[i]));
     };
   }, [reduced, touch]);
 
@@ -247,8 +344,11 @@ export default function Hero({ mode = 'work', play = true }) {
         <LocationMap />
       </div>
 
-      {/* Wordmark — letters scatter in and settle into order */}
-      <h1 className="hero__title">
+      {/* Wordmark — decodes in place, then glitches with cursor proximity.
+          aria-label pins the accessible name: the letters hold random glyphs
+          for ~1s during the decode (and again briefly during hover churn), so
+          without it a screen reader announces the heading as garbage. */}
+      <h1 className="hero__title" aria-label={WORDMARK}>
         <span ref={wordRef} className="hero__word" data-cursor>
           {LETTERS.map((ch, i) => (
             <span
@@ -259,6 +359,15 @@ export default function Hero({ mode = 'work', play = true }) {
               {ch}
             </span>
           ))}
+          {/* Stroke-only registration layer. aria-hidden: it sits inside the
+              <h1>, so without it the heading is announced twice. */}
+          <span className="hero__ghost" aria-hidden="true">
+            {LETTERS.map((ch, i) => (
+              <span key={i} ref={(el) => (ghostRef.current[i] = el)} className="hero__letter">
+                {ch}
+              </span>
+            ))}
+          </span>
         </span>
       </h1>
 

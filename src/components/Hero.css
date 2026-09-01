@@ -73,11 +73,20 @@
   color: var(--fg);
 }
 
-/* Each letter is independently transformable for the scatter-in intro. */
+/* One span per character so the reveal can decode into them individually AND so
+   each can carry its own `--g` (0→1) — the per-letter glitch intensity Hero.jsx
+   writes from that letter's own distance to the cursor. The base letters never
+   transform (the scatter and gravity sag are both gone), so no `will-change`. */
 .hero__letter {
   display: inline-block;
-  will-change: transform;
-  backface-visibility: hidden;
+  --g: 0;
+}
+
+/* Inside the cursor's pocket the letter inverts. Per letter, not per word —
+   that's what makes the effect local. */
+.hero__letter.is-hot {
+  color: #fff;
+  mix-blend-mode: difference;
 }
 
 /* SVG filter holder — kept out of flow */
@@ -88,22 +97,38 @@
   pointer-events: none;
 }
 
-/* --- Wordmark hover: colour invert + glassy distortion --- */
+/* --- Wordmark: a local glitch that follows the cursor --- */
+/* Each letter carries its own `--g`; nothing here is word-wide any more. The
+   SVG warp is deliberately NOT driven on hover — a whole-word warp would
+   contradict the locality — so it only fires once, during the reveal pulse. */
 .hero__word {
   position: relative;
   display: inline-block;
   color: var(--fg);
-  /* Glass distortion filter is always attached; it's an identity warp until
-     the displacement scale is animated up on hover (see Hero.jsx). */
+  /* Identity warp at rest; the reveal pulses the displacement scale up and back
+     down to 0 (see Hero.jsx). */
   filter: url(#hero-glass);
 }
 
-/* On hover the wordmark inverts against whatever sits behind it (dark backdrop
-   or the showreel video) via the difference blend. */
-.hero__word.is-hot {
-  mix-blend-mode: difference;
-  color: #fff;
+/* Stroke-only registration layer — outline, no fill. Sits exactly over the base
+   letters (same class, so identical metrics). The container only positions; the
+   offset and fade are PER LETTER so the misregistration is confined to the
+   cursor's pocket instead of sliding the whole word. */
+.hero__ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--fg) 62%, transparent);
 }
+
+.hero__ghost .hero__letter {
+  opacity: calc(var(--g) * 0.9);
+  transform: translate3d(calc(var(--g) * 7px), calc(var(--g) * -4px), 0);
+}
+
 
 .hero__foot {
   position: relative;
