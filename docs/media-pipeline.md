@@ -5,7 +5,7 @@ Built 2026-08-09 from `studio-systems-pack/04-media-pipeline/`, adapted for this
 - **Phase A — the encode half.** Masters in, web-ready delivery files out, one command.
 - **Phase B — the manifest.** The build no longer scans the disk for media, so it works on a
   machine that has none. This is the prerequisite for media ever leaving the repo.
-- **Phase C — object storage.** Not built. Needs a Cloudflare R2 account.
+- **Phase C — object storage.** Media lives in Cloudflare R2; the repo no longer carries it.
 
 ## The one command
 
@@ -103,7 +103,7 @@ Both print a `[skip]` line so their absence is visible rather than silent.
 | AVIF/WebP width ladder | `IMAGE_LADDER=1` | nothing consumes it — there is no `<picture>`/srcset renderer, so every sibling would be generated and never requested. Generating output nothing reads is how a pipeline earns distrust. |
 | webm + mobile-video manifests | `MEDIA_MANIFESTS=1` | the builders are still in the vault. They **rebuild from a disk scan**, so when they return, CI must set `SKIP_WEBM_MANIFEST=1` or a media-less runner wipes every entry. |
 
-`--sync-r2` is accepted but does nothing useful: `sync-to-store.mjs` is not copied in yet.
+`--sync-r2` on `process-masters.mjs` is still unwired; use `npm run media:sync` after an encode.
 
 ## Known rough edges
 
@@ -208,11 +208,53 @@ than overwrite.
 
 ---
 
-# Phase C — not built
+# Phase C — object storage
 
-Object storage (Cloudflare R2 recommended, zero egress), `sync-to-store.mjs`, cache tiers by
-filename, and `verify-referenced.mjs`. Needs an account Ansh creates. At that point
-`public/projects/` becomes gitignored and `VITE_MEDIA_BASE_URL` points at the CDN — the
-manifest and every consumer stay exactly as they are.
+Media lives in **Cloudflare R2** (`chandparaaa-media`) and is served from
+`https://pub-67342d07ad21409f99f55162c3acdbef.r2.dev`. `public/projects/` is gitignored: the
+files stay on disk locally so `npm run dev` works offline and the manifest can be
+regenerated, but git no longer carries them.
+
+Measured at cut-over: deploy artifact **121 MB → 12 MB**, with `index.html` and every bundle
+byte-identical to the media-carrying build.
+
+## The two commands
+
+```bash
+npm run media:sync      # upload public/projects/ (additive; never pass --prune from CI)
+npm run media:verify    # every manifest entry present AND non-empty in the bucket
+```
+
+`media:verify` is **manifest-driven, not a dist scan**. The pack's version text-scans `dist/`
+for media URLs and assumes client JS builds none at runtime. That is false here — URLs are
+assembled at runtime, `dist` holds zero complete media URLs, and the scanner would find
+nothing, check nothing, and report a pass. Sabotage-tested: missing object → exit 1, empty
+manifest → exit 2, absent credentials → exit 2, healthy → exit 0.
+
+**Run it before every ship.** With media out of the repo there is no local fallback: a missing
+object is a broken image on the live site, not a slow one.
+
+## Configuration
+
+| Where | What | Committed? |
+|---|---|---|
+| `.env.production` | `VITE_MEDIA_BASE_URL` | **yes** — a public URL, and CI needs it |
+| `.env.local` | R2 S3 credentials | **never** — gitignored twice over |
+
+Unset locally on purpose: `mediaManifest.js` falls back to the site's own `BASE_URL` and
+serves from `public/projects/`, so dev works with no bucket and no network.
+
+## Known limits
+
+- **`r2.dev` is Cloudflare's development-grade endpoint and is rate-limited.** No throttling
+  observed at 20 rapid requests, but a traffic spike is untested and there is no fallback.
+  The fix is a custom domain, which needs the DNS zone on Cloudflare — the nameservers are
+  currently at GoDaddy. Moving them touches the apex records that serve the live site from
+  GitHub Pages, so it is a deliberate job, not a side effect.
+- **Stable filenames under a 30-day cache.** `sync-to-store.mjs` sets
+  `max-age=2592000, must-revalidate` on media. Replacing a file's bytes under the same name
+  serves the stale version for that window — rename to `-v2` instead of overwriting.
+- **Never `--prune` from CI.** A runner holds only what it just encoded, so a prune there
+  would delete the rest of the project's media from the bucket.
 
 Full plan: `~/.claude/plans/joyful-sparking-pebble.md`.

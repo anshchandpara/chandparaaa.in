@@ -17,3 +17,10 @@ tools/render-studio
 # this file accumulates everything typed to the assistant. The rest of memory/ IS
 # tracked — decisions and lessons benefit from history; a transcript does not.
 memory/user-prompts.md
+
+# Project media lives in Cloudflare R2 (bucket chandparaaa-media), not in git.
+# src/data/media-manifest.json is what the build reads; it IS tracked. These
+# files stay on disk locally so `npm run dev` works offline and the manifest can
+# be regenerated, but they are never committed again.
+# Re-sync with:  npm run media:sync && npm run media:verify
+public/projects/
