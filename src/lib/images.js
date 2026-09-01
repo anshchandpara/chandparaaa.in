@@ -1,51 +1,44 @@
 /**
- * Real project media in src/media/projects/<slug>/. Vite hashes + bundles each
- * file; the glob enumerates them so galleries build automatically.
+ * Real project media, served from `public/projects/<slug>/`.
+ *
+ * Enumeration comes from the COMMITTED manifest (`lib/mediaManifest.js`), not
+ * from a disk scan — see that file for why. Behaviour is otherwise unchanged:
+ *
  * `.gif` flows through as a normal still (animates natively in <img>).
  * `.mp4`/`.webm` are **silent gallery loops** — far better than a GIF for
  * smooth gradients (no 256-colour banding, a fraction of the weight). They sit
  * in filename order alongside the stills; `getHero` skips them so masonry
  * cards and thumbnails always resolve to a real image.
+ *
+ * `hero.mp4`/`hero.webm` is reserved for the page hero (lib/heroVideo.js) and
+ * is excluded from the gallery by the manifest builder, so it is never shown
+ * twice.
  */
-const modules = import.meta.glob('../media/projects/*/*.{jpg,jpeg,png,webp,gif,mp4,webm}', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
+import { projectEntry, mediaUrl } from './mediaManifest';
 
-/** True for a bundled URL that points at a video file. */
+/** True for a URL that points at a video file. */
 export const isVideoSrc = (url) => /\.(mp4|webm)(\?|#|$)/i.test(url || '');
 
-const bySlug = {};
-for (const [path, url] of Object.entries(modules)) {
-  const m = path.match(/projects\/([^/]+)\/([^/]+)$/);
-  if (!m) continue;
-  const [, slug, file] = m;
-  // `hero.mp4`/`hero.webm` is reserved for the page hero (lib/heroVideo.js) —
-  // keep it out of the gallery so it isn't shown twice.
-  if (/^hero\.(mp4|webm)$/i.test(file)) continue;
-  (bySlug[slug] ||= []).push({ file, url });
-}
-for (const k in bySlug) bySlug[k].sort((a, b) => a.file.localeCompare(b.file));
-
 export function hasImages(slug) {
-  return !!(bySlug[slug] && bySlug[slug].length);
+  return projectEntry(slug).files.length > 0;
 }
 
 /**
  * Ordered image URLs for a slug. If `preferred` (a filename) is supplied and
  * present, it's moved to the front so it becomes the hero/thumbnail.
+ *
+ * Files are already sorted by `localeCompare` in the manifest builder, matching
+ * the ordering the glob-based version produced.
  */
 export function getImages(slug, preferred) {
-  const arr = bySlug[slug] || [];
-  if (!arr.length) return [];
+  const files = projectEntry(slug).files;
+  if (!files.length) return [];
+  const urls = files.map((file) => mediaUrl(slug, file));
   if (preferred) {
-    const i = arr.findIndex((x) => x.file === preferred);
-    if (i > 0) {
-      return [arr[i].url, ...arr.slice(0, i).map((x) => x.url), ...arr.slice(i + 1).map((x) => x.url)];
-    }
+    const i = files.indexOf(preferred);
+    if (i > 0) return [urls[i], ...urls.slice(0, i), ...urls.slice(i + 1)];
   }
-  return arr.map((x) => x.url);
+  return urls;
 }
 
 /** First still for a slug — skips gallery loops, so cards never get a video. */

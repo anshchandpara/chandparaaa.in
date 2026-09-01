@@ -1,15 +1,13 @@
 /**
- * About-page portrait. Drop a single image into src/media/about/ (or upload it
+ * About-page portrait. Drop a single image into `public/about/` (or upload it
  * via the /admin form) and it appears beside the bio; remove it and the layout
  * gracefully collapses back to text-only. First sorted file wins.
+ *
+ * Enumeration comes from the committed manifest, not a disk scan — see
+ * `lib/mediaManifest.js`.
  */
-const modules = import.meta.glob('../media/about/*.{jpg,jpeg,png,webp}', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
+import { aboutFiles, aboutUrl } from './mediaManifest';
 
-export const ABOUT_PORTRAIT =
-  Object.keys(modules)
-    .sort()
-    .map((k) => modules[k])[0] || '';
+const first = aboutFiles()[0];
+
+export const ABOUT_PORTRAIT = first ? aboutUrl(first) : '';

@@ -11,9 +11,39 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = path.resolve(__dirname, '../src/data/projects.json');
 const PEOPLE_FILE = path.resolve(__dirname, '../src/data/people.json');
 const DESIGN_FILE = path.resolve(__dirname, '../src/data/design.json');
-const ABOUT_DIR = path.resolve(__dirname, '../src/media/about');
-const PROJECT_MEDIA = path.resolve(__dirname, '../src/media/projects');
+// Media moved to public/ in Phase B (2026-08-09) so the build enumerates it from
+// a committed manifest instead of a disk glob. Uploads MUST land here or the
+// manifest never sees them.
+const ABOUT_DIR = path.resolve(__dirname, '../public/about');
+const PROJECT_MEDIA = path.resolve(__dirname, '../public/projects');
 const HTML_FILE = path.resolve(__dirname, './admin.html');
+
+/**
+ * Regenerate src/data/media-manifest.json after any media write.
+ *
+ * Without this, a Studio upload lands on disk and stays INVISIBLE to the site:
+ * nothing scans the media directory any more, so the manifest is the only thing
+ * that knows a file exists. Uploading and seeing nothing appear — with no error
+ * — is exactly the confusing failure the manifest was introduced to prevent,
+ * just moved from CI to the Studio.
+ *
+ * Synchronous on purpose: the response should not claim success before the
+ * manifest reflects the change.
+ */
+function refreshMediaManifest() {
+  try {
+    execFileSync('node', [path.resolve(__dirname, 'pipeline/build-media-manifest.mjs')], {
+      cwd: path.resolve(__dirname, '..'),
+      stdio: 'pipe',
+    });
+    return { ok: true };
+  } catch (err) {
+    const detail = (err.stderr?.toString() || err.message || '').trim().split('\n').slice(-2).join(' ');
+    console.error('[admin] media manifest refresh FAILED —', detail);
+    console.error('[admin] the new media will not appear until you run: npm run media:manifest');
+    return { ok: false, error: detail };
+  }
+}
 
 // Match the repo convention: 2-space indent, unicode preserved, trailing newline.
 const writeJSON = (file, d) => fs.writeFileSync(file, JSON.stringify(d, null, 2) + '\n');
@@ -66,7 +96,7 @@ const mediaFor = (slug) => {
     .sort()
     .map((f) => ({
       file: f,
-      url: `/src/media/projects/${slug}/${encodeURIComponent(f)}`,
+      url: `/projects/${slug}/${encodeURIComponent(f)}`,
       size: fs.statSync(path.join(dir, f)).size,
     }));
 };
@@ -130,7 +160,7 @@ const currentPortrait = () => {
 const portraitInfo = () => {
   const file = currentPortrait();
   return file
-    ? { exists: true, file, url: `/src/media/about/${file}?t=${Date.now()}` }
+    ? { exists: true, file, url: `/about/${file}?t=${Date.now()}` }
     : { exists: false, file: null, url: null };
 };
 
@@ -337,7 +367,7 @@ export default function adminPlugin() {
             return sendJSON(res, 200, { projects: listProjects(data) });
           }
 
-          // ── About portrait (src/media/about/) ──
+          // ── About portrait (public/about/) ──
           if (req.method === 'GET' && url === '/api/about-image') {
             return sendJSON(res, 200, portraitInfo());
           }
@@ -365,12 +395,14 @@ export default function adminPlugin() {
             } finally {
               if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
             }
+            refreshMediaManifest();
             return sendJSON(res, 200, { ...portraitInfo(), originalName: String(name) });
           }
           if (req.method === 'DELETE' && url === '/api/about-image') {
             if (fs.existsSync(ABOUT_DIR))
               for (const f of fs.readdirSync(ABOUT_DIR))
                 if (/\.(jpe?g|png|webp)$/i.test(f)) fs.unlinkSync(path.join(ABOUT_DIR, f));
+            refreshMediaManifest();
             return sendJSON(res, 200, portraitInfo());
           }
 
@@ -526,6 +558,7 @@ export default function adminPlugin() {
               fs.unlinkSync(tmp);
               saved.push(path.basename(out));
             }
+            refreshMediaManifest();
             return sendJSON(res, 200, { saved, media: mediaFor(slug) });
           }
 
@@ -544,6 +577,7 @@ export default function adminPlugin() {
               entry.image = '';
               writeData(data);
             }
+            refreshMediaManifest();
             return sendJSON(res, 200, { media: mediaFor(slug) });
           }
 

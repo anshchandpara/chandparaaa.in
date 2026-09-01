@@ -100,7 +100,8 @@ src/
     useRoute.js           ?p=<slug> / ?page=<name> routing + link interceptor
   lib/
     accents.js            per-project accent colors
-    images.js             glob-enumerate real project imagery by slug
+    images.js             project imagery by slug, read from the committed manifest
+    mediaManifest.js      the manifest reader + the empty-manifest guard
     workCards.js          derive featured cards (aspect ratios, meta)
     archive.js            build archive groups by year/mode
     projectData.js        flatten + resolve a project by slug
@@ -111,12 +112,12 @@ src/
 
 ## Imagery
 
-Real photos live in `src/media/projects/<slug>/` (85 files, 11 projects), sourced from
+Real photos live in `public/projects/<slug>/` (85 files, 11 projects), sourced from
 [Ansh-Chandpara-Website](https://github.com/anshchandpara/Ansh-Chandpara-Website) and remapped
 from its `assets/images/NN-<name>/` folders to our slugs. `src/lib/images.js` enumerates them via
-`import.meta.glob`; the designated hero from `projects.json` (when present) is shown first and the
+the committed media manifest (`src/data/media-manifest.json`); the designated hero from `projects.json` (when present) is shown first and the
 rest become the gallery. Projects without photos (e.g. Lootere, The Railway Men) keep the WebGL
-shader panel. To add more, drop files into `src/media/projects/<slug>/`.
+shader panel. To add more, drop files into `public/projects/<slug>/`.
 
 Source frames are usually huge (e.g. The Railway Men shipped 20 × ~10 MB 3.4K PNGs). Downscale +
 convert before importing — e.g. `sips -s format jpeg -s formatOptions 82 -Z 2000 in.png --out out.jpg`
@@ -183,7 +184,7 @@ links, credits and your photo are all managed from one place.
 
 **About portrait:** the About page shows your photo under the "A study in motion…" heading (4:5
 crop, subtle grade). Upload it via `/admin` (auto-optimized with `sips` to a ≤2000px q82 JPEG at
-`src/media/about/portrait.jpg`) or drop an image into `src/media/about/` manually. Remove it and
+`public/about/portrait.jpg`) or drop an image into `public/about/` manually. Remove it and
 the section gracefully collapses back to text-only. `src/lib/aboutImage.js` is the loader.
 
 ## Location (live map)

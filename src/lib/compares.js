@@ -1,15 +1,14 @@
 /**
  * Before/after VFX pairs for the project-page A/B slider. Drop matched media
- * into src/media/projects/<slug>/compare/ named `NN-clean.<ext>` (the plate)
+ * into `public/projects/<slug>/compare/` named `NN-clean.<ext>` (the plate)
  * and `NN-final.<ext>` (the composite). Stills (jpg/png/webp) OR frame-synced
- * loop videos (mp4/webm) both work. They live in a sub-folder so images.js
- * (which globs one level deep) leaves them out of the normal gallery.
+ * loop videos (mp4/webm) both work. They live in a sub-folder so the gallery
+ * (which only lists files one level deep) leaves them out.
+ *
+ * Enumeration comes from the committed manifest, not a disk scan — see
+ * `lib/mediaManifest.js`.
  */
-const modules = import.meta.glob('../media/projects/*/compare/*.{jpg,jpeg,png,webp,mp4,webm}', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
+import { projectEntry, compareUrl } from './mediaManifest';
 
 const isVideo = (url) => /\.(mp4|webm)(\?|$)/i.test(url);
 
@@ -25,21 +24,13 @@ const DEFAULT_LABELS = { before: 'Plate', after: 'Final', heading: 'Plate → Fi
 
 export const getCompareLabels = (slug) => LABELS[slug] || DEFAULT_LABELS;
 
-const bySlug = {};
-for (const [path, url] of Object.entries(modules)) {
-  const m = path.match(/projects\/([^/]+)\/compare\/([^/]+)$/);
-  if (!m) continue;
-  const [, slug, file] = m;
-  (bySlug[slug] ||= []).push({ file, url });
-}
-
 /** Ordered [{ before, after }] pairs for a slug (only complete pairs). */
 export function getCompares(slug) {
   const groups = {};
-  for (const { file, url } of bySlug[slug] || []) {
+  for (const file of projectEntry(slug).compare || []) {
     const m = file.match(/^(\d+)-(clean|final)\./i);
     if (!m) continue;
-    (groups[m[1]] ||= {})[m[2].toLowerCase()] = url;
+    (groups[m[1]] ||= {})[m[2].toLowerCase()] = compareUrl(slug, file);
   }
   return Object.keys(groups)
     .sort()

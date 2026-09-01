@@ -17,6 +17,12 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # This runner must NEVER regenerate a manifest that rebuilds from a disk
+      # scan. It holds only what the repo carries, so a rebuild would record a
+      # near-empty tree and wipe every entry — a green build serving a site with
+      # empty galleries. Set now, before Phase C gives CI any encoding to do.
+      SKIP_REBUILD_MANIFESTS: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,7 +30,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # `npm run build` triggers the `prebuild` script, which validates the
+      # committed media manifest and FAILS the build if it is missing, empty or
+      # malformed. Do not replace this with a bare `npx vite build` — that skips
+      # prebuild and takes the guard with it.
       - run: npm run build
+      # Belt and braces: if any future step regenerates a manifest here, throw
+      # the change away rather than shipping it.
+      - name: Refuse manifest drift from CI
+        run: git diff --exit-code -- src/data/media-manifest.json || (git checkout -- src/data/media-manifest.json && echo "::error::CI modified the media manifest; discarded." && exit 1)
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
