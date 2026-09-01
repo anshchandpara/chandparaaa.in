@@ -14,51 +14,51 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-08-09. Site is live and untouched; a studio-systems migration is mid-flight in the repo
-around it. Nothing is deployed from this work yet.**
+**2026-09-01. Shipped. The glitch wordmark, the media manifest layer and the memory retrofit
+are all live at chandparaaa.in as of `4395000`. Working tree clean, `dev` level with `main`.**
 
-SITE STATE: `dev`, level with `origin/main` at `6940c1c`. 27 `work` entries (22 published,
-5 draft: hashishbhai-dhanji-rasla, kyra-itc-farmlite, storm-plus, tasc, sketches-live) and
-5 `lab` entries (1 published, 4 draft). **Zero Vimeo IDs across all 32 entries** — the `video`
-field is empty everywhere, so no project currently leads with its film.
+SITE STATE: 27 `work` entries (22 published, 5 draft) and 5 `lab` entries (1 published,
+4 draft). **Still zero Vimeo IDs across all 32 entries** — no project leads with its film.
+That is the biggest remaining gap in the portfolio and it needs IDs from Ansh.
 
-UNCOMMITTED, PRE-EXISTING: `Hero.jsx`, `Hero.css`, `glitch.js` carry design work from the last
-session (the wordmark's local per-letter glitch). **Not mine, not reviewed, not shipped** —
-leave them alone unless Ansh asks.
+VERIFIED LIVE: site 200; all 273 media URLs resolve at their new `/projects/<slug>/...`
+paths; `--g` (the per-letter glitch property) present in the deployed bundle, confirming the
+glitch wordmark shipped rather than the old gravity scatter.
 
-UNCOMMITTED, FROM THE MIGRATION: `CLAUDE.md`, `package.json`, `docs/`, `memory/`,
-`_archive/`, `tools/hooks/`, `tools/pipeline/`, plus the media move (273 files, staged as
-renames) and the four rewritten `src/lib` media modules. Build clean. Nothing committed.
-
-MIGRATION STATE: stages 0–3 and pipeline phases A+B are **done and verified** (details in
-the ship log below). Phase C is the only remaining piece and it is blocked on an account.
+NOT VERIFIED: that the wordmark animation *plays through*. The browser pane is stuck hidden,
+rAF is fully frozen there, so GSAP cannot advance a frame — every "frozen wordmark" reading
+was that artifact, not a bug. Static analysis confirms the reveal is opacity-only with no
+x/y/rotation. **Ansh should eyeball the live site.**
 
 THREE THINGS NOT TO BREAK:
-1. **`npm run build`, never `npx vite build`.** The manifest guard is npm's `prebuild`; a
-   bare vite call skips it. A runtime throw cannot fail a build — sabotage-tested, it went
-   green. Suite is 5/5 red, control green.
-2. **Both project hooks live in `Work/Claude/.claude/settings.json`** — the PARENT folder,
-   because sessions root there and a settings file inside `ansh-portfolio/` never loads. It
-   fails silently, not loudly.
-3. **`src/data/media-manifest.json` REBUILDS from a disk scan.** Never regenerate it where
-   the media is absent. CI has `SKIP_REBUILD_MANIFESTS=1` and a `git diff --exit-code` belt.
-   Adding media by hand needs `npm run media:manifest`; pipeline and Studio do it for you.
+1. **`npm run build`, never `npx vite build`.** The manifest guard is npm's `prebuild`; a bare
+   vite call skips it. A runtime throw cannot fail a build — sabotage-tested, it went green.
+2. **Both project hooks live in `Work/Claude/.claude/settings.json`** — the PARENT folder.
+   A settings file inside this repo never loads, and fails silently.
+3. **`src/data/media-manifest.json` REBUILDS from a disk scan.** Never regenerate it where the
+   media is absent. CI has `SKIP_REBUILD_MANIFESTS=1` and a `git diff --exit-code` belt.
 
-KNOWN GAP: prompt logging is off from the parent root — `log-prompt.py` walks *up* for a
-`memory/` dir and there is none at `Work/Claude/`. By design; decision below.
+R2 IS LIVE AND EMPTY: bucket `chandparaaa-media`, credentials in a gitignored `.env.local`,
+connection verified read-only, 0 objects. Phase C — syncing media to it — is **not built**.
+Two things block it: no public URL yet (nameservers are still at GoDaddy, so an R2 custom
+domain cannot activate; r2.dev would work today), and `verify-referenced.mjs` is a disabled
+stub because the pack's version text-scans `dist/`, which now contains zero literal media
+URLs and would report a pass having checked nothing.
 
-NEXT (waiting on me): Phase C — R2, `sync-to-store.mjs`, cache tiers, `verify-referenced`.
-When it lands, `public/projects/` becomes gitignored and `VITE_MEDIA_BASE_URL` points at the
-CDN; the manifest and every consumer stay exactly as they are.
-
-WAITING ON ANSH: (1) should prompt logging cover the parent root? one `memory/` dir at
-`Work/Claude/` switches it on, at the cost of a second place project facts could land;
-(2) the Voice section of `~/.claude/RULES.md` + the "unknown" block in `preferences.md` —
-nobody else can write those; (3) a Cloudflare R2 account before Phase C; (4) confirm
-`/Volumes/T7/` is a real backup of `Website Master/`.
+WAITING ON ANSH: (1) eyeball the wordmark on the live site; (2) Vimeo IDs, or a decision to
+self-host the films; (3) the Voice section of `~/.claude/RULES.md` and the "unknown" block in
+`memory/preferences.md`; (4) confirm `/Volumes/T7/` is a real backup of `Website Master/`.
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-01 — glitch wordmark + manifest layer + memory retrofit** — commit `4395000`.
+Three commits shipped together, because `ship.sh` merges `dev`->`main` wholesale and all of
+it was uncommitted side by side. The wordmark now decodes in place instead of scattering
+into position; media moved to `public/projects/` and the build stopped scanning the disk for
+it. Verified live: 273/273 media URLs resolve at the new paths (two transient 503s from
+Pages throttling under rapid sequential requests, both 200 on retry). What now inherits the
+fix: media can leave the repo without the build noticing, which is what Phase C needs.
 
 **2026-08-09 — media pipeline, phases A + B** — not committed.
 Phase A: `npm run media -- <slug>` encodes from `~/media-masters/<slug>/` into
