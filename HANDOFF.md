@@ -14,43 +14,55 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-01. Shipped. The glitch wordmark, the media manifest layer and the memory retrofit
-are all live at chandparaaa.in as of `4395000`. Working tree clean, `dev` level with `main`.**
+**2026-09-01. Media is on Cloudflare R2 and the repo no longer carries it. Live at `2f4c0e3`.
+Deploy artifact 121 MB -> 12 MB. Working tree clean, `dev` level with `main`.**
 
-SITE STATE: 27 `work` entries (22 published, 5 draft) and 5 `lab` entries (1 published,
-4 draft). **Still zero Vimeo IDs across all 32 entries** — no project leads with its film.
-That is the biggest remaining gap in the portfolio and it needs IDs from Ansh.
+SITE STATE: 27 `work` entries (22 published, 5 draft), 5 `lab` (1 published, 4 draft). Ansh is
+adding Vimeo IDs himself — do not chase those.
 
-VERIFIED LIVE: site 200; all 273 media URLs resolve at their new `/projects/<slug>/...`
-paths; `--g` (the per-letter glitch property) present in the deployed bundle, confirming the
-glitch wordmark shipped rather than the old gravity scatter.
+MEDIA NOW LIVES IN R2. Bucket `chandparaaa-media`, served from
+`https://pub-67342d07ad21409f99f55162c3acdbef.r2.dev`, wired via `VITE_MEDIA_BASE_URL` in a
+committed `.env.production`. `public/projects/` is gitignored; the files remain on disk so
+`npm run dev` works offline and the manifest can be regenerated. Verified live: bundle points
+at R2, media 404s on the site origin (correctly gone from the deploy) and 200s from R2.
 
-NOT VERIFIED: that the wordmark animation *plays through*. The browser pane is stuck hidden,
-rAF is fully frozen there, so GSAP cannot advance a frame — every "frozen wordmark" reading
-was that artifact, not a bug. Static analysis confirms the reveal is opacity-only with no
-x/y/rotation. **Ansh should eyeball the live site.**
+**RUN `npm run media:verify` BEFORE EVERY SHIP.** There is no local fallback any more — a
+missing object is a broken image on the live site, not a slow one. It is manifest-driven, not
+a dist scan; sabotage-tested (missing -> 1, empty manifest -> 2, no creds -> 2, healthy -> 0).
+After any encode: `npm run media:sync && npm run media:verify`.
 
 THREE THINGS NOT TO BREAK:
-1. **`npm run build`, never `npx vite build`.** The manifest guard is npm's `prebuild`; a bare
-   vite call skips it. A runtime throw cannot fail a build — sabotage-tested, it went green.
-2. **Both project hooks live in `Work/Claude/.claude/settings.json`** — the PARENT folder.
-   A settings file inside this repo never loads, and fails silently.
-3. **`src/data/media-manifest.json` REBUILDS from a disk scan.** Never regenerate it where the
-   media is absent. CI has `SKIP_REBUILD_MANIFESTS=1` and a `git diff --exit-code` belt.
+1. **`npm run build`, never `npx vite build`** — the manifest guard is npm's `prebuild`.
+2. **Both project hooks live in `Work/Claude/.claude/settings.json`**, the PARENT folder. A
+   settings file inside this repo never loads, and fails silently.
+3. **The media manifest REBUILDS from a disk scan.** Never regenerate it where media is absent.
+   CI has `SKIP_REBUILD_MANIFESTS=1` and a `git diff --exit-code` belt.
 
-R2 IS LIVE AND EMPTY: bucket `chandparaaa-media`, credentials in a gitignored `.env.local`,
-connection verified read-only, 0 objects. Phase C — syncing media to it — is **not built**.
-Two things block it: no public URL yet (nameservers are still at GoDaddy, so an R2 custom
-domain cannot activate; r2.dev would work today), and `verify-referenced.mjs` is a disabled
-stub because the pack's version text-scans `dist/`, which now contains zero literal media
-URLs and would report a pass having checked nothing.
+KNOWN LIMIT: `r2.dev` is Cloudflare's development-grade endpoint and is rate-limited. No
+throttling seen at 20 rapid requests, but a traffic spike is untested and there is now no
+fallback. The fix is a custom domain, which needs the DNS zone moved to Cloudflare —
+nameservers are at GoDaddy and the apex serves the live site from GitHub Pages, so that is a
+deliberate job with real blast radius, not a side effect.
 
-WAITING ON ANSH: (1) eyeball the wordmark on the live site; (2) Vimeo IDs, or a decision to
-self-host the films; (3) the Voice section of `~/.claude/RULES.md` and the "unknown" block in
-`memory/preferences.md`; (4) confirm `/Volumes/T7/` is a real backup of `Website Master/`.
+NOT DONE: `media:verify` is not wired into `ship.sh`. It is the obvious next guard now that
+there is no fallback, but adding it was not bundled into this deploy.
+
+WAITING ON ANSH: (1) eyeball the glitch wordmark on the live site — I could never verify it
+animates, only that it is opacity-only and deployed; (2) the Voice section of
+`~/.claude/RULES.md` and the "unknown" block in `memory/preferences.md`; (3) confirm
+`/Volumes/T7/` is a real backup of `Website Master/`.
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-01 — media moved to Cloudflare R2** — commit `2f4c0e3`.
+273 objects uploaded (45s, 0 failed), `public/projects/` untracked and gitignored, site
+pointed at r2.dev via `.env.production`. Deploy artifact 121 MB -> 12 MB with byte-identical
+markup. Verified live: media 404s on the site origin and 200s from R2, which is the proof the
+smaller artifact actually deployed. Also replaced the pack's dist-scanning verifier, which
+would have reported a pass having checked nothing — `dist` contains zero literal media URLs
+because they are assembled at runtime. What now inherits the fix: the repo stops growing, and
+adding media is sync + verify rather than a commit.
 
 **2026-09-01 — glitch wordmark + manifest layer + memory retrofit** — commit `4395000`.
 Three commits shipped together, because `ship.sh` merges `dev`->`main` wholesale and all of
