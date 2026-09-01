@@ -5,3 +5,15 @@ dist-ssr
 .DS_Store
 .vite
 tools/render-studio
+
+# Object-storage credentials. Covered by *.local above, but named explicitly so
+# narrowing that glob can never silently expose keys. A key that reaches a public
+# repo is compromised even after removal — git keeps history and forks keep copies.
+# If it ever happens: ROTATE the key, do not just delete the line.
+.env.local
+.env.*.local
+
+# Verbatim prompt log, written by the log-prompt hook. This repo is PUBLIC, and
+# this file accumulates everything typed to the assistant. The rest of memory/ IS
+# tracked — decisions and lessons benefit from history; a transcript does not.
+memory/user-prompts.md
