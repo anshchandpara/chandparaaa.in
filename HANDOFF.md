@@ -14,11 +14,15 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-01. Media is on Cloudflare R2 and the repo no longer carries it. Live at `2f4c0e3`.
-Deploy artifact 121 MB -> 12 MB. Working tree clean, `dev` level with `main`.**
+**2026-09-01. Live at `2c7c61c`. Media on R2, and the first two films are on the site.**
 
-SITE STATE: 27 `work` entries (22 published, 5 draft), 5 `lab` (1 published, 4 draft). Ansh is
-adding Vimeo IDs himself — do not chase those.
+SITE STATE: 27 `work` entries (22 published, 5 draft), 5 `lab` (1 published, 4 draft).
+**2 of 32 now carry a Vimeo ID** — `lootere` (1214204485) and `equals` (1206749045). Ansh
+supplies the rest as he has them; do not chase.
+
+VIMEO GOTCHA: `player.vimeo.com` returns **401 to curl** regardless of User-Agent or Referer,
+with a body reading "Access to this content has been restricted". That is anti-bot, not a
+privacy setting — the same URL loads fine in a browser. Verify embeds in the browser pane.
 
 MEDIA NOW LIVES IN R2. Bucket `chandparaaa-media`, served from
 `https://pub-67342d07ad21409f99f55162c3acdbef.r2.dev`, wired via `VITE_MEDIA_BASE_URL` in a
@@ -44,8 +48,14 @@ fallback. The fix is a custom domain, which needs the DNS zone moved to Cloudfla
 nameservers are at GoDaddy and the apex serves the live site from GitHub Pages, so that is a
 deliberate job with real blast radius, not a side effect.
 
+LOCAL MEDIA CAN VANISH ON A SHIP — and did once, on 2026-09-01. `ship.sh` checks out `main`,
+ff-merges, checks out `dev`; if `main` still tracked `public/projects/` at checkout time, git
+deletes all 273 files. `.gitignore` does not protect files git was already tracking. Now that
+both branches have it untracked this should not recur — it survived the next ship intact — but
+the recovery is `npm run media:pull`, which is also what a fresh clone needs.
+
 NOT DONE: `media:verify` is not wired into `ship.sh`. It is the obvious next guard now that
-there is no fallback, but adding it was not bundled into this deploy.
+there is no local fallback.
 
 WAITING ON ANSH: (1) eyeball the glitch wordmark on the live site — I could never verify it
 animates, only that it is opacity-only and deployed; (2) the Voice section of
@@ -54,6 +64,13 @@ animates, only that it is opacity-only and deployed; (2) the Voice section of
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-01 — Lootere and Equals lead with their films** — commit `2c7c61c`.
+First two Vimeo IDs of 32. Also added `npm run media:pull`, the missing counterpart to
+`media:sync`, after the previous ship deleted all 273 local media files: `ship.sh` switches
+branches, and `main` still tracked them at checkout time. Nothing was lost (R2 held 273/273,
+manifest intact, and the manifest builder refused to regenerate from the empty tree). Verified
+live: both IDs in the deployed bundle, 7/7 gallery images loading from R2, 0 broken.
 
 **2026-09-01 — media moved to Cloudflare R2** — commit `2f4c0e3`.
 273 objects uploaded (45s, 0 failed), `public/projects/` untracked and gitignored, site
