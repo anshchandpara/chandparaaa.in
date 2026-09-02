@@ -16,7 +16,8 @@
     "media:validate": "node tools/pipeline/build-media-manifest.mjs --validate",
     "prebuild": "npm run media:validate",
     "media:sync": "node --env-file=.env.local tools/pipeline/sync-to-store.mjs public/projects",
-    "media:verify": "node --env-file=.env.local tools/pipeline/verify-referenced.mjs"
+    "media:verify": "node --env-file=.env.local tools/pipeline/verify-referenced.mjs",
+    "media:pull": "node --env-file=.env.local tools/pipeline/pull-from-store.mjs"
   },
   "dependencies": {
     "gsap": "^3.12.5",

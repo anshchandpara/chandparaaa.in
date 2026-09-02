@@ -5,6 +5,19 @@ opinion; cite what proved it.
 
 ---
 
+**2026-09-01 · Untracking a directory + a branch-switching ship script DELETES the local
+files.** `public/projects/` was untracked and gitignored, then `npm run ship` ran. ship.sh does
+`git checkout main` -> ff-merge -> `git checkout dev`; main still tracked the media at checkout
+time, so advancing past the deletion commit made git remove all 273 files from the working
+tree. **.gitignore does not protect files git was already tracking.**
+*Evidence:* `public/projects` absent from disk immediately after a successful ship, while R2
+still held 273/273. Nothing was lost — but local dev serves 404s until restored, because dev
+deliberately reads from disk rather than the CDN.
+*What now inherits the fix:* `npm run media:pull` restores from the bucket, and is also what a
+fresh clone needs. The manifest builder's refuse-on-missing-tree guard did its job here — it
+declined to regenerate from the empty directory rather than writing an empty manifest and
+wiping every entry. → `docs/media-pipeline.md`
+
 **2026-08-09 · A guard in the wrong layer is not a guard: a runtime `throw` cannot fail a
 build.** `src/lib/mediaManifest.js` throws on an empty manifest, which felt like enough.
 Sabotage-testing it — emptying the manifest and building — produced **exit 0**. Vite bundles
