@@ -8,6 +8,21 @@ decision — add it, mark the old one superseded, and never silently delete.
 
 ---
 
+**2026-09-01 · `/Volumes/T7` holds the masters. Confirmed by Ansh — he backed them up there.**
+The drive is kept detached, so it is usually not mounted. **An unmounted T7 is not a missing
+backup; do not re-raise this as an open risk.**
+
+Worth checking only when the drive is next connected, and the question is *currency*, not
+existence — a backup reflects the day it was made, and `Live Projects 2026` (188 GB) is the
+folder most likely to have moved on since. A read-only size and file-count comparison settles
+it in a minute.
+
+Context for anyone reading later: the T7 is the *second* copy, which is why it matters.
+iCloud Drive is not active on this Mac — the masters sit in the local-only
+`iCloud Drive (Archive)` folder macOS leaves behind after sign-out — and `tmutil` reports no
+Time Machine destination. R2 does not count here: it holds encoded web deliverables, not
+masters (rule R3).
+
 **2026-08-09 · Project media lives in `public/projects/`, and the build enumerates it from a
 committed manifest — never a disk scan.** Four `import.meta.glob` calls were replaced by
 `src/data/media-manifest.json` + `src/lib/mediaManifest.js`. The build must work on a machine
