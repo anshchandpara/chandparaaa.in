@@ -59,8 +59,9 @@ there is no local fallback.
 
 WAITING ON ANSH: (1) eyeball the glitch wordmark on the live site — I could never verify it
 animates, only that it is opacity-only and deployed; (2) the Voice section of
-`~/.claude/RULES.md` and the "unknown" block in `memory/preferences.md`; (3) confirm
-`/Volumes/T7/` is a real backup of `Website Master/`.
+`~/.claude/RULES.md` and the "unknown" block in `memory/preferences.md`; (3) **connect the T7 and let me verify the masters are actually on it** — it is
+the designated backup but currently unmounted and unverified, and there is no second copy
+anywhere (no iCloud sync, no Time Machine destination). ~207 GB single-copy.
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
