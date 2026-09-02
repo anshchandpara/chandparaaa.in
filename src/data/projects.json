@@ -239,7 +239,8 @@
           "label": "Concept",
           "text": "Pirates as hunter-gatherers: cargo ships stalked like prey across open water. Eat or be eaten."
         }
-      ]
+      ],
+      "videoAspect": 1.775
     },
     {
       "slug": "hunter",
@@ -321,7 +322,8 @@
           "label": "Story",
           "text": "A traveller finds songwriting in the landscape, then converges with the community that has been singing it all along."
         }
-      ]
+      ],
+      "videoAspect": 2.3933
     },
     {
       "slug": "raat-khatam",

@@ -24,6 +24,10 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       image: p.image || '',
       gallery: p.gallery || [],
       video: p.video || '', // Vimeo ID — plays the title sequence as the hero
+      // True aspect of that film, from `npm run media:video-meta`. The hero is a
+      // fixed box and the films are not one shape (1.775 vs 2.393 scope), so the
+      // iframe is sized from this to COVER rather than letterbox. 16/9 fallback.
+      videoAspect: Number(p.videoAspect) > 0 ? Number(p.videoAspect) : 16 / 9,
       youtube: p.youtube || '', // full YouTube URL — "Watch the film" link
       // Text breaks between gallery frames: [{ after: <n frames>, label?, text }]
       notes: (p.notes || [])

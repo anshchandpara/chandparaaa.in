@@ -158,18 +158,39 @@
 /* Hero media */
 .pd__hero {
   position: relative;
-  aspect-ratio: 16 / 9;
+  /* A film hero takes the film's own aspect (set inline from projects.json), so
+     the frame fits exactly — no pillarbox, no letterbox, nothing cropped. Stills
+     and loops keep 16/9. 88vh still caps the tall case; when it bites, the rule
+     below makes the iframe cover rather than leave bars. */
+  aspect-ratio: var(--video-aspect, 16 / 9);
   overflow: hidden;
   max-height: 88vh;
   margin-bottom: clamp(60px, 9vh, 110px);
 }
 /* (kept for clarity — every hero is full-bleed now) */
 .pd__hero--bleed { max-height: 88vh; }
+/* The Vimeo iframe COVERS the hero instead of fitting inside it, matching how
+   .pd__hero-img already behaves. Necessary because the hero is a fixed box —
+   aspect-ratio 16/9 clamped by max-height:88vh, so ~2.02:1 on a laptop — while
+   the films are not one shape (Lootere 1.775, Equals 2.393 scope). Fitting one
+   pillarboxes it and letterboxes the other.
+
+   Size the iframe to the FILM's aspect, at least as large as the hero in both
+   directions, then centre it and let .pd__hero's overflow:hidden crop the
+   excess. --video-aspect comes from projects.json via `npm run media:video-meta`. */
 .pd__hero-video {
+  /* NB: do NOT declare --video-aspect here. A declaration on this element beats
+     the value inherited from .pd__hero, so the iframe would always use the
+     fallback and scope films would crop needlessly. Fallback goes in var(). */
+  --hero-h: min(calc(100vw / var(--video-aspect, 1.7778)), 88vh);
+  --ih: max(var(--hero-h), calc(100vw / var(--video-aspect, 1.7778)));
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: var(--ih);
+  width: calc(var(--ih) * var(--video-aspect, 1.7778));
+  max-width: none;
   border: 0;
   display: block;
 }

@@ -244,9 +244,16 @@ export default function ProjectPage({ slug }) {
         <div
           ref={heroMediaRef}
           className={`pd__hero${heroVideo && !item.video ? ' pd__hero--bleed' : ''}`}
-          style={{ background: accent }}
+          style={{
+            background: accent,
+            // A film hero takes the FILM's shape, so it fits exactly with no bars
+            // and no crop. Only when 88vh clamps it does the iframe have to cover.
+            ...(item.video ? { '--video-aspect': item.videoAspect } : null),
+          }}
         >
           {item.video ? (
+            /* --video-aspect drives the cover sizing in ProjectPage.css. Without the
+               film's own aspect the iframe can only letterbox or pillarbox in the hero. */
             <iframe
               className="pd__hero-video"
               title={`${item.title} — title sequence`}
