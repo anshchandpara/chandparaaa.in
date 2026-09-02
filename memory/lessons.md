@@ -5,6 +5,16 @@ opinion; cite what proved it.
 
 ---
 
+**2026-09-01 · Vimeo player URLs return 401 to curl no matter what, so never conclude an
+embed is broken from the command line.** `player.vimeo.com/video/<id>` returned 401 with no
+Referer, with `Referer: chandparaaa.in`, and with a full Safari User-Agent — while a public
+control video returned 200. The body says "We couldn't verify the security of your
+connection… Access to this content has been restricted", which reads exactly like a privacy
+or domain restriction.
+*Evidence:* the same URL loads perfectly in a real browser — full player, correct title,
+00:47. It is Vimeo's anti-bot layer, not the video's settings. Verify embeds in the browser
+pane; a 401 from curl is not a finding. → incident A4
+
 **2026-09-01 · Untracking a directory + a branch-switching ship script DELETES the local
 files.** `public/projects/` was untracked and gitignored, then `npm run ship` ran. ship.sh does
 `git checkout main` -> ff-merge -> `git checkout dev`; main still tracked the media at checkout
