@@ -92,26 +92,8 @@
 .pd__title-line {
   display: inline-block;
   will-change: transform;
-  /* Glass distortion is always attached — identity warp until hover
-     (JS animates #pd-disp scale, mirroring the hero wordmark). */
-  filter: url(#pd-glass);
-  transition: text-shadow 0.3s var(--ease);
-}
-/* Chromatic aberration on hover: red/cyan fringes, offsets scale with the
-   type size. Toggled via .is-ab (mouse only; touch never gets it). */
-.pd__title.is-ab .pd__title-line {
-  text-shadow:
-    0.035em 0 0 rgba(255, 45, 85, 0.5),
-    -0.035em 0 0 rgba(0, 205, 255, 0.45);
 }
 
-/* SVG filter holder — kept out of flow */
-.pd__defs {
-  position: absolute;
-  width: 0;
-  height: 0;
-  overflow: hidden;
-}
 
 .pd__subtitle {
   font-size: clamp(17px, 1.8vw, 24px);

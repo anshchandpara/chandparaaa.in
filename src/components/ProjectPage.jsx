@@ -25,7 +25,6 @@ export default function ProjectPage({ slug }) {
   const { item, next, accent, heroImg, galleryImgs } = getProject(slug);
   const revealRef = useReveal([slug]);
   const titleRef = useRef(null);
-  const titleBoxRef = useRef(null);
   const heroImgRef = useRef(null);
   const heroMediaRef = useRef(null);
   const nextRef = useMagnetic();
@@ -110,56 +109,6 @@ export default function ProjectPage({ slug }) {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  // Title hover: chromatic aberration (CSS class) + glassy distortion (SVG
-  // displacement, same language as the hero wordmark). Skipped on touch;
-  // reduced motion keeps the static aberration but no warp.
-  useEffect(() => {
-    const el = titleBoxRef.current;
-    const touch =
-      window.matchMedia && window.matchMedia('(hover: none)').matches;
-    if (!el || touch) return undefined;
-
-    const disp = document.getElementById('pd-disp');
-    const turb = document.getElementById('pd-turb');
-    let wobble;
-
-    const enter = () => {
-      el.classList.add('is-ab');
-      if (reduced || !disp || !turb) return;
-      gsap.killTweensOf(disp);
-      gsap.to(disp, { attr: { scale: 5 }, duration: 0.45, ease: 'none' });
-      gsap.set(turb, { attr: { baseFrequency: 0.008 } });
-      wobble?.kill();
-      wobble = gsap.to(turb, {
-        attr: { baseFrequency: 0.013 },
-        duration: 1.8,
-        ease: 'none',
-        repeat: -1,
-        yoyo: true,
-      });
-    };
-    const leave = () => {
-      el.classList.remove('is-ab');
-      if (reduced || !disp || !turb) return;
-      wobble?.kill();
-      wobble = null;
-      gsap.killTweensOf(disp);
-      gsap.to(disp, {
-        attr: { scale: 0 },
-        duration: 0.35,
-        ease: 'none',
-        onComplete: () => gsap.set(turb, { attr: { baseFrequency: 0.0001 } }),
-      });
-    };
-
-    el.addEventListener('mouseenter', enter);
-    el.addEventListener('mouseleave', leave);
-    return () => {
-      el.removeEventListener('mouseenter', enter);
-      el.removeEventListener('mouseleave', leave);
-      wobble?.kill();
-    };
-  }, [slug, reduced]);
 
   // Category is the accent eyebrow above the title now, so listing it again here
   // put the same words twice in one block.
@@ -182,34 +131,6 @@ export default function ProjectPage({ slug }) {
 
       {/* SVG filter powering the glassy distortion on the title (identity
           warp until hover — same pattern as the hero wordmark). */}
-      <svg className="pd__defs" aria-hidden="true" width="0" height="0">
-        <defs>
-          <filter
-            id="pd-glass"
-            x="-20%"
-            y="-45%"
-            width="140%"
-            height="190%"
-            colorInterpolationFilters="sRGB"
-          >
-            <feTurbulence
-              id="pd-turb"
-              type="fractalNoise"
-              baseFrequency="0.0001"
-              numOctaves="2"
-              result="noise"
-            />
-            <feDisplacementMap
-              id="pd-disp"
-              in="SourceGraphic"
-              in2="noise"
-              scale="0"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
-        </defs>
-      </svg>
 
       <main ref={revealRef} className="pd" data-screen-label="Project detail">
         <div
@@ -274,7 +195,7 @@ export default function ProjectPage({ slug }) {
         <div className="pd__id" data-rv>
           <div className="pd__id-main">
             <p className="eyebrow pd__id-eyebrow">{item.category}</p>
-            <h1 ref={titleBoxRef} className="pd__title" data-cursor>
+            <h1 className="pd__title" data-cursor>
               <span ref={titleRef} className="pd__title-line">{item.title}</span>
             </h1>
             {item.subtitle && <p className="pd__subtitle">{item.subtitle}</p>}
