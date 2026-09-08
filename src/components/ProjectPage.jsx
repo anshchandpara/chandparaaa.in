@@ -161,12 +161,13 @@ export default function ProjectPage({ slug }) {
     };
   }, [slug, reduced]);
 
+  // Category is the accent eyebrow above the title now, so listing it again here
+  // put the same words twice in one block.
   const meta = [
     ['Client', item.client],
     ['Year', item.year],
     ['Role', item.role],
     ['Platform', item.platform],
-    ['Category', item.category],
   ];
 
   return (
@@ -211,57 +212,18 @@ export default function ProjectPage({ slug }) {
       </svg>
 
       <main ref={revealRef} className="pd" data-screen-label="Project detail">
-        {/* Letterbox backdrop behind the header — the project's own key frame,
-            tilt-shifted (sharp band, blurred above/below) and veiled so the
-            title stays legible. Skipped when a project has no imagery. */}
-        {backdropImg && (
-          <div className="pd__backdrop" aria-hidden="true">
-            <img className="pd__backdrop-blur" src={backdropImg} alt="" />
-            <img className="pd__backdrop-sharp" src={backdropImg} alt="" />
-            <div className="pd__backdrop-veil" />
-          </div>
-        )}
-
-        <p className="eyebrow" data-rv style={{ marginBottom: 20 }}>
-          {item.num} — {item.category}
-        </p>
-
-        <h1 ref={titleBoxRef} className="pd__title" data-cursor>
-          <span ref={titleRef} className="pd__title-line">{item.title}</span>
-        </h1>
-
-        {item.subtitle && <p className="pd__subtitle" data-rv>{item.subtitle}</p>}
-
-        <dl className="pd__meta" data-rv>
-          {meta.map(([k, v]) => (
-            <div key={k}>
-              <dt>{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
-
         <div
           ref={heroMediaRef}
-          className={`pd__hero${heroVideo && !item.video ? ' pd__hero--bleed' : ''}`}
-          style={{
-            background: accent,
-            // A film hero takes the FILM's shape, so it fits exactly with no bars
-            // and no crop. Only when 88vh clamps it does the iframe have to cover.
-            ...(item.video ? { '--video-aspect': item.videoAspect } : null),
-          }}
+          className="pd__hero"
         >
-          {item.video ? (
-            /* --video-aspect drives the cover sizing in ProjectPage.css. Without the
-               film's own aspect the iframe can only letterbox or pillarbox in the hero. */
-            <iframe
-              className="pd__hero-video"
-              title={`${item.title} — title sequence`}
-              src={`https://player.vimeo.com/video/${item.video}?title=0&byline=0&portrait=0&dnt=1&color=d98b2b`}
-              allow="autoplay; fullscreen; picture-in-picture"
-              loading="lazy"
-            />
-          ) : heroVideo ? (
+          {/* A STILL leads, never the film.
+
+              These are title sequences: the film carries its own designed title,
+              so putting the project name over it — or making it the hero at all —
+              sets our typography against the work's. The film gets its own inset
+              section below, where the player chrome reads as a player and the
+              frame is unambiguously the thing being shown. */}
+          {heroVideo ? (
             <video
               ref={heroImgRef}
               className="pd__hero-img pd__hero-loop"
@@ -283,17 +245,72 @@ export default function ProjectPage({ slug }) {
               onClick={() => setLbIndex(0)}
             />
           ) : (
-            <>
-              <ProjectHeroCanvas color={accent} />
-              <div className="pd__hero-title">{item.title}</div>
-            </>
+            <ProjectHeroCanvas color={accent} />
           )}
         </div>
 
-        <div className="pd__brief" data-rv>
-          <p className="eyebrow">Brief</p>
-          <p className="pd__desc">{item.desc || 'Project notes coming soon.'}</p>
+        {/* Letterbox backdrop. Its job was to give the header something to sit on
+            at the top of the page. The hero now opens the page and the header sits
+            below the fold on plain ground, so this only renders for a project with
+            NO hero media — where there is still a bare header to carry. */}
+        {backdropImg && !item.video && !heroVideo && !heroImg && (
+          <div className="pd__backdrop" aria-hidden="true">
+            <img className="pd__backdrop-blur" src={backdropImg} alt="" />
+            <img className="pd__backdrop-sharp" src={backdropImg} alt="" />
+            <div className="pd__backdrop-veil" />
+          </div>
+        )}
+
+        {/* The eyebrow and title now live over the hero. Repeating them here put
+            the same words on screen twice, one directly under the other. What
+            belongs below the fold is the subtitle and the metadata.
+
+            The h1 stays — as a visually-hidden heading, so the page keeps one
+            real document heading for assistive tech and search, which the
+            overlaid div is not. */}
+        {/* Identity. Two columns: who and what on the left, the story on the
+            right. Replaces a full-width dl followed by a separate brief block —
+            the same facts, read in one pass instead of two. */}
+        <div className="pd__id" data-rv>
+          <div className="pd__id-main">
+            <p className="eyebrow pd__id-eyebrow">{item.category}</p>
+            <h1 ref={titleBoxRef} className="pd__title" data-cursor>
+              <span ref={titleRef} className="pd__title-line">{item.title}</span>
+            </h1>
+            {item.subtitle && <p className="pd__subtitle">{item.subtitle}</p>}
+            <dl className="pd__meta">
+              {meta.map(([k, v]) => (
+                <div key={k}>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div className="pd__id-desc">
+            <p className="pd__desc">{item.desc || 'Project notes coming soon.'}</p>
+          </div>
         </div>
+
+        {/* The film, inset. Not full-bleed and not the hero: a contained player
+            reads as "press play on the work" rather than as page furniture. */}
+        {item.video && (
+          <div className="pd__film" data-rv>
+            <p className="eyebrow pd__film-label">Title sequence</p>
+            <div
+              className="pd__film-frame"
+              style={{ '--video-aspect': item.videoAspect }}
+            >
+              <iframe
+                className="pd__film-video"
+                title={`${item.title} — title sequence`}
+                src={`https://player.vimeo.com/video/${item.video}?title=0&byline=0&portrait=0&dnt=1&color=d98b2b`}
+                allow="autoplay; fullscreen; picture-in-picture"
+                loading="lazy"
+              />
+            </div>
+          </div>
+        )}
 
         {item.youtube && (
           <div className="pd__watch" data-rv>
@@ -411,13 +428,13 @@ export default function ProjectPage({ slug }) {
         {item.credits.length > 0 && (
           <div className="pd__credits" data-rv>
             <p className="eyebrow pd__credits-label">Credits</p>
-            <ul className="pd__credit-list">
+            <dl className="pd__credit-list">
               {item.credits.map((c) => {
                 const { role, names } = parseCredit(c);
                 return (
-                  <li className="pd__credit" key={c}>
-                    {role && <span className="pd__credit-role">{role}</span>}
-                    <span className="pd__credit-people">
+                  <Fragment key={c}>
+                    <dt className="pd__credit-role">{role || ''}</dt>
+                    <dd className="pd__credit-people">
                       {names.map((p, i) => {
                         const cls = `pd__name${p.self ? ' is-self' : ''}`;
                         const node = p.url ? (
@@ -440,11 +457,11 @@ export default function ProjectPage({ slug }) {
                           </Fragment>
                         );
                       })}
-                    </span>
-                  </li>
+                    </dd>
+                  </Fragment>
                 );
               })}
-            </ul>
+            </dl>
           </div>
         )}
 

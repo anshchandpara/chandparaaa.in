@@ -155,19 +155,32 @@
   border-radius: 0;
 }
 
-/* Hero media */
+/* Hero media — the opening screen.
+
+   The SECTION is full-screen; the MEDIA is not. Filling a 900px viewport with a
+   2.393 scope film would need 2160px of width and crop a third of the frame, so
+   the film sits at its true aspect, as large as fits, against --bg. A 16:9 film
+   fills ~90% of the screen; a scope film leaves black above and below.
+
+   That black is cinema letterboxing, not the accent-orange pillar bars that were
+   removed earlier — those came from a fixed 16/9 box mismatched to the film. */
 .pd__hero {
   position: relative;
-  /* A film hero takes the film's own aspect (set inline from projects.json), so
-     the frame fits exactly — no pillarbox, no letterbox, nothing cropped. Stills
-     and loops keep 16/9. 88vh still caps the tall case; when it bites, the rule
-     below makes the iframe cover rather than leave bars. */
-  aspect-ratio: var(--video-aspect, 16 / 9);
+  /* Escape .pd's 130px nav clearance so the frame starts at the very top. */
+  margin-top: -130px;
+  /* A band, not a full screen. Full-screen forced a choice between cropping the
+     frame and filling it with black; ~58vh shows the whole frame AND lets the
+     title block below start on the first screen, so the page announces what it
+     is without a scroll. */
+  height: 58vh;
+  min-height: 380px;
+  max-height: 720px;
+  background: var(--bg);
   overflow: hidden;
-  max-height: 88vh;
-  margin-bottom: clamp(60px, 9vh, 110px);
+  margin-bottom: clamp(48px, 7vh, 88px);
 }
-/* (kept for clarity — every hero is full-bleed now) */
+
+
 .pd__hero--bleed { max-height: 88vh; }
 /* The Vimeo iframe COVERS the hero instead of fitting inside it, matching how
    .pd__hero-img already behaves. Necessary because the hero is a fixed box —
@@ -179,29 +192,27 @@
    directions, then centre it and let .pd__hero's overflow:hidden crop the
    excess. --video-aspect comes from projects.json via `npm run media:video-meta`. */
 .pd__hero-video {
-  /* NB: do NOT declare --video-aspect here. A declaration on this element beats
-     the value inherited from .pd__hero, so the iframe would always use the
-     fallback and scope films would crop needlessly. Fallback goes in var(). */
-  --hero-h: min(calc(100vw / var(--video-aspect, 1.7778)), 88vh);
-  --ih: max(var(--hero-h), calc(100vw / var(--video-aspect, 1.7778)));
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: var(--ih);
-  width: calc(var(--ih) * var(--video-aspect, 1.7778));
-  max-width: none;
+  /* Fallback lives in var(), never as a declaration here — a declaration on this
+     element beats the value inherited from .pd__hero, which silently forced every
+     film to 16/9. */
+  aspect-ratio: var(--video-aspect, 1.7778);
+  width: min(100%, calc(100svh * var(--video-aspect, 1.7778)));
+  max-width: 100%;
+  max-height: 100%;
   border: 0;
   display: block;
 }
+
 .pd__hero-img {
   position: absolute;
-  inset: -6% 0;
+  inset: 0;
   width: 100%;
-  height: 112%;
+  height: 100%;
   object-fit: cover;
   will-change: transform;
 }
+
+
 .pd-hero__gl {
   position: absolute;
   inset: 0;
@@ -209,19 +220,81 @@
   height: 100%;
   display: block;
 }
-.pd__hero-title {
+/* Scrim. Values proven on the home hero (Hero.css:47): a light top wash so the
+   fixed nav stays readable, clear through the middle so the frame is unobscured,
+   heavy at the bottom to carry the title. mix-blend-mode was tried on the title
+   itself and is unreliable across 32 different films. */
+.pd__hero-scrim {
   position: absolute;
-  left: 22px;
-  bottom: 18px;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 0.45) 0%,
+    transparent 34%,
+    rgba(10, 10, 10, 0.92) 100%
+  );
+}
+
+.pd__hero-over {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  bottom: clamp(28px, 6vh, 64px);
   z-index: 2;
+  pointer-events: none;
+}
+
+.pd__hero-eyebrow {
+  margin: 0 0 12px;
+}
+
+.pd__hero-title {
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: clamp(28px, 4vw, 56px);
+  font-size: clamp(34px, 7vw, 104px);
+  line-height: 0.94;
   text-transform: uppercase;
   letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.92);
-  mix-blend-mode: difference;
+  color: var(--fg);
 }
+
+/* Fold cue — a full-screen opening needs to say there is more below. */
+.pd__hero-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 2;
+  width: 1px;
+  height: 34px;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, transparent, var(--fg-3));
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pd__hero-cue { animation: pd-cue 2.4s var(--ease) infinite; }
+  @keyframes pd-cue {
+    0%, 100% { transform: translateX(-50%) scaleY(0.55); opacity: 0.35; }
+    50%      { transform: translateX(-50%) scaleY(1);    opacity: 0.8; }
+  }
+}
+
+/* PORTRAIT: a full screen of mostly black is not cinematic. At 375x812 a 16:9
+   frame contained in 100svh leaves ~300px of black above AND below, so in
+   portrait the hero takes the media's natural height at full width instead. */
+@media (orientation: portrait) {
+  .pd__hero {
+    height: auto;
+    aspect-ratio: var(--video-aspect, 16 / 9);
+    max-height: 100svh;
+  }
+  .pd__hero-video { width: 100%; height: 100%; }
+  .pd__hero-img { width: 100%; height: 100%; object-fit: cover; }
+}
+
 
 /* Brief */
 .pd__brief {
@@ -405,15 +478,6 @@
   padding: 0;
 }
 
-.pd__credit {
-  display: grid;
-  grid-template-columns: minmax(120px, 200px) 1fr;
-  gap: 20px 28px;
-  align-items: baseline;
-  padding: 16px 0;
-  border-top: 1px solid var(--line);
-}
-.pd__credit:last-child { border-bottom: 1px solid var(--line); }
 
 .pd__credit-role {
   font-size: 11px;
@@ -458,8 +522,7 @@ a.pd__name.is-self:hover {
 }
 
 @media (max-width: 620px) {
-  .pd__credit { grid-template-columns: 1fr; gap: 4px; padding: 14px 0; }
-}
+  }
 
 /* Next */
 .pd__next {
@@ -487,4 +550,207 @@ a.pd__name.is-self:hover {
   .pd__credits { grid-template-columns: 1fr; gap: 20px; }
   .pd__gallery,
   .pd__slots { grid-template-columns: 1fr; }
+}
+
+/* The document h1 is kept for assistive tech and search, but the visible title
+   is the overlay on the hero. Not display:none — that would remove it from the
+   accessibility tree along with the page's only real heading. */
+.pd__title--sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Identity: who and what, beside the story ───────────────────────────────
+   Was a full-width dl and then a separate brief block — two passes over the
+   same idea. One row, two columns: facts left, narrative right. */
+.pd__id {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(24px, 5vw, 88px);
+  align-items: start;
+  margin-bottom: clamp(56px, 9vh, 104px);
+}
+.pd__id-eyebrow { color: var(--accent); margin: 0 0 14px; }
+.pd__id .pd__title {
+  /* .pd__title is overflow:hidden for the clip-reveal, with line-height 0.9 — a
+     117px box for a 130px font, which shears the bottom off uppercase glyphs.
+     Pad the box so it clears the glyphs; the margin absorbs it so the rhythm is
+     unchanged. */
+  margin: 0 0 6px;
+  padding-bottom: 0.1em;
+}
+.pd__id .pd__subtitle { margin: 0 0 26px; }
+.pd__id .pd__meta { margin: 0; }
+.pd__id-desc { padding-top: 6px; }
+
+/* ── The film, inset ────────────────────────────────────────────────────────
+   75% of the column, centred. Contained rather than full-bleed so the player
+   chrome reads as a player, and so the film sits apart from the page's own
+   full-bleed imagery instead of competing with it. */
+.pd__film { margin: 0 0 clamp(56px, 9vh, 104px); }
+.pd__film-label { color: var(--accent); margin: 0 0 16px; }
+.pd__film-frame {
+  width: min(100%, 1080px);
+  margin-inline: auto;
+  aspect-ratio: var(--video-aspect, 1.7778);
+  background: #000;
+}
+.pd__film-video { width: 100%; height: 100%; border: 0; display: block; }
+
+@media (max-width: 860px) {
+  .pd__id { grid-template-columns: 1fr; gap: 28px; }
+  .pd__hero { height: 42vh; min-height: 260px; }
+}
+
+/* Four fields squeezed into the left column wrapped "Karma Media and
+   Entertainment" onto three lines. Two columns gives each value room to sit on
+   one or two lines instead. */
+.pd__id .pd__meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 32px;
+  max-width: 420px;
+}
+.pd__id .pd__meta > div { min-width: 0; }
+@media (max-width: 860px) {
+  .pd__id .pd__meta { max-width: none; }
+}
+
+/* ── Credits, tightened ─────────────────────────────────────────────────────
+   Was 8 rows at 62px = 556px, every row fenced by a hairline. The reference
+   fits the same 8 rows in ~216px with no rules at all: the alignment does the
+   work the borders were doing.
+
+   Role left, names RIGHT-aligned, so the names form a clean vertical edge and
+   the eye reads the pairing without a rule between them. Multiple names stack
+   rather than running on with commas — "Karan Vanjari, Ansh Chandpara" reads as
+   one string; stacked, it reads as two people.
+
+   CSS-only: the markup, the people.js linking and the owner highlight are all
+   untouched. */
+
+/* One hairline for the whole block instead of one per row. */
+.pd__credit-list {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.pd__credit-people {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-size: clamp(15px, 1.35vw, 17px);
+  line-height: 1.45;
+}
+
+/* The commas were the separator when names ran inline. Stacked, the line break
+   is the separator, and a trailing comma on each line would be wrong. */
+.pd__credit-sep { display: none; }
+
+.pd__credit-role { padding-top: 3px; }
+
+@media (max-width: 860px) {
+  /* Right-aligning against a 120px role label on a phone puts the two halves at
+     opposite edges with a gulf between. Stack instead. */
+    .pd__credit-people { align-items: flex-start; text-align: left; }
+}
+
+/* ── Credits, composed ──────────────────────────────────────────────────────
+   The grid put a single word — "Credits" — in a ~550px column and ran the list
+   down the other side for 456px. Dead space beside a tall thin list.
+
+   Now: the label is an eyebrow over the top (matching .pd__film-label), and the
+   pairs run in two columns across the full width. Same information, roughly
+   half the height, and the section reads as a composed block rather than a
+   leftover list. */
+.pd__credits {
+  display: block;
+  border-top: 1px solid var(--line);
+  padding-top: clamp(32px, 5vh, 56px);
+}
+.pd__credits-label {
+  color: var(--accent);
+  margin: 0 0 clamp(20px, 3vh, 32px);
+}
+.pd__credit-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(48px, 7vw, 120px);
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* Each pair keeps its own role|name grid, so the right-aligned name edge now
+   forms twice — once per column — instead of once across a half-empty row. */
+
+@media (max-width: 860px) {
+  .pd__credit-list { grid-template-columns: 1fr; column-gap: 0; }
+}
+
+/* ── Credits: ONE grid, four columns ────────────────────────────────────────
+   Two independent columns could not stay aligned. A credit with stacked names
+   (CG Leads -> two people) made its column taller from that row down, so EDITOR
+   stopped sitting level with STORYBOARDS and the hairlines broke across the gap
+   at different heights. 28 credit lines across the site carry multiple names, so
+   this was the normal case, not an edge one.
+
+   One grid fixes it structurally: dt/dd are direct children, so a tall cell sets
+   the row height and its partner aligns to it. Markup is a <dl> because credits
+   ARE name/value pairs — and .pd__meta above already uses that idiom, so this
+   needs no display:contents hack. */
+.pd__credit-list {
+  display: grid;
+  /* Bounded role columns, not `auto`. A 36-character role — "Costume Stylist
+     (Fatima Sana Shaikh)" on mars-beauty-ad — sized an auto column to 320px and
+     starved the names to 69px at 1024px wide. minmax caps the label band and
+     guarantees the names keep the remainder. */
+  grid-template-columns:
+    minmax(88px, 190px) minmax(0, 1fr)
+    minmax(88px, 190px) minmax(0, 1fr);
+  column-gap: clamp(32px, 5vw, 96px);
+  margin: 0;
+  padding: 0;
+}
+
+.pd__credit-role,
+.pd__credit-people {
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+  margin: 0;                       /* dd carries a UA indent otherwise */
+  align-self: stretch;
+}
+
+.pd__credit-role {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  padding-right: 20px;
+  /* Long roles must wrap rather than force the column wide. Rows still align:
+     that is what the single grid guarantees. */
+  hyphens: auto;
+}
+
+.pd__credit-people {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-size: clamp(15px, 1.35vw, 17px);
+  line-height: 1.45;
+  color: var(--fg-2);
+}
+
+@media (max-width: 860px) {
+  /* One pair per row, names left-aligned: against a short role label on a phone,
+     right-alignment throws the two halves to opposite edges. */
+  .pd__credit-list { grid-template-columns: auto minmax(0, 1fr); column-gap: 24px; }
+  .pd__credit-people { align-items: flex-start; text-align: left; }
 }
