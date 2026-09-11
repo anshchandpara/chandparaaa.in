@@ -93,3 +93,17 @@ export function getProject(slug) {
 
   return { item, next, accent, heroImg, galleryImgs };
 }
+
+/**
+ * The lab's front door: its newest published entry, by code.
+ *
+ * Lab mode on Home has no grid — the hero CTA used to link to `#work`, which
+ * does not exist in lab mode. Rather than hard-code a slug, the door goes to
+ * whatever was published most recently, so the next experiment inherits it.
+ * Falls back to the Archive when nothing in the lab is published.
+ */
+export function getLatestLab() {
+  const published = data.lab.filter((x) => !x.draft);
+  if (!published.length) return null;
+  return published.reduce((a, b) => (Number(b.code) > Number(a.code) ? b : a));
+}

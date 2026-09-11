@@ -23,6 +23,17 @@
   --max: 1440px;
   --pad-x: clamp(20px, 4vw, 72px);
 
+  /* Vertical rhythm — THREE steps, deliberately far apart.
+     Measured 2026-09-10, the project page ran 63 / 81 / 81 / 81 / 90 / 90 / 81px
+     between sections: three values within ~10% of each other, which the eye reads
+     as one value. Nothing grouped, so nothing led. These are ~2.3x apart at each
+     step so grouping is legible: tight holds a group together, section separates
+     related blocks, chapter separates movements.
+     Use ONLY these between sections. A one-off clamp puts the flat rhythm back. */
+  --sp-tight: clamp(20px, 3vh, 28px);
+  --sp-section: clamp(44px, 6vh, 64px);
+  --sp-chapter: clamp(88px, 14vh, 150px);
+
   /* Motion — linear everywhere, short durations */
   --ease: linear;
 
@@ -33,6 +44,27 @@
   --fui-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cg fill='none' stroke='white'%3E%3Cpath stroke-opacity='.5' d='M64 0v256M128 0v256M192 0v256M0 64h256M0 128h256M0 192h256'/%3E%3Cpath stroke-opacity='.9' d='M.5 0v256M0 .5h256'/%3E%3Cpath stroke-opacity='1' d='M121 128h14M128 121v14'/%3E%3C/g%3E%3C/svg%3E");
   --fui-tile-accent: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cg fill='none' stroke='%23d98b2b'%3E%3Cpath stroke-opacity='.5' d='M64 0v256M128 0v256M192 0v256M0 64h256M0 128h256M0 192h256'/%3E%3Cpath stroke-opacity='.9' d='M.5 0v256M0 .5h256'/%3E%3Cpath stroke-opacity='1' d='M121 128h14M128 121v14'/%3E%3C/g%3E%3C/svg%3E");
 }
+
+/* Scoped light theme — a white room inside a dark site.
+   A page opts in by adding this class to <body> on mount and removing it on
+   unmount (see components/lab/Reveries.jsx). Everything that reads the tokens
+   follows: the nav and cursor are mix-blend-mode: difference so they invert
+   themselves, and eyebrows / footer / hairlines re-resolve through --fg-* and
+   --line. The FUI grid is white hairlines and would vanish anyway, but hiding
+   it saves the paint. No other page is affected. */
+/* Body only. <html> cannot be reached from here — lib/design.js sets --bg as
+   an inline style on the root element, which outranks any selector — so the
+   page that opts in also sets html's --bg from JS (see Reveries.jsx). */
+body.theme-light {
+  --bg: #ffffff;
+  --bg-2: #f6f5f2;
+  --bg-3: #efede8;
+  --fg: #0a0a0a;
+  --fg-2: #3d3a34;
+  --fg-3: #8a847a;
+  --line: rgba(10, 10, 10, 0.12);
+}
+body.theme-light .fui { display: none; }
 
 * { box-sizing: border-box; }
 

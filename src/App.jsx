@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import Cursor from './components/Cursor';
 import FuiGrid from './components/FuiGrid';
 import Home from './components/Home';
 import AboutPage from './components/AboutPage';
 import ProjectPage from './components/ProjectPage';
+import { LAB_PAGES } from './components/lab/pages';
 import { useRoute, installRouter } from './hooks/useRoute';
 
 export default function App() {
@@ -14,7 +15,17 @@ export default function App() {
 
   let view;
   let key;
-  if (slug) {
+  const LabPage = slug ? LAB_PAGES[slug] : null;
+  if (LabPage) {
+    // A lab entry with its own page. Lazy, so its chunk loads on first visit;
+    // the fallback is null because the page paints its own ground on mount.
+    view = (
+      <Suspense fallback={null}>
+        <LabPage key={slug} slug={slug} />
+      </Suspense>
+    );
+    key = `p:${slug}`;
+  } else if (slug) {
     view = <ProjectPage key={slug} slug={slug} />;
     key = `p:${slug}`;
   } else if (page === 'about') {

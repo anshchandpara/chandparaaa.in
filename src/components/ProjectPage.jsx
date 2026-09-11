@@ -6,6 +6,7 @@ import { parseCredit } from '../lib/people';
 import { CURRENT_LOCATION } from '../lib/location';
 import { useReveal } from '../hooks/useReveal';
 import { useMagnetic } from '../hooks/useMagnetic';
+import { useTitleFit } from '../hooks/useTitleFit';
 import ProjectHeroCanvas from './ProjectHeroCanvas';
 import Lightbox from './Lightbox';
 import Compare from './Compare';
@@ -25,6 +26,7 @@ export default function ProjectPage({ slug }) {
   const { item, next, accent, heroImg, galleryImgs } = getProject(slug);
   const revealRef = useReveal([slug]);
   const titleRef = useRef(null);
+  const titleBoxRef = useRef(null);
   const heroImgRef = useRef(null);
   const heroMediaRef = useRef(null);
   const nextRef = useMagnetic();
@@ -68,6 +70,13 @@ export default function ProjectPage({ slug }) {
     typeof window !== 'undefined' &&
     window.matchMedia &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Size the title to its own length FIRST. Declared before the clip-rise
+  // below because React runs layout effects in declaration order, and the
+  // rise's yPercent resolves against the height this sets. Also the fix for
+  // the crop: the mask clips horizontally as well as vertically, so a word
+  // wider than the column was being cut off mid-letter.
+  useTitleFit(titleBoxRef, [slug]);
 
   // Title rises from a clip mask on load.
   useLayoutEffect(() => {
@@ -195,7 +204,7 @@ export default function ProjectPage({ slug }) {
         <div className="pd__id" data-rv>
           <div className="pd__id-main">
             <p className="eyebrow pd__id-eyebrow">{item.category}</p>
-            <h1 className="pd__title" data-cursor>
+            <h1 ref={titleBoxRef} className="pd__title" data-cursor>
               <span ref={titleRef} className="pd__title-line">{item.title}</span>
             </h1>
             {item.subtitle && <p className="pd__subtitle">{item.subtitle}</p>}

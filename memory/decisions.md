@@ -8,6 +8,15 @@ decision — add it, mark the old one superseded, and never silently delete.
 
 ---
 
+**2026-09-11 · Reveries is a scrolling room with click-to-focus, not direct-manipulation plates.**
+A prototype of the artworks as physical 3D plates the visitor drags, turns and flips was built
+and tried (canvas "Reveries Plates"); Ansh preferred the room already in `src/components/lab/`
+— pointer parallax, scroll walks the camera forward, click brings one piece to centre, the rest
+recede into fog. Direct manipulation is settled as not the direction. If a single idea from the
+plates is ever wanted back, the only cheap one is a flippable back face carrying the piece
+number; everything else would replace the interaction model, which he chose to keep.
+→ owner: `src/components/lab/reveriesScene.js`, `TUNE`
+
 **2026-09-01 · `/Volumes/T7` holds the masters. Confirmed by Ansh — he backed them up there.**
 The drive is kept detached, so it is usually not mounted. **An unmounted T7 is not a missing
 backup; do not re-raise this as an open risk.**

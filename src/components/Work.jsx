@@ -66,10 +66,12 @@ function ProjectCard({ card }) {
             </div>
           </div>
 
-          {/* Caption over the revealed image. */}
+          {/* Caption over the revealed image. The title stays (it is the
+              anchor — the cover has faded out by now), but the second line
+              carries new information rather than repeating metaLine. */}
           <div className="fcard__caption">
             <h3 className="fcard__ctitle">{card.title}</h3>
-            <p className="fcard__cmeta">{card.metaLine}</p>
+            <p className="fcard__cmeta">{card.hoverLine}</p>
           </div>
         </div>
       </a>

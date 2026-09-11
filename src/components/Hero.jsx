@@ -5,6 +5,7 @@ import LocationMap from './LocationMap';
 // Hero background loop — muted, self-hosted in /public. Shared with the Landing
 // gate (lib/heroVideo.js) so both play the same cached file.
 import { HERO_VIDEO, HERO_POSTER } from '../lib/heroVideo';
+import { getLatestLab } from '../lib/projectData';
 // Lab-mode cover — Ansh's own ornamental drawing (replaces a stock photo).
 import LAB_IMG from '../media/lab/lab-cover.jpg';
 import { scrambleLetters, randomGlyph } from '../lib/glitch';
@@ -43,6 +44,11 @@ export default function Hero({ mode = 'work', play = true }) {
 
   const ctaRef = useMagnetic();
   const copy = COPY[mode] ?? COPY.work;
+  // Work mode scrolls to the masonry. Lab mode has no masonry — `#work` was a
+  // dead link there — so its door is the newest published experiment, with
+  // the Archive as the fallback when nothing is published.
+  const latestLab = mode === 'lab' ? getLatestLab() : null;
+  const ctaHref = mode === 'lab' ? (latestLab ? `?p=${latestLab.slug}` : '?page=about#archive') : '#work';
 
   const reduced =
     typeof window !== 'undefined' &&
@@ -374,7 +380,7 @@ export default function Hero({ mode = 'work', play = true }) {
       {/* Subhead + CTA */}
       <div className="hero__foot">
         <p ref={subRef} className="hero__sub">{copy.sub}</p>
-        <a ref={ctaRef} href="#work" className="hero__cta" data-magnetic data-cursor>
+        <a ref={ctaRef} href={ctaHref} className="hero__cta" data-magnetic data-cursor>
           <span>{copy.cta}</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M12 4v16m0 0l-6-6m6 6l6-6" />

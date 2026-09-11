@@ -14,13 +14,26 @@ export function getWorkCards() {
     .map((p) => {
       // Real imagery when available (designated hero first), else shader panel.
       const img = getHero(p.slug, baseName(p.image));
+      const metaLine = [p.category, p.platform || p.client || p.role]
+        .filter(Boolean)
+        .join(' · ');
+
+      // The hover caption used to restate `metaLine` verbatim under a smaller
+      // copy of the same title — so revealing the image told you nothing you
+      // could not already read. It now carries what the cover does NOT: the
+      // credit that actually matters on a portfolio, and when it was made.
+      // Anything already visible on the cover is filtered out rather than
+      // repeated, and an entry too sparse to say something new keeps metaLine.
+      const onCover = new Set([p.category, p.platform || p.client || p.role].filter(Boolean));
+      const hoverLine =
+        [p.role, p.year].filter(Boolean).filter((v) => !onCover.has(v)).join(' · ') || metaLine;
+
       return {
         ...p,
         href: `?p=${p.slug}`,
         accent: getAccent(p.slug),
-        metaLine: [p.category, p.platform || p.client || p.role]
-          .filter(Boolean)
-          .join(' · '),
+        metaLine,
+        hoverLine,
         hasImg: !!img,
         img,
       };

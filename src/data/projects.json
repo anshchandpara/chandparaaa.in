@@ -942,6 +942,18 @@
       "role": "",
       "youtube": "",
       "credits": []
+    },
+    {
+      "slug": "reveries",
+      "code": "006",
+      "title": "Reveries",
+      "kind": "Ink · Series",
+      "year": 2026,
+      "desc": "Sixteen ink drawings from the Reveries series, floating in a white room. Move to look around, scroll to walk through them, click one to bring it forward.",
+      "gallery": [],
+      "image": "",
+      "video": "",
+      "draft": true
     }
   ]
 }

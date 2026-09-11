@@ -14,52 +14,44 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-01. Live at `2c7c61c`. Media on R2, and the first two films are on the site.**
+**2026-09-11. Live at `5953eb5`. A large unshipped body of work sits on `dev`, and one thing
+is blocked on Ansh.**
 
-SITE STATE: 27 `work` entries (22 published, 5 draft), 5 `lab` (1 published, 4 draft).
-**2 of 32 now carry a Vimeo ID** — `lootere` (1214204485) and `equals` (1206749045). Ansh
-supplies the rest as he has them; do not chase.
+BLOCKER — R2 CORS. The new Lab piece (`?p=reveries`, sixteen ink cut-outs floating in a white
+three.js room) loads its textures with WebGL, and WebGL refuses cross-origin images without a
+CORS header. The R2 bucket sends none, and the API token cannot set bucket config
+(`AccessDenied`). **Ansh must add it in the Cloudflare dashboard**: R2 → `chandparaaa-media` →
+Settings → CORS policy →
+`[{"AllowedOrigins":["*"],"AllowedMethods":["GET","HEAD"],"AllowedHeaders":["*"],"MaxAgeSeconds":86400}]`
+(read-only; the objects are already public). Until then the room renders empty on the real
+domain. Verified locally with `VITE_MEDIA_BASE_URL= npm run build` — a verification-only
+build, never to be shipped.
 
-VIMEO GOTCHA: `player.vimeo.com` returns **401 to curl** regardless of User-Agent or Referer,
-with a body reading "Access to this content has been restricted". That is anti-bot, not a
-privacy setting — the same URL loads fine in a browser. Verify embeds in the browser pane.
+UNSHIPPED ON `dev` (all verified, nothing committed): the project-page rhythm scale
+(`--sp-tight/section/chapter`), demoted notes, credits hairlines removed, card hover captions
+carry role · year, 120 lines of dead CSS removed with a computed-style diff as proof,
+`useTitleFit` (fixes MANORATHANGAL rendering as MANORAT — was live on production), and the
+Reveries room: `tools/pipeline/encode-cutouts.mjs` (two-tier alpha WebP, 141 MB → 7.5 MB),
+`src/components/lab/` (registry + page + scene), a scoped `body.theme-light`, lab entry `006`,
+and the lab hero CTA now opens the newest published experiment instead of a dead `#work`.
 
-MEDIA NOW LIVES IN R2. Bucket `chandparaaa-media`, served from
-`https://pub-67342d07ad21409f99f55162c3acdbef.r2.dev`, wired via `VITE_MEDIA_BASE_URL` in a
-committed `.env.production`. `public/projects/` is gitignored; the files remain on disk so
-`npm run dev` works offline and the manifest can be regenerated. Verified live: bundle points
-at R2, media 404s on the site origin (correctly gone from the deploy) and 200s from R2.
+SITE STATE: 27 `work` (22 published), 6 `lab` (2 published). R2 holds **305** objects
+(273 + 32 for reveries), `media:verify` PASS. 2 of 32 entries carry a Vimeo ID.
 
-**RUN `npm run media:verify` BEFORE EVERY SHIP.** There is no local fallback any more — a
-missing object is a broken image on the live site, not a slow one. It is manifest-driven, not
-a dist scan; sabotage-tested (missing -> 1, empty manifest -> 2, no creds -> 2, healthy -> 0).
-After any encode: `npm run media:sync && npm run media:verify`.
+WAITING ON ANSH: (1) the R2 CORS policy above; (2) an Adobe Fonts web project with Obviously
+Variable / Neue Haas Grotesk / Ambroise / Bely — send the kit ID; (3) judge the Reveries room
+(arrangement, drift, fog, focus size — every number is in `TUNE` at the top of
+`reveriesScene.js`) and rewrite its title + desc, which are my first draft; (4) the lab CTA
+still reads "Browse experiments" but now lands on one piece — copy is his call; (5) the title
+playground on the Desktop, if he wants a different size curve than 2 lines / 56–136px.
 
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — the manifest guard is npm's `prebuild`.
-2. **Both project hooks live in `Work/Claude/.claude/settings.json`**, the PARENT folder. A
-   settings file inside this repo never loads, and fails silently.
+2. **Both project hooks live in `Work/Claude/.claude/settings.json`**, the PARENT folder.
 3. **The media manifest REBUILDS from a disk scan.** Never regenerate it where media is absent.
-   CI has `SKIP_REBUILD_MANIFESTS=1` and a `git diff --exit-code` belt.
 
-KNOWN LIMIT: `r2.dev` is Cloudflare's development-grade endpoint and is rate-limited. No
-throttling seen at 20 rapid requests, but a traffic spike is untested and there is now no
-fallback. The fix is a custom domain, which needs the DNS zone moved to Cloudflare —
-nameservers are at GoDaddy and the apex serves the live site from GitHub Pages, so that is a
-deliberate job with real blast radius, not a side effect.
-
-LOCAL MEDIA CAN VANISH ON A SHIP — and did once, on 2026-09-01. `ship.sh` checks out `main`,
-ff-merges, checks out `dev`; if `main` still tracked `public/projects/` at checkout time, git
-deletes all 273 files. `.gitignore` does not protect files git was already tracking. Now that
-both branches have it untracked this should not recur — it survived the next ship intact — but
-the recovery is `npm run media:pull`, which is also what a fresh clone needs.
-
-NOT DONE: `media:verify` is not wired into `ship.sh`. It is the obvious next guard now that
-there is no local fallback.
-
-WAITING ON ANSH: (1) eyeball the glitch wordmark on the live site — I could never verify it
-animates, only that it is opacity-only and deployed; (2) the Voice section of
-`~/.claude/RULES.md` and the "unknown" block in `memory/preferences.md`; (3) nothing — the T7 masters backup is confirmed and closed.
+KNOWN LIMIT: `r2.dev` is rate-limited with no fallback; a custom domain needs the DNS zone
+moved to Cloudflare (nameservers at GoDaddy, apex on GitHub Pages) — a deliberate job.
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)

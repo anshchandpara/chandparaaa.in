@@ -5,6 +5,52 @@ opinion; cite what proved it.
 
 ---
 
+**2026-09-11 · WebGL textures need CORS; `<img>` tags do not — so a bucket that has served
+every image on the site for weeks can still block the first three.js texture.** The R2 public
+bucket sends no `Access-Control-Allow-Origin`. Browsers happily paint a cross-origin image into
+an `<img>`, but refuse to upload a "tainted" one to a WebGL texture, so `TextureLoader` fails on
+all 16 Reveries pieces with a CORS error while the same URLs work everywhere else.
+*Evidence:* `curl -sI -H "Origin: https://chandparaaa.in" <r2 url>` returns 200 with no
+`access-control-*` header; `GetBucketCors` via the S3 API returns `AccessDenied` — the R2 token
+has object scope, not bucket-config scope, so this cannot be fixed from the pipeline. It is a
+Cloudflare dashboard setting (R2 → bucket → Settings → CORS). For local verification only,
+`VITE_MEDIA_BASE_URL= npm run build` points a production build at `public/` — never ship that
+build. → `src/components/lab/reveriesScene.js`
+
+**2026-09-11 · `applyDesign()` writes `--bg` as an INLINE style on `<html>`, which no stylesheet
+selector can beat.** A scoped light theme via `body.theme-light { --bg: #fff }` made the body
+white but left `<html>` dark, showing as a dark flash on macOS overscroll. `:root:has(body.theme-light)`
+demonstrably matched (`html.matches()` → true) and still lost.
+*Evidence:* `getComputedStyle(html).getPropertyValue('--bg')` stayed `#0a0a0a` with the rule
+present in the built CSS. `lib/design.js` sets root custom properties with `style.setProperty`;
+inline beats everything but `!important`. The page that opts in now sets html's `--bg` from JS
+and restores it on unmount. → `src/components/lab/Reveries.jsx`
+
+**2026-09-10 · You cannot detect text overflow by reading the element's own width —
+a shrink-to-fit box is CLAMPED to its container, so the measurement can never exceed it.**
+`.pd__title` is `overflow: hidden` (the clip mask the title rise animates out of), and that
+mask crops HORIZONTALLY as well as vertically — CSS gives no vertical-only overflow. A single
+word wider than the column therefore got guillotined: `MANORATHANGAL` rendered as `MANORAT`
+at 129.6px in a 569px column, 501px of the word simply gone, live on production.
+*Evidence:* the first fix tested `span.getBoundingClientRect().width > box.clientWidth` and
+never fired — measured box 1123px, reported span width 1123px, actual canvas ink 1149px. The
+span is inline-block inside a BFC, so its used width is capped at the available width and the
+glyphs paint outside it; that is INK overflow, not layout overflow, and `scrollWidth` does not
+reliably see it either. The working test measures the widest WORD at max-content in an
+offscreen twin with `white-space: pre` — words are what cannot break, so they are the real
+constraint. → `src/hooks/useTitleFit.js`
+
+**2026-09-10 · A CSS custom-property fallback belongs in `var()`, never as its own
+declaration — a declaration on the child BEATS the value inherited from the parent.**
+`.pd__hero-video` carried `aspect-ratio: var(--video-aspect, 1.7778)` but an earlier version
+declared `--video-aspect: 1.7778` on that element. Inheritance never got a chance: every film
+silently rendered 16:9, and Equals (2.393 scope) was cropped ~13% a side. It looks like a
+working fallback right up until you check a non-16:9 film.
+*Evidence:* the fix was to delete the declaration and keep the fallback inside `var()`. The
+same pattern is now load-bearing on `.pd__film-frame`, which is why the warning was moved
+there when `.pd__hero-video` was removed as dead code on 2026-09-10.
+→ `docs/design-state.md`, grep "video-aspect"
+
 **2026-09-01 · Vimeo player URLs return 401 to curl no matter what, so never conclude an
 embed is broken from the command line.** `player.vimeo.com/video/<id>` returned 401 with no
 Referer, with `Referer: chandparaaa.in`, and with a full Safari User-Agent — while a public
