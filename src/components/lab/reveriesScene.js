@@ -53,6 +53,14 @@ export const TUNE = {
   leanMax: 14,       // degrees — the lean never exceeds this
   leanDecay: 0.12,   // how fast the lean settles once released
   resetDur: 1.1,
+
+  // Zoom on a focused piece. Wheel and pinch are continuous; buttons, keys
+  // and double-click step. The zoom tier (3072px) loads past zoomTierAt.
+  zoomMax: 4,
+  zoomStep: 1.6,      // per button / key press
+  zoomDouble: 2.5,    // double-click toggles 1 ↔ this
+  zoomWheel: 0.0015,  // zoom factor per wheel pixel
+  zoomTierAt: 1.5,
 };
 
 /**
@@ -92,7 +100,7 @@ const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
  *           onFocus?: (i:number)=>void, onLoad?: (loaded:number,total:number)=>void }} opts
  */
 export function createScene(canvas, items, opts = {}) {
-  const { reducedMotion = false, onHover, onFocus, onLoad, onDisturb } = opts;
+  const { reducedMotion = false, onHover, onFocus, onLoad, onDisturb, onZoom } = opts;
   const travel = travelFor(items.length);
 
   // Throws when WebGL is unavailable — the caller catches and falls back.
@@ -162,6 +170,8 @@ export function createScene(canvas, items, opts = {}) {
       focusing: false,      // true while this piece is driven by a focus/blur tween
       large: null,          // hi-res texture once loaded
       largeLoading: false,
+      zoomTex: null,        // 3072px tier, held only while this piece is focused and zoomed
+      zoomLoading: false,
     };
   });
 
@@ -285,9 +295,12 @@ export function createScene(canvas, items, opts = {}) {
 
   const fwd = new THREE.Vector3();
   const tmpEuler = new THREE.Euler();
+  let zoom = 1; // on the focused piece only; 1 = the fitted size
   function focus(i) {
     if (i < 0 || i >= pieces.length || i === focused) return;
     const wasFocused = focused;
+    if (wasFocused >= 0) dropZoomTexture(pieces[wasFocused]);
+    zoom = 1; onZoom?.(1);
     focused = i;
     setHover(-1);
     onFocus?.(i);
@@ -338,6 +351,8 @@ export function createScene(canvas, items, opts = {}) {
     const p = pieces[focused];
     focused = -1;
     onFocus?.(-1);
+    dropZoomTexture(p);
+    zoom = 1; onZoom?.(1);
     const dur = reducedMotion ? 0 : TUNE.focusDur;
     sendHome(p, dur);
     pieces.forEach((q) => gsap.to(q, { dim: 1, recede: 0, duration: dur, ease: 'none' }));
@@ -376,6 +391,67 @@ export function createScene(canvas, items, opts = {}) {
     }, undefined, () => { p.largeLoading = false; });
   }
 
+  // ---- zoom on the focused piece ------------------------------------------
+  /**
+   * Set the zoom, scaling ABOUT a point on the piece so what is under the
+   * cursor (or between the fingers) stays put. `about` is an NDC vector; with
+   * none, the piece scales about its own centre.
+   */
+  const zoomHit = new THREE.Vector3();
+  const zoomPlane = new THREE.Plane();
+  function setZoom(next, about = null, animate = false) {
+    if (focused < 0) return;
+    const p = pieces[focused];
+    const z = Math.min(TUNE.zoomMax, Math.max(1, next));
+    if (Math.abs(z - zoom) < 1e-4) return;
+    const ratio = z / zoom;
+    zoom = z;
+    gsap.killTweensOf(p.mesh.scale);
+    const s = fitScale(p) * zoom;
+    // Keep the anchor point fixed: move the centre away from it by the ratio.
+    let target = p.mesh.position.clone();
+    if (about) {
+      camera.getWorldDirection(camDir);
+      zoomPlane.setFromNormalAndCoplanarPoint(camDir, p.mesh.position);
+      raycaster.setFromCamera(about, camera);
+      if (raycaster.ray.intersectPlane(zoomPlane, zoomHit)) {
+        target = zoomHit.clone().add(p.mesh.position.clone().sub(zoomHit).multiplyScalar(ratio));
+      }
+    }
+    if (animate && !reducedMotion) {
+      gsap.killTweensOf(p.mesh.position);
+      gsap.to(p.mesh.scale, { x: s, y: s, duration: 0.35, ease: 'power2.out' });
+      gsap.to(p.mesh.position, { x: target.x, y: target.y, z: target.z, duration: 0.35, ease: 'power2.out' });
+    } else {
+      p.mesh.scale.set(s, s, 1);
+      p.mesh.position.copy(target);
+    }
+    onZoom?.(zoom);
+    if (zoom >= TUNE.zoomTierAt) loadZoomTier(p);
+  }
+  function zoomIn(about)  { setZoom(zoom * TUNE.zoomStep, about, true); }
+  function zoomOut(about) { setZoom(zoom / TUNE.zoomStep, about, true); }
+  function zoomReset()    { setZoom(1, null, true); }
+  function zoomToggle(about) { setZoom(zoom > 1.05 ? 1 : TUNE.zoomDouble, about, true); }
+
+  function loadZoomTier(p) {
+    if (p.zoomTex || p.zoomLoading || !p.item.zoom) return;
+    p.zoomLoading = true;
+    loader.load(p.item.zoom, (tex) => {
+      p.zoomLoading = false;
+      if (disposed || focused !== p.i) { tex.dispose(); return; }
+      p.zoomTex = prepTexture(tex);
+      p.material.map = p.zoomTex; p.material.needsUpdate = true;
+    }, undefined, () => { p.zoomLoading = false; });
+  }
+  // A 3072px texture is ~25 MB on the GPU; they are never kept past the focus
+  // that asked for them. The browser cache makes the next load cheap.
+  function dropZoomTexture(p) {
+    if (!p.zoomTex) return;
+    if (p.material.map === p.zoomTex) { p.material.map = p.large || p.material.map; p.material.needsUpdate = true; }
+    p.zoomTex.dispose(); p.zoomTex = null;
+  }
+
   // ---- pointer on the canvas: tap, drag-move, drag-turn, touch-walk --------
   //
   // One press can end three ways. A release within 8px is a TAP: focus or
@@ -388,6 +464,9 @@ export function createScene(canvas, items, opts = {}) {
   let down = null;      // the press, for tap detection
   let held = null;      // { p, mode, plane, offset, last, moved }
   let walk = null;      // touch drag on empty space → scroll
+  const active = new Map(); // pointerId → {x,y}; two of them while focused = a pinch
+  let pinch = null;     // { dist, zoom }
+  let lastTapAt = 0;
   const dragPlane = new THREE.Plane();
   const hit = new THREE.Vector3();
   const camDir = new THREE.Vector3();
@@ -396,6 +475,15 @@ export function createScene(canvas, items, opts = {}) {
   const AXIS_Y = new THREE.Vector3(0, 1, 0);
 
   const onPointerDown = (e) => {
+    active.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (active.size === 2 && focused >= 0) {
+      // Second finger: this is a pinch, not a drag. Let go of any held piece.
+      const [a, b] = [...active.values()];
+      pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y), zoom };
+      if (held) { held.p.held = false; if (focused === held.p.i) held.p.focusing = true; held = null; }
+      down = null; walk = null;
+      return;
+    }
     down = { x: e.clientX, y: e.clientY, t: performance.now() };
     setNdcFromEvent(e);
     const i = pick();
@@ -432,6 +520,15 @@ export function createScene(canvas, items, opts = {}) {
 
   const onPointerMove = (e) => {
     setNdcFromEvent(e);
+    if (active.has(e.pointerId)) active.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && active.size >= 2) {
+      const [a, b] = [...active.values()];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      const r = canvas.getBoundingClientRect();
+      const mid = new THREE.Vector2((((a.x + b.x) / 2 - r.left) / r.width) * 2 - 1, -((((a.y + b.y) / 2 - r.top) / r.height) * 2 - 1));
+      setZoom(pinch.zoom * (dist / pinch.dist), mid);
+      return;
+    }
     if (walk) {
       const dy = e.clientY - walk.y;
       walk.y = e.clientY;
@@ -470,6 +567,8 @@ export function createScene(canvas, items, opts = {}) {
   };
 
   const onPointerUp = (e) => {
+    active.delete(e.pointerId);
+    if (pinch) { if (active.size < 2) pinch = null; down = null; return; }
     walk = null;
     if (held) {
       const { p, moved, start, delta, rotate } = held;
@@ -478,7 +577,9 @@ export function createScene(canvas, items, opts = {}) {
       p.mesh.quaternion.copy(start).premultiply(delta); // drop the lean; keep the turn
       if (focused === p.i) {
         // A focused piece is being examined, not rehomed: blur still returns
-        // it to its slot in the cloud.
+        // it to its slot in the cloud. The focus owns it again — without this
+        // the drift loop takes it back the moment it is released.
+        p.focusing = true;
       } else {
         // Wherever it was left is its new home: drift resumes from here, and
         // focus/blur tween to and from here.
@@ -502,6 +603,12 @@ export function createScene(canvas, items, opts = {}) {
     const quick = performance.now() - down.t < 600;
     down = null;
     if (dist > 8 || !quick) return;
+    // The second tap of a double-click is not a tap of its own — dblclick
+    // handles that pair as a zoom.
+    const now = performance.now();
+    const isSecondTap = now - lastTapAt < 320;
+    lastTapAt = now;
+    if (isSecondTap && focused >= 0) return;
     // Re-raycast at the release point so touch (no hover) works too.
     setNdcFromEvent(e);
     const i = pick();
@@ -514,6 +621,22 @@ export function createScene(canvas, items, opts = {}) {
     }
   };
   const onPointerLeave = () => { if (!held) { ndc.set(2, 2); setHover(-1); } };
+  // While a piece is forward the wheel zooms it instead of scrolling the page
+  // (scroll is banked during focus anyway, so nothing is lost).
+  const onWheel = (e) => {
+    if (focused < 0) return;
+    e.preventDefault();
+    setNdcFromEvent(e);
+    setZoom(zoom * Math.exp(-e.deltaY * TUNE.zoomWheel), ndc.clone());
+  };
+  // Double-click zooms in on the point, or back out. It lands after the two
+  // taps that focused the piece, so it reads as "double-click a drawing to
+  // look closer".
+  const onDblClick = (e) => {
+    if (focused < 0) return;
+    setNdcFromEvent(e);
+    zoomToggle(ndc.clone());
+  };
   // Right-drag turns a piece; the context menu would eat it.
   const onContextMenu = (e) => { if (held || pick() >= 0) e.preventDefault(); };
   function setNdcFromEvent(e) {
@@ -525,6 +648,8 @@ export function createScene(canvas, items, opts = {}) {
   canvas.addEventListener('pointermove', onPointerMove);
   canvas.addEventListener('pointerleave', onPointerLeave);
   canvas.addEventListener('contextmenu', onContextMenu);
+  canvas.addEventListener('wheel', onWheel, { passive: false });
+  canvas.addEventListener('dblclick', onDblClick);
 
   // ---- frame ---------------------------------------------------------------
   let t = 0;
@@ -574,7 +699,7 @@ export function createScene(canvas, items, opts = {}) {
     camera.updateProjectionMatrix();
     if (focused >= 0) {
       const p = pieces[focused];
-      const s = fitScale(p);
+      const s = fitScale(p) * zoom;
       gsap.to(p.mesh.scale, { x: s, y: s, duration: 0.3, ease: 'none' });
     }
   }
@@ -589,11 +714,14 @@ export function createScene(canvas, items, opts = {}) {
     canvas.removeEventListener('pointermove', onPointerMove);
     canvas.removeEventListener('pointerleave', onPointerLeave);
     canvas.removeEventListener('contextmenu', onContextMenu);
+    canvas.removeEventListener('wheel', onWheel);
+    canvas.removeEventListener('dblclick', onDblClick);
     pieces.forEach((p) => {
       gsap.killTweensOf([p, p.mesh.position, p.mesh.rotation, p.mesh.scale]);
       p.mesh.geometry.dispose();
       p.material.map?.dispose();
       p.large?.dispose();
+      p.zoomTex?.dispose();
       p.material.dispose();
       scene.remove(p.mesh);
     });
@@ -616,6 +744,10 @@ export function createScene(canvas, items, opts = {}) {
     },
     get count() { return pieces.length; },
     get travel() { return travel; },
+    get zoom() { return zoom; },
+    zoomIn: () => zoomIn(null),
+    zoomOut: () => zoomOut(null),
+    zoomReset,
     resize,
     dispose,
     // exposed for verification only

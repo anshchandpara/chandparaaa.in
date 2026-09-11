@@ -4,6 +4,7 @@
  *
  *   npm run media:cutouts -- <slug> "<source dir>"
  *   npm run media:cutouts -- <slug> "<source dir>" --append
+ *   npm run media:cutouts -- <slug> "<source dir>" --only-tier=zoom --start=17
  *
  * For artwork that is a CUT-OUT — ink on a transparent ground — where alpha is
  * the whole point, so JPEG is out and the generic masters pipeline is wrong
@@ -14,6 +15,8 @@
  *
  *   NN.webp         long edge 768   the drifting / thumbnail tier
  *   NN.large.webp   long edge 1536  swapped in on focus, loaded one at a time
+ *   NN.zoom.webp    long edge 3072  swapped in when a focused piece is zoomed
+ *                                   past ~1.5× — line-work needs the pixels
  *
  * Both tiers sit flat in the folder because the media manifest scans only the
  * `compare/` subfolder; anything else would be skipped, never synced, never
@@ -29,7 +32,10 @@
  * names them (rules R2/R3). Version up the slug or clear the folder yourself.
  * `--append` is the one sanctioned way to grow a series: numbering continues
  * from the highest NN already there, and every output path is still checked
- * for existence before it is written.
+ * for existence before it is written. `--only-tier=<name>` writes just that
+ * tier (for adding a tier to an existing series) and `--start=<n>` sets the
+ * first number, so the new files line up with the ones already there; files
+ * that exist are skipped, never overwritten.
  *
  * Sources: .png (alpha expected) plus .jpg/.jpeg for scanned drawings — those
  * have no alpha and encode as opaque WebP, which is correct for a scan.
@@ -41,14 +47,22 @@ import sharp from 'sharp';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 
-const TIERS = [
-  { suffix: '',        long: 768,  quality: 80, alphaQuality: 80 },
-  { suffix: '.large',  long: 1536, quality: 80, alphaQuality: 60 },
+const ALL_TIERS = [
+  { name: 'base',  suffix: '',        long: 768,  quality: 80, alphaQuality: 80 },
+  { name: 'large', suffix: '.large',  long: 1536, quality: 80, alphaQuality: 60 },
+  { name: 'zoom',  suffix: '.zoom',   long: 3072, quality: 78, alphaQuality: 50 },
 ];
 
 const args = process.argv.slice(2);
 const APPEND = args.includes('--append');
+const ONLY = (args.find((a) => a.startsWith('--only-tier=')) || '').split('=')[1] || null;
+const START = Number((args.find((a) => a.startsWith('--start=')) || '').split('=')[1] || 0);
 const [slug, srcDir] = args.filter((a) => !a.startsWith('--'));
+const TIERS = ONLY ? ALL_TIERS.filter((t) => t.name === ONLY) : ALL_TIERS;
+if (ONLY && !TIERS.length) {
+  console.error(`[cutouts] unknown tier "${ONLY}" — one of ${ALL_TIERS.map((t) => t.name).join(', ')}`);
+  process.exit(2);
+}
 if (!slug || !srcDir) {
   console.error('usage: encode-cutouts.mjs <slug> "<source dir of PNGs>"');
   process.exit(2);
@@ -62,10 +76,12 @@ const outDir = join(ROOT, 'public', 'projects', slug);
 
 // Refuse to clobber. A previous run, a hand-dropped file, anything — unless
 // --append, in which case numbering continues after what is there.
-let startAt = 0;
+let startAt = START > 0 ? START - 1 : 0;
 try {
   const existing = (await readdir(outDir)).filter((f) => !f.startsWith('.'));
-  if (existing.length && APPEND) {
+  if (existing.length && ONLY) {
+    console.log(`[cutouts] --only-tier=${ONLY}: writing that tier only, from ${String(startAt + 1).padStart(2, '0')}; existing files are skipped`);
+  } else if (existing.length && APPEND) {
     startAt = Math.max(0, ...existing.map((f) => Number((f.match(/^(\d+)\./) || [])[1] || 0)));
     console.log(`[cutouts] --append: ${existing.length} file(s) present, numbering continues from ${String(startAt + 1).padStart(2, '0')}`);
   } else if (existing.length) {
@@ -107,8 +123,14 @@ for (let i = 0; i < sources.length; i += 1) {
 
   for (const t of TIERS) {
     const out = join(outDir, `${nn}${t.suffix}.webp`);
-    // Belt and braces: the folder was empty at start, but never write over a file.
-    try { await access(out); console.error(`[cutouts] ${out} appeared mid-run — aborting`); process.exit(1); } catch { /* absent, good */ }
+    // Never write over a file. With --only-tier an existing file is simply
+    // skipped (the run is idempotent); otherwise it is an abort.
+    let exists = false;
+    try { await access(out); exists = true; } catch { /* absent, good */ }
+    if (exists) {
+      if (ONLY) { const { size } = await stat(out); total += size; row[t.suffix || 'base'] = size; row.skipped = true; continue; }
+      console.error(`[cutouts] ${out} appeared mid-run — aborting`); process.exit(1);
+    }
 
     // Long edge only — the other side follows the aspect. One options object:
     // sharp's resize(a, b) reads `b` as a height, not as options.
@@ -122,13 +144,13 @@ for (let i = 0; i < sources.length; i += 1) {
     row[t.suffix || 'base'] = size;
   }
   rows.push(row);
-  const kb = (n) => `${(n / 1024).toFixed(0).padStart(4)} KB`;
-  console.log(`  ${nn}  ${row.dims.padEnd(10)}  base ${kb(row.base)}   large ${kb(row['.large'])}   ← ${row.src}`);
+  const kb = (n) => (n == null ? '   —  ' : `${(n / 1024).toFixed(0).padStart(4)} KB`);
+  console.log(`  ${nn}  ${row.dims.padEnd(10)}  ${TIERS.map((t) => `${t.name} ${kb(row[t.suffix || 'base'])}`).join('   ')}${row.skipped ? '  (existed)' : ''}   ← ${row.src}`);
 }
 
-const base = rows.reduce((s, r) => s + r.base, 0);
-const large = rows.reduce((s, r) => s + r['.large'], 0);
-console.log(`\n[cutouts] base tier  ${(base / 1048576).toFixed(2)} MB  (loads with the page)`);
-console.log(`[cutouts] large tier ${(large / 1048576).toFixed(2)} MB  (one at a time, on focus)`);
+for (const t of TIERS) {
+  const sum = rows.reduce((s, r) => s + (r[t.suffix || 'base'] || 0), 0);
+  console.log(`[cutouts] ${t.name.padEnd(5)} tier ${(sum / 1048576).toFixed(2)} MB`);
+}
 console.log(`[cutouts] ${rows.length * TIERS.length} files, ${(total / 1048576).toFixed(2)} MB total`);
 console.log('\n[cutouts] next:  npm run media:manifest && npm run media:sync && npm run media:verify');

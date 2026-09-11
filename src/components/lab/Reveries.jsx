@@ -5,7 +5,7 @@ import { CURRENT_LOCATION } from '../../lib/location';
 import { createScene, runwayVhFor } from './reveriesScene';
 import './Reveries.css';
 
-const LARGE_RE = /\.large\.webp$/i;
+const TIER_RE = /\.(large|zoom)\.webp$/i;
 
 /**
  * Reveries — a white room of floating ink drawings. Lab entry with its own
@@ -22,11 +22,12 @@ export default function Reveries({ slug }) {
   // Base tier from the manifest; the large tier is derived by name, so both
   // are things `media:verify` checks and neither is a guess.
   const items = useMemo(() => {
-    const files = projectEntry(slug).files.filter((f) => /\.webp$/i.test(f) && !LARGE_RE.test(f));
+    const files = projectEntry(slug).files.filter((f) => /\.webp$/i.test(f) && !TIER_RE.test(f));
     return files.map((f) => ({
       file: f,
       src: mediaUrl(slug, f),
       large: mediaUrl(slug, f.replace(/\.webp$/i, '.large.webp')),
+      zoom: mediaUrl(slug, f.replace(/\.webp$/i, '.zoom.webp')),
     }));
   }, [slug]);
 
@@ -38,6 +39,7 @@ export default function Reveries({ slug }) {
   const [noWebGL, setNoWebGL] = useState(false);
   const [disturbed, setDisturbed] = useState(false); // any piece moved from its slot
   const [legendOpen, setLegendOpen] = useState(false); // the controls popup
+  const [zoom, setZoom] = useState(1); // on the focused piece; 1 = fitted
 
   // A popup closes when you press anywhere else — including the room itself.
   useEffect(() => {
@@ -97,6 +99,7 @@ export default function Reveries({ slug }) {
         onFocus: setFocused,
         onLoad: setLoaded,
         onDisturb: () => setDisturbed(true),
+        onZoom: setZoom,
       });
     } catch (e) {
       // No WebGL (or a blocked context). Show the work anyway.
@@ -124,6 +127,9 @@ export default function Reveries({ slug }) {
       if (e.key === 'Escape') scene.blur();
       else if (e.key === 'ArrowRight') scene.next();
       else if (e.key === 'ArrowLeft') scene.prev();
+      else if (e.key === '+' || e.key === '=') scene.zoomIn();
+      else if (e.key === '-' || e.key === '_') scene.zoomOut();
+      else if (e.key === '0') scene.zoomReset();
     };
     window.addEventListener('pointermove', onMove, { passive: true });
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -192,7 +198,10 @@ export default function Reveries({ slug }) {
             {/* Bottom-left: the index label while a drawing is forward, the
                 controls popup otherwise — they never show together. */}
             <div className="rv__corner">
-              <span className="rv__index" aria-live="polite">{focused >= 0 ? `${nn(focused)} / ${String(count).padStart(2, '0')}` : ''}</span>
+              <span className="rv__index" aria-live="polite">
+                {focused >= 0 ? `${nn(focused)} / ${String(count).padStart(2, '0')}` : ''}
+                {focused >= 0 && zoom > 1.05 && <span className="rv__zoom">{zoom.toFixed(1)}×</span>}
+              </span>
               {!noWebGL && (
                 <div className={`rv__help${legendOpen ? ' is-open' : ''}`} aria-hidden={focused >= 0}>
                   <button type="button" className="rv__help-toggle" data-cursor
@@ -206,12 +215,14 @@ export default function Reveries({ slug }) {
                     <dt>Drag</dt><dd>Move it</dd>
                     <dt>Shift-drag · right-drag</dt><dd>Turn it</dd>
                     <dt>Scroll</dt><dd>Walk through the room</dd>
+                    <dt>Wheel · double-click</dt><dd>Zoom, once a drawing is forward</dd>
                     <dt>← → · Esc</dt><dd>Step through · close</dd>
                   </dl>
                   <dl className="rv__legend" data-input="touch">
                     <dt>Tap</dt><dd>Bring a drawing forward</dd>
                     <dt>Drag a drawing</dt><dd>Move it</dd>
                     <dt>Drag empty space</dt><dd>Walk through the room</dd>
+                    <dt>Pinch · double-tap</dt><dd>Zoom, once a drawing is forward</dd>
                     <dt>Tap again</dt><dd>Close</dd>
                   </dl>
                 </div>
@@ -224,6 +235,8 @@ export default function Reveries({ slug }) {
               )}
               {focused >= 0 && (
                 <>
+                  <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.zoomOut()} aria-label="Zoom out" disabled={zoom <= 1.001}>−</button>
+                  <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.zoomIn()} aria-label="Zoom in">+</button>
                   <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.prev()} aria-label="Previous drawing">‹</button>
                   <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.next()} aria-label="Next drawing">›</button>
                   <button type="button" className="rv__btn rv__btn--close" data-cursor onClick={() => sceneRef.current?.blur()} aria-label="Close">×</button>

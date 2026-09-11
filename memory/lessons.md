@@ -5,6 +5,17 @@ opinion; cite what proved it.
 
 ---
 
+**2026-09-11 · A slice-and-replace edit removes everything between its two markers, and a
+verification that only checks what was ADDED will pass while the removal ships.** Rewriting the
+controls-legend CSS as `s[:start] + new + s[end:]` from the legend marker to the fallback marker
+also deleted `.rv__focus`, `.rv__corner`, `.rv__index`, `.rv__controls` and `.rv__btn`, which
+sat between them. The check that followed measured the popup and the legend — the new things —
+and the unstyled ‹ › × buttons went live in `c47572d`.
+*Evidence:* `grep -n "^\.rv" Reveries.css` after the edit listed none of those selectors, and
+`git show main:…` confirmed they were gone on the live branch. Rule from it: after any block
+replacement, diff the SELECTOR LIST before and after (`grep '^\.' | sort`), not just the
+feature you meant to touch. Restored the same day, alongside the zoom work.
+
 **2026-09-11 · A CORS policy added AFTER a browser has cached the object does not reach that
 browser: it keeps serving the headerless copy for the full cache lifetime.** R2 project media
 is `Cache-Control: max-age=2592000, must-revalidate` — 30 days fresh. The preview browser had
