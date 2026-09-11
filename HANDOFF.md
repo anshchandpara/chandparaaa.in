@@ -14,30 +14,36 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-11. Live at `da432ee`. The Reveries room is open — the lab's front door now leads
-somewhere.**
+**2026-09-11. Live at `c47572d`. The Reveries room holds 61 drawings, is directly manipulable,
+and is open.**
 
-R2 CORS is set (`Access-Control-Allow-Origin: *` on GET; the OPTIONS 403 is irrelevant —
-image loads with `crossOrigin` are simple requests, no preflight). Verified live: 32/32
-objects fetch under CORS, the room loads 16/16 textures, `L·006 · Reveries` is in the Archive
-in lab mode, and the lab hero CTA opens it. One caveat for anyone who visited the draft page
-BEFORE the policy existed: their browser may hold 30-day cached responses with no CORS
-header and see missing pieces — a hard reload fixes it, and no real visitor ever reached the
-draft.
+THE ROOM (`?p=reveries`, `src/components/lab/`): 61 cut-outs and plates from
+`~/Documents/Work/extra circular /` (16 from `Reveries revive/Print/PNG Poster`, 45 from the
+folder's top level + `Reveries revive/`), placed on a seeded-shuffled helix so no batch
+clusters. Pointer parallax, scroll walks the camera 52.5 units over a 1413vh runway (both
+scale with the count via `travelFor()` / `runwayVhFor()`), fog to white, click brings a
+drawing forward, ← → step, Esc closes. Drag moves a piece in the plane facing the camera;
+Shift/Alt-drag or right-drag turns it; a piece keeps drifting from where it is left; a focused
+piece can be turned to examine it and still returns to its slot; "Reset room" restores the
+seed. On touch a finger on empty space walks. Controls popup bottom-left (mouse list on a
+pointer device, touch list otherwise). Two files deliberately left out: `Favicon_.png` (an
+icon sheet) and `Ps_Map.png` (0% ink on white). Ansh chose to keep the eight opaque pieces.
 
-SITE STATE: 27 `work` (22 published), 6 `lab` (2 published: bts-captures, reveries). R2 holds
-305 objects, `media:verify` PASS. 2 of 32 entries carry a Vimeo ID.
+MEDIA: two-tier alpha WebP via `npm run media:cutouts -- <slug> <dir> [--append]` (base 768
+long edge with the page, `.large` 1536 on focus). R2 holds **395** objects, `media:verify`
+PASS. Base tier for the room is 7.1 MB, progressive. R2 CORS is set; a browser that loaded
+the draft page BEFORE the policy may hold 30-day poisoned cache entries for a few textures —
+`fetch(url, {cache:'reload'})` repairs it; no real visitor was affected.
 
-WAITING ON ANSH: (1) judge the room — arrangement, drift, fog, focus size; every number is in
-`TUNE` at the top of `src/components/lab/reveriesScene.js`; the front piece sits close to the
-left edge at the entrance (`radius`); (2) rewrite the Reveries title + desc in
-`projects.json`, currently my first draft; (3) the lab CTA copy "Browse experiments" now lands
-on one piece; (4) an Adobe Fonts web project (Obviously Variable, Neue Haas Grotesk, Ambroise,
-Bely) — send the kit ID and the type direction proceeds; (5) the title-fit playground on the
-Desktop if a different curve than 2 lines / 56–136px.
+SITE STATE: 27 `work` (22 published), 6 `lab` (2 published: bts-captures, reveries).
 
-SETTLED: Reveries is a scrolling room with click-to-focus; direct-manipulation plates were
-tried and declined → `memory/decisions.md`.
+WAITING ON ANSH: (1) judge the room now it is 61 — drift, fog, radius (front pieces pass
+close), `TUNE` at the top of `reveriesScene.js`; (2) the Reveries title/desc in
+`projects.json` are still my first draft ("Sixty-one drawings…"); (3) the two Gorillaz pieces
+(files 31, 32) and the Marlboro type studies (30, 31 by sheet; files 30/31) are in at his
+word — his call if they should stay; (4) the lab CTA copy "Browse experiments" lands on the
+room; (5) an Adobe Fonts web project — send the kit ID and the type direction proceeds;
+(6) the title-fit playground on the Desktop if a different curve than 2 lines / 56–136px.
 
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — the manifest guard is npm's `prebuild`.
@@ -49,6 +55,18 @@ moved to Cloudflare — a deliberate job with real blast radius.
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-11 — Reveries: direct manipulation, controls popup, 45 more drawings** — commit `c47572d`.
+Drag moves a piece on the camera-facing plane at its depth; Shift/Alt/right-drag turns it
+(tracked as a quaternion delta from identity, so a move never changes orientation and a turn
+never bakes the drift phase in); tap still focuses; Reset room. A controls popup bottom-left
+switches mouse/touch lists on `(hover: none)`. The room grew 16 → 61 from `extra circular`
+(encoder gained `--append` + JPEG), placement is a seeded shuffle so the additions interleave
+with the originals, and travel/runway now derive from the count. Verified live: 61/61
+textures, a real pointer drag moved file 01 by 0.55 units without focusing it, Reset offered.
+Found on the way: an empty aria-live label still claims its flex gap, and three siblings of a
+space-between column put the middle one mid-screen — the old hint had been floating there
+unnoticed all along.
 
 **2026-09-11 — Reveries room opened** — commit `da432ee`.
 Ansh set the R2 CORS policy; `reveries` flipped from draft to published. Verified live: 32/32

@@ -8,6 +8,14 @@ decision — add it, mark the old one superseded, and never silently delete.
 
 ---
 
+**2026-09-11 · The Reveries room mixes cut-outs with opaque plates, scattered — not sorted.**
+Eight of the 61 pieces are opaque rectangles (full paintings, a scan, a coloured ground).
+Raised as a choice; Ansh: "opaque images are fine, use them, scatter them across." So placement
+is a seeded shuffle of the helix slots rather than file order — the originals and every later
+batch interleave through the depth, and the room reads as a sketchbook spilled into space.
+Adding a series later means `--append` and nothing else; the shuffle absorbs it.
+→ `src/components/lab/reveriesScene.js`, `slotOf`
+
 **2026-09-11 (later) · The room's pieces are directly manipulable — INSIDE the scrolling room,
 not instead of it.** Supersedes the clause below that settled direct manipulation as "not the
 direction": what was declined was the *plates* model that replaced the room. Ansh then asked
