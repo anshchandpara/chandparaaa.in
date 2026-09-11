@@ -14,23 +14,27 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-11. Live at `c47572d`. The Reveries room holds 61 drawings, is directly manipulable,
-and is open.**
+**2026-09-11. Live at `aef5642`. The Reveries room holds 61 drawings, is directly manipulable,
+zoomable when a drawing is forward, and is open.**
 
 THE ROOM (`?p=reveries`, `src/components/lab/`): 61 cut-outs and plates from
 `~/Documents/Work/extra circular /` (16 from `Reveries revive/Print/PNG Poster`, 45 from the
 folder's top level + `Reveries revive/`), placed on a seeded-shuffled helix so no batch
 clusters. Pointer parallax, scroll walks the camera 52.5 units over a 1413vh runway (both
 scale with the count via `travelFor()` / `runwayVhFor()`), fog to white, click brings a
-drawing forward, ← → step, Esc closes. Drag moves a piece in the plane facing the camera;
+drawing forward, ← → step, Esc closes. Once a drawing is forward: wheel / pinch zoom about the point, double-click
+toggles 1 ↔ 2.5×, `+ − 0` and − + buttons, 1–4×, readout beside the index; a 3072px
+`.zoom.webp` tier loads past 1.5× and is dropped on close (~25 MB GPU each — never kept).
+Drag moves a piece in the plane facing the camera;
 Shift/Alt-drag or right-drag turns it; a piece keeps drifting from where it is left; a focused
 piece can be turned to examine it and still returns to its slot; "Reset room" restores the
 seed. On touch a finger on empty space walks. Controls popup bottom-left (mouse list on a
 pointer device, touch list otherwise). Two files deliberately left out: `Favicon_.png` (an
 icon sheet) and `Ps_Map.png` (0% ink on white). Ansh chose to keep the eight opaque pieces.
 
-MEDIA: two-tier alpha WebP via `npm run media:cutouts -- <slug> <dir> [--append]` (base 768
-long edge with the page, `.large` 1536 on focus). R2 holds **395** objects, `media:verify`
+MEDIA: three-tier alpha WebP via `npm run media:cutouts -- <slug> <dir> [--append |
+--only-tier=<name> --start=<n>]` (base 768 with the page, `.large` 1536 on focus, `.zoom`
+3072 past 1.5×). R2 holds **456** objects, `media:verify`
 PASS. Base tier for the room is 7.1 MB, progressive. R2 CORS is set; a browser that loaded
 the draft page BEFORE the policy may hold 30-day poisoned cache entries for a few textures —
 `fetch(url, {cache:'reload'})` repairs it; no real visitor was affected.
@@ -55,6 +59,16 @@ moved to Cloudflare — a deliberate job with real blast radius.
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-11 — zoom on focused drawings; restore CSS lost in c47572d** — commit `aef5642`.
+The previous ship's legend-to-popup rewrite sliced between two CSS markers and deleted the
+bottom-row rules (`.rv__focus`, `.rv__corner`, `.rv__index`, `.rv__controls`, `.rv__btn`) —
+the ‹ › × buttons went live as bare browser buttons, and the check that followed only
+measured what had been added. Restored, plus zoom: wheel/pinch about the point, double-click
+toggle, keys and buttons, 1–4×, a third 3072px tier (61 files, 32 MB, one at a time, dropped
+on close), and a fix for a focused piece snapping home after being dragged. Verified live:
+five styled 44px buttons, flex row, corner column, wheel → 1.6× with readout.
+→ lesson: diff the selector list after any block replacement.
 
 **2026-09-11 — Reveries: direct manipulation, controls popup, 45 more drawings** — commit `c47572d`.
 Drag moves a piece on the camera-facing plane at its depth; Shift/Alt/right-drag turns it
