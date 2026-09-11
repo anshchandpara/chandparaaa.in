@@ -16,13 +16,15 @@
   height: 100%;
   display: block;
   z-index: 0;
-  touch-action: pan-y; /* taps focus; vertical swipes still scroll the page */
+  /* The scene owns every touch: a finger on a piece drags it, a finger on
+     empty space walks the camera (the scene forwards that to the page scroll).
+     pan-y would let the browser steal a drag that started on a piece. */
+  touch-action: none;
 }
 
-/* Nothing in here — it is the scroll runway. 400vh ≈ a comfortable walk
-   through sixteen pieces at TUNE.travel. */
+/* Nothing in here — it is the scroll runway. Height is set inline from the
+   piece count (reveriesScene.runwayVhFor), so the pace of the walk holds. */
 .rv__driver {
-  height: 400vh;
   pointer-events: none;
 }
 
@@ -37,65 +39,86 @@
   flex-direction: column;
   justify-content: space-between;
 }
+.rv__top {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 .rv__eyebrow {
-  margin: 0 0 8px;
+  margin: 0;
   color: var(--fg-3);
 }
 .rv__load {
   color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
-.rv__hint {
-  margin: 0;
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  color: var(--fg-3);
-  max-width: 34ch;
+/* ---------- controls popup ---------- */
+/* A small pill in the bottom-left; press it and the legend opens above it as
+   a popover. Same dl idiom as the project credits, set small: this is a
+   reference card, not reading matter, and it sits over the artwork. */
+.rv__help {
+  display: flex;
+  flex-direction: column-reverse; /* toggle stays at the bottom, list opens upward */
+  align-items: flex-start;
   transition: opacity 0.3s var(--ease);
 }
-.rv.is-focused .rv__hint { opacity: 0; }
-
-.rv__focus {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-.rv__index {
-  font-family: var(--f-display);
-  font-weight: 700;
-  font-size: clamp(22px, 2.6vw, 34px);
-  letter-spacing: -0.01em;
-  line-height: 1;
-  color: var(--fg);
-  font-variant-numeric: tabular-nums;
-  min-height: 1em;
-}
-.rv__controls {
-  display: flex;
-  gap: 8px;
-  pointer-events: auto;
-}
-.rv__controls[hidden] { display: none; }
-.rv__btn {
+.rv.is-focused .rv__help { opacity: 0; pointer-events: none; }
+.rv__help-toggle {
   appearance: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
   border: 1px solid var(--line);
   background: transparent;
-  color: var(--fg);
+  color: var(--fg-3);
   font-family: var(--f-sans);
-  font-size: 22px;
-  line-height: 1;
-  display: grid;
-  place-items: center;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 8px 12px;
   cursor: pointer;
-  transition: border-color 0.25s var(--ease), color 0.25s var(--ease);
+  pointer-events: auto;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
-.rv__btn:hover { border-color: var(--fg); }
-.rv__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.rv__btn--close { margin-left: 8px; }
+.rv__help-toggle:hover,
+.rv__help-toggle[aria-expanded="true"] { color: var(--fg); border-color: var(--fg); }
+.rv__help-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rv__legend {
+  display: none;
+  width: min(264px, calc(100vw - 2 * var(--pad-x)));
+  margin: 0 0 8px;
+  padding: 2px 12px 8px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  /* The label column is CAPPED. Left as `auto`, the longest label
+     ("Shift-drag · right-drag", nowrap) took most of the width and pushed
+     every value onto three lines. Labels wrap now; values get the room. */
+  grid-template-columns: minmax(76px, 104px) minmax(0, 1fr);
+  column-gap: 12px;
+  pointer-events: auto;
+}
+.rv__legend dt,
+.rv__legend dd {
+  margin: 0;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+  line-height: 1.35;
+}
+.rv__legend dt {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  padding-top: 7px;
+}
+.rv__legend dd { color: var(--fg-2); text-wrap: pretty; }
+/* Open: show the list that matches the input. (hover: hover) is the honest
+   test for a mouse; a touch screen with no pointer gets the touch list. */
+.rv__help.is-open .rv__legend[data-input="mouse"] { display: grid; }
+@media (hover: none) {
+  .rv__help.is-open .rv__legend[data-input="mouse"] { display: none; }
+  .rv__help.is-open .rv__legend[data-input="touch"] { display: grid; }
+}
 
 /* ---------- no-WebGL fallback ---------- */
 .rv__grid {
@@ -111,10 +134,9 @@
 
 @media (max-width: 720px) {
   .rv__ui { padding-top: 80px; }
-  .rv__hint { display: none; }
   .rv__btn { width: 40px; height: 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rv__hint, .rv__btn { transition: none; }
+  .rv__help, .rv__btn { transition: none; }
 }

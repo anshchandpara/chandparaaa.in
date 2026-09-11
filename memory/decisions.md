@@ -8,7 +8,19 @@ decision — add it, mark the old one superseded, and never silently delete.
 
 ---
 
+**2026-09-11 (later) · The room's pieces are directly manipulable — INSIDE the scrolling room,
+not instead of it.** Supersedes the clause below that settled direct manipulation as "not the
+direction": what was declined was the *plates* model that replaced the room. Ansh then asked
+for drag on the pieces themselves, and that is now live code: drag moves a piece in the plane
+facing the camera, Shift/Alt-drag or right-drag turns it, a plain click still focuses; a piece
+keeps drifting from wherever it is left, a focused piece can be turned to examine it and still
+returns to its slot on blur, and "Reset room" restores the seeded arrangement. On touch, a
+finger on empty space walks the camera (the canvas is `touch-action: none`). The turn is
+tracked as a delta from identity so a pure move never changes orientation and a turn never
+bakes the drift phase in. → `src/components/lab/reveriesScene.js`, `TUNE.turnSpeed / lean`
+
 **2026-09-11 · Reveries is a scrolling room with click-to-focus, not direct-manipulation plates.**
+*(Partly superseded above — the room stayed; drag on the pieces was added later the same day.)*
 A prototype of the artworks as physical 3D plates the visitor drags, turns and flips was built
 and tried (canvas "Reveries Plates"); Ansh preferred the room already in `src/components/lab/`
 — pointer parallax, scroll walks the camera forward, click brings one piece to centre, the rest

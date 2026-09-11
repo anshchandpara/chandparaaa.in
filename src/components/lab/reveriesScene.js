@@ -21,7 +21,8 @@ import { addPanel, removePanel } from '../../lib/glTicker';
 export const TUNE = {
   fov: 40,
   camZ: 8,           // where the camera starts
-  travel: 12,        // how far a full scroll walks it forward (−z)
+  travel: 12,        // MINIMUM walk (−z) for a full scroll; grows with the count — see travelFor()
+  vhPerUnit: 25,     // scroll runway: viewport-heights of page per unit of walk
   parallax: 0.35,    // camera offset (units) with the pointer at the viewport edge
   parallaxLerp: 0.06,
 
@@ -43,7 +44,29 @@ export const TUNE = {
   recedeZ: 1.5,      // how far the others fall back while one is focused
 
   seed: 1618,        // arrangement is deterministic — the same room every visit
+
+  // Direct manipulation. Drag moves a piece in the plane facing the camera;
+  // Shift/Alt-drag or right-drag turns it. A moving piece leans into its
+  // motion a little (`lean`), which is what makes it feel held, not slid.
+  turnSpeed: 0.55,   // degrees of rotation per pixel of drag
+  lean: 0.045,       // tilt per px/frame of drag velocity (radians-ish, small)
+  leanMax: 14,       // degrees — the lean never exceeds this
+  leanDecay: 0.12,   // how fast the lean settles once released
+  resetDur: 1.1,
 };
+
+/**
+ * How far a full scroll walks the camera, for a room of `count` pieces. The
+ * helix is `spread` deep per piece, so the walk ends just short of the last
+ * one; sixteen pieces gave 12 units and that pace is kept for any count.
+ */
+export function travelFor(count) {
+  return Math.max(TUNE.travel, (count - 1) * TUNE.spread - 1.5);
+}
+/** Runway height, in vh, that scrolls that far at the same pace as sixteen did. */
+export function runwayVhFor(count) {
+  return Math.round(100 + travelFor(count) * TUNE.vhPerUnit);
+}
 
 const GOLDEN = Math.PI * (3 - Math.sqrt(5));
 const deg = (d) => (d * Math.PI) / 180;
@@ -69,7 +92,8 @@ const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
  *           onFocus?: (i:number)=>void, onLoad?: (loaded:number,total:number)=>void }} opts
  */
 export function createScene(canvas, items, opts = {}) {
-  const { reducedMotion = false, onHover, onFocus, onLoad } = opts;
+  const { reducedMotion = false, onHover, onFocus, onLoad, onDisturb } = opts;
+  const travel = travelFor(items.length);
 
   // Throws when WebGL is unavailable — the caller catches and falls back.
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -87,11 +111,21 @@ export function createScene(canvas, items, opts = {}) {
   // ---- pieces --------------------------------------------------------------
   const rand = rng(TUNE.seed);
   const loader = new THREE.TextureLoader();
+  // Placement is a seeded shuffle of the file order. Without it the room reads
+  // in the order the files were added — the first series at the front, every
+  // later addition behind it — and anything that arrived as a batch clusters.
+  // Shuffling the SLOT, not the item, keeps file numbers and the caption stable.
+  const slotOf = items.map((_, i) => i);
+  for (let i = slotOf.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rand() * (i + 1));
+    [slotOf[i], slotOf[j]] = [slotOf[j], slotOf[i]];
+  }
   const pieces = items.map((item, i) => {
-    const angle = i * GOLDEN + rand() * 0.6;
+    const slot = slotOf[i];
+    const angle = slot * GOLDEN + rand() * 0.6;
     const radius = between(rand, TUNE.radius);
     const home = {
-      pos: new THREE.Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius * 0.7, -i * TUNE.spread),
+      pos: new THREE.Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius * 0.7, -slot * TUNE.spread),
       rot: new THREE.Euler(
         deg((rand() * 2 - 1) * TUNE.tilt[1]),
         deg((rand() * 2 - 1) * TUNE.tilt[0]),
@@ -115,6 +149,11 @@ export function createScene(canvas, items, opts = {}) {
 
     return {
       i, item, mesh, material, home,
+      // The seeded slot, kept apart from `home`: manipulation rewrites home
+      // (a piece keeps drifting from wherever it was left); reset restores this.
+      origin: { pos: home.pos.clone(), rot: home.rot.clone() },
+      held: false,          // true while the pointer has it
+      lean: new THREE.Vector2(), // transient tilt from drag velocity
       loaded: 0,            // 0 → 1 as the base texture arrives
       dim: 1,               // 1 normally, TUNE.recedeOpacity while another is focused
       recede: 0,            // extra −z while another is focused
@@ -177,7 +216,7 @@ export function createScene(canvas, items, opts = {}) {
     par.y += (pointer.y * k - par.y) * TUNE.parallaxLerp;
     // Lerp the travel too: scroll while a piece is focused is banked, not
     // applied, and this is what stops the camera snapping when it is released.
-    const zTarget = TUNE.camZ - easeInOut(scrollT) * TUNE.travel;
+    const zTarget = TUNE.camZ - easeInOut(scrollT) * travel;
     camZ += (zTarget - camZ) * (reducedMotion ? 1 : 0.08);
     const z = camZ;
     camera.position.set(par.x, par.y, z);
@@ -306,6 +345,24 @@ export function createScene(canvas, items, opts = {}) {
     gsap.delayedCall(dur * 0.5, () => { frozen = null; });
   }
 
+  /** Every piece back to its seeded slot. The room as it was on arrival. */
+  function reset() {
+    if (focused >= 0) blur();
+    const dur = reducedMotion ? 0 : TUNE.resetDur;
+    pieces.forEach((p) => {
+      if (p.held) return;
+      p.focusing = true;
+      gsap.killTweensOf([p.mesh.position, p.mesh.rotation, p.mesh.scale]);
+      p.home.pos.copy(p.origin.pos);
+      p.home.rot.copy(p.origin.rot);
+      p.lean.set(0, 0);
+      gsap.to(p.mesh.position, { x: p.origin.pos.x, y: p.origin.pos.y, z: p.origin.pos.z, duration: dur, ease: 'power2.inOut' });
+      gsap.to(p.mesh.rotation, { x: p.origin.rot.x, y: p.origin.rot.y, z: p.origin.rot.z, duration: dur, ease: 'power2.inOut',
+        onComplete: () => { p.focusing = false; } });
+      gsap.to(p.mesh.scale, { x: 1, y: 1, z: 1, duration: dur, ease: 'power2.inOut' });
+    });
+  }
+
   function loadLarge(p) {
     if (p.large || p.largeLoading || !p.item.large) return;
     p.largeLoading = true;
@@ -319,15 +376,132 @@ export function createScene(canvas, items, opts = {}) {
     }, undefined, () => { p.largeLoading = false; });
   }
 
-  // ---- pointer on the canvas ----------------------------------------------
-  let down = null;
-  const onPointerDown = (e) => { down = { x: e.clientX, y: e.clientY, t: performance.now() }; };
+  // ---- pointer on the canvas: tap, drag-move, drag-turn, touch-walk --------
+  //
+  // One press can end three ways. A release within 8px is a TAP: focus or
+  // blur. Movement on a piece is a DRAG: it moves the piece in the plane that
+  // faces the camera at its depth (so it follows the cursor exactly, at any
+  // distance), or turns it when Shift/Alt is held or the right button is used.
+  // On touch, movement on EMPTY space walks the camera — the canvas is
+  // `touch-action: none` so a finger on a piece can never scroll the page
+  // instead, and this is what gives scrolling back.
+  let down = null;      // the press, for tap detection
+  let held = null;      // { p, mode, plane, offset, last, moved }
+  let walk = null;      // touch drag on empty space → scroll
+  const dragPlane = new THREE.Plane();
+  const hit = new THREE.Vector3();
+  const camDir = new THREE.Vector3();
+  const qTmp = new THREE.Quaternion();
+  const axisX = new THREE.Vector3();
+  const AXIS_Y = new THREE.Vector3(0, 1, 0);
+
+  const onPointerDown = (e) => {
+    down = { x: e.clientX, y: e.clientY, t: performance.now() };
+    setNdcFromEvent(e);
+    const i = pick();
+    if (i >= 0) {
+      const p = pieces[i];
+      const rotate = e.shiftKey || e.altKey || e.button === 2;
+      // Plane through the piece, facing the camera — the surface it slides on.
+      camera.getWorldDirection(camDir);
+      dragPlane.setFromNormalAndCoplanarPoint(camDir, p.mesh.position);
+      raycaster.setFromCamera(ndc, camera);
+      raycaster.ray.intersectPlane(dragPlane, hit);
+      held = {
+        p, rotate,
+        offset: hit.clone().sub(p.mesh.position), // so it never jumps to the cursor
+        // `start` is the pose at grab (drift included, so nothing jumps);
+        // `delta` is only what the hand has turned it since. Display is
+        // delta·start (+ lean); on release home becomes delta·home — so a
+        // pure move leaves the orientation exactly as it was, and a turn
+        // never bakes the drift phase into it.
+        start: p.mesh.quaternion.clone(),
+        delta: new THREE.Quaternion(),
+        last: { x: e.clientX, y: e.clientY },
+        moved: false,
+      };
+      gsap.killTweensOf([p.mesh.position, p.mesh.rotation, p.mesh.scale]);
+      p.held = true;
+      p.focusing = false;
+      p.mesh.renderOrder = focused === p.i ? 10 : 5; // above its neighbours while held
+      try { canvas.setPointerCapture(e.pointerId); } catch { /* not all pointers capture */ }
+    } else if (e.pointerType === 'touch') {
+      walk = { y: e.clientY };
+    }
+  };
+
+  const onPointerMove = (e) => {
+    setNdcFromEvent(e);
+    if (walk) {
+      const dy = e.clientY - walk.y;
+      walk.y = e.clientY;
+      window.scrollBy(0, -dy);
+      return;
+    }
+    if (!held) return;
+    const { p } = held;
+    const dx = e.clientX - held.last.x;
+    const dy = e.clientY - held.last.y;
+    held.last = { x: e.clientX, y: e.clientY };
+    if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8) held.moved = true;
+    if (!held.moved) return;
+
+    if (held.rotate) {
+      // Turn about the world up axis for sideways drag, and about the camera's
+      // right axis for vertical drag — the two turns a hand would make.
+      axisX.set(1, 0, 0).applyQuaternion(camera.quaternion);
+      qTmp.setFromAxisAngle(AXIS_Y, deg(dx * TUNE.turnSpeed));
+      held.delta.premultiply(qTmp);
+      qTmp.setFromAxisAngle(axisX, deg(dy * TUNE.turnSpeed));
+      held.delta.premultiply(qTmp);
+    } else {
+      camera.getWorldDirection(camDir);
+      dragPlane.setFromNormalAndCoplanarPoint(camDir, p.mesh.position);
+      raycaster.setFromCamera(ndc, camera);
+      if (raycaster.ray.intersectPlane(dragPlane, hit)) {
+        p.mesh.position.copy(hit.sub(held.offset));
+      }
+      if (!reducedMotion) {
+        // Lean into the motion. Decays in the frame loop.
+        p.lean.x = Math.max(-1, Math.min(1, p.lean.x + dy * TUNE.lean * 0.1));
+        p.lean.y = Math.max(-1, Math.min(1, p.lean.y + dx * TUNE.lean * 0.1));
+      }
+    }
+  };
+
   const onPointerUp = (e) => {
+    walk = null;
+    if (held) {
+      const { p, moved, start, delta, rotate } = held;
+      held = null;
+      p.held = false;
+      p.mesh.quaternion.copy(start).premultiply(delta); // drop the lean; keep the turn
+      if (focused === p.i) {
+        // A focused piece is being examined, not rehomed: blur still returns
+        // it to its slot in the cloud.
+      } else {
+        // Wherever it was left is its new home: drift resumes from here, and
+        // focus/blur tween to and from here.
+        // Only what the hand changed becomes home: a move rehomes position, a
+        // turn rehomes orientation. Copying the other would bake in the drift
+        // phase the piece happened to be at when grabbed.
+        if (rotate) {
+          qTmp.setFromEuler(p.home.rot).premultiply(delta);
+          p.home.rot.setFromQuaternion(qTmp);
+        } else {
+          p.home.pos.copy(p.mesh.position);
+        }
+        p.mesh.renderOrder = 0;
+        if (moved) onDisturb?.();
+      }
+      try { canvas.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
+      if (moved) { down = null; return; } // a drag is not a tap
+    }
     if (!down) return;
-    const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+    const dist = Math.hypot(e.clientX - down.x, e.clientY - down.y);
     const quick = performance.now() - down.t < 600;
     down = null;
-    if (moved > 8 || !quick) return; // a scroll or a drag, not a tap
+    if (dist > 8 || !quick) return;
     // Re-raycast at the release point so touch (no hover) works too.
     setNdcFromEvent(e);
     const i = pick();
@@ -339,8 +513,9 @@ export function createScene(canvas, items, opts = {}) {
       focus(i);
     }
   };
-  const onPointerMove = (e) => { setNdcFromEvent(e); };
-  const onPointerLeave = () => { ndc.set(2, 2); setHover(-1); };
+  const onPointerLeave = () => { if (!held) { ndc.set(2, 2); setHover(-1); } };
+  // Right-drag turns a piece; the context menu would eat it.
+  const onContextMenu = (e) => { if (held || pick() >= 0) e.preventDefault(); };
   function setNdcFromEvent(e) {
     const r = canvas.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1));
@@ -349,6 +524,7 @@ export function createScene(canvas, items, opts = {}) {
   canvas.addEventListener('pointerup', onPointerUp);
   canvas.addEventListener('pointermove', onPointerMove);
   canvas.addEventListener('pointerleave', onPointerLeave);
+  canvas.addEventListener('contextmenu', onContextMenu);
 
   // ---- frame ---------------------------------------------------------------
   let t = 0;
@@ -360,6 +536,18 @@ export function createScene(canvas, items, opts = {}) {
       const amp = reducedMotion ? 0 : 1;
       pieces.forEach((p) => {
         p.material.opacity = p.loaded * p.dim;
+        // The lean settles whether held or not; while held it is fed by the drag.
+        p.lean.multiplyScalar(1 - TUNE.leanDecay);
+        if (p.held) {
+          // The pointer owns position and turn. Display = base orientation
+          // (held.q) + lean; the base itself is never read back from the mesh.
+          p.mesh.quaternion.copy(held.start).premultiply(held.delta);
+          if (!held.rotate) {
+            p.mesh.rotation.x += p.lean.x * deg(TUNE.leanMax);
+            p.mesh.rotation.y += p.lean.y * deg(TUNE.leanMax);
+          }
+          return;
+        }
         if (p.focusing) return; // a tween owns the transform
         const w = (t / p.period + p.phase) * Math.PI * 2;
         p.mesh.position.set(
@@ -368,9 +556,9 @@ export function createScene(canvas, items, opts = {}) {
           p.home.pos.z + p.recede
         );
         p.mesh.rotation.set(
-          p.home.rot.x + Math.sin(w * 0.7) * deg(TUNE.driftRot) * amp * 0.5,
-          p.home.rot.y + Math.cos(w) * deg(TUNE.driftRot) * amp,
-          0
+          p.home.rot.x + Math.sin(w * 0.7) * deg(TUNE.driftRot) * amp * 0.5 + p.lean.x * deg(TUNE.leanMax),
+          p.home.rot.y + Math.cos(w) * deg(TUNE.driftRot) * amp + p.lean.y * deg(TUNE.leanMax),
+          p.home.rot.z
         );
       });
       if (ndc.x <= 1 && ndc.x >= -1) updateHover();
@@ -400,6 +588,7 @@ export function createScene(canvas, items, opts = {}) {
     canvas.removeEventListener('pointerup', onPointerUp);
     canvas.removeEventListener('pointermove', onPointerMove);
     canvas.removeEventListener('pointerleave', onPointerLeave);
+    canvas.removeEventListener('contextmenu', onContextMenu);
     pieces.forEach((p) => {
       gsap.killTweensOf([p, p.mesh.position, p.mesh.rotation, p.mesh.scale]);
       p.mesh.geometry.dispose();
@@ -419,7 +608,14 @@ export function createScene(canvas, items, opts = {}) {
     next() { focus(focused < 0 ? 0 : (focused + 1) % pieces.length); },
     prev() { focus(focused < 0 ? pieces.length - 1 : (focused - 1 + pieces.length) % pieces.length); },
     get focused() { return focused; },
+    reset,
+    /** True when any piece has been moved or turned from its seeded slot. */
+    get disturbed() {
+      return pieces.some((p) => p.home.pos.distanceTo(p.origin.pos) > 0.01
+        || Math.abs(p.home.rot.x - p.origin.rot.x) + Math.abs(p.home.rot.y - p.origin.rot.y) + Math.abs(p.home.rot.z - p.origin.rot.z) > 0.01);
+    },
     get count() { return pieces.length; },
+    get travel() { return travel; },
     resize,
     dispose,
     // exposed for verification only

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { getProject } from '../../lib/projectData';
 import { projectEntry, mediaUrl } from '../../lib/mediaManifest';
 import { CURRENT_LOCATION } from '../../lib/location';
-import { createScene } from './reveriesScene';
+import { createScene, runwayVhFor } from './reveriesScene';
 import './Reveries.css';
 
 const LARGE_RE = /\.large\.webp$/i;
@@ -36,6 +36,16 @@ export default function Reveries({ slug }) {
   const [focused, setFocused] = useState(-1);
   const [loaded, setLoaded] = useState(0);
   const [noWebGL, setNoWebGL] = useState(false);
+  const [disturbed, setDisturbed] = useState(false); // any piece moved from its slot
+  const [legendOpen, setLegendOpen] = useState(false); // the controls popup
+
+  // A popup closes when you press anywhere else — including the room itself.
+  useEffect(() => {
+    if (!legendOpen) return undefined;
+    const close = (e) => { if (!e.target.closest?.('.rv__help')) setLegendOpen(false); };
+    window.addEventListener('pointerdown', close, true);
+    return () => window.removeEventListener('pointerdown', close, true);
+  }, [legendOpen]);
 
   const reduced =
     typeof window !== 'undefined' &&
@@ -86,6 +96,7 @@ export default function Reveries({ slug }) {
         },
         onFocus: setFocused,
         onLoad: setLoaded,
+        onDisturb: () => setDisturbed(true),
       });
     } catch (e) {
       // No WebGL (or a blocked context). Show the work anyway.
@@ -159,28 +170,65 @@ export default function Reveries({ slug }) {
         ) : (
           <>
             <canvas ref={canvasRef} className="rv__canvas" aria-label={`${item.title}: ${count} drawings in a 3D space`} />
-            {/* Tall, empty, and the reason scrolling walks the camera forward. */}
-            <div ref={driverRef} className="rv__driver" aria-hidden="true" />
+            {/* Tall, empty, and the reason scrolling walks the camera forward.
+                Its height comes from the piece count so the walking pace is
+                the same whether the room holds sixteen drawings or sixty. */}
+            <div ref={driverRef} className="rv__driver" aria-hidden="true" style={{ height: `${runwayVhFor(items.length)}vh` }} />
           </>
         )}
 
         <div className="rv__ui">
+          <div className="rv__top">
           <p className="eyebrow rv__eyebrow">
             {item.title} · {item.category} · {item.year}
             {loaded < count && !noWebGL && (
               <span className="rv__load" aria-live="polite"> · {loaded}/{count}</span>
             )}
           </p>
-          {!noWebGL && (
-            <p className="rv__hint" aria-hidden={focused >= 0}>Click a drawing to bring it forward · scroll to walk through</p>
-          )}
 
-          <div className="rv__focus" aria-live="polite">
-            <span className="rv__index">{focused >= 0 ? `${nn(focused)} / ${String(count).padStart(2, '0')}` : ''}</span>
-            <div className="rv__controls" hidden={focused < 0}>
-              <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.prev()} aria-label="Previous drawing">‹</button>
-              <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.next()} aria-label="Next drawing">›</button>
-              <button type="button" className="rv__btn rv__btn--close" data-cursor onClick={() => sceneRef.current?.blur()} aria-label="Close">×</button>
+          </div>
+
+          <div className="rv__focus">
+            {/* Bottom-left: the index label while a drawing is forward, the
+                controls popup otherwise — they never show together. */}
+            <div className="rv__corner">
+              <span className="rv__index" aria-live="polite">{focused >= 0 ? `${nn(focused)} / ${String(count).padStart(2, '0')}` : ''}</span>
+              {!noWebGL && (
+                <div className={`rv__help${legendOpen ? ' is-open' : ''}`} aria-hidden={focused >= 0}>
+                  <button type="button" className="rv__help-toggle" data-cursor
+                    aria-expanded={legendOpen} aria-controls="rv-legend"
+                    onClick={() => setLegendOpen((v) => !v)}>Controls</button>
+                  {/* Two lists, one shown: CSS picks by (hover: hover) / (hover: none),
+                      which is the honest test for "is there a mouse" — a phone with
+                      a mouse attached gets the mouse list. */}
+                  <dl id="rv-legend" className="rv__legend" data-input="mouse">
+                    <dt>Click</dt><dd>Bring a drawing forward</dd>
+                    <dt>Drag</dt><dd>Move it</dd>
+                    <dt>Shift-drag · right-drag</dt><dd>Turn it</dd>
+                    <dt>Scroll</dt><dd>Walk through the room</dd>
+                    <dt>← → · Esc</dt><dd>Step through · close</dd>
+                  </dl>
+                  <dl className="rv__legend" data-input="touch">
+                    <dt>Tap</dt><dd>Bring a drawing forward</dd>
+                    <dt>Drag a drawing</dt><dd>Move it</dd>
+                    <dt>Drag empty space</dt><dd>Walk through the room</dd>
+                    <dt>Tap again</dt><dd>Close</dd>
+                  </dl>
+                </div>
+              )}
+            </div>
+            <div className="rv__controls">
+              {disturbed && focused < 0 && (
+                <button type="button" className="rv__btn rv__btn--text" data-cursor
+                  onClick={() => { sceneRef.current?.reset(); setDisturbed(false); }}>Reset room</button>
+              )}
+              {focused >= 0 && (
+                <>
+                  <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.prev()} aria-label="Previous drawing">‹</button>
+                  <button type="button" className="rv__btn" data-cursor onClick={() => sceneRef.current?.next()} aria-label="Next drawing">›</button>
+                  <button type="button" className="rv__btn rv__btn--close" data-cursor onClick={() => sceneRef.current?.blur()} aria-label="Close">×</button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@
  * encode-cutouts.mjs — alpha-preserving two-tier WebP for cut-out artwork.
  *
  *   npm run media:cutouts -- <slug> "<source dir>"
+ *   npm run media:cutouts -- <slug> "<source dir>" --append
  *
  * For artwork that is a CUT-OUT — ink on a transparent ground — where alpha is
  * the whole point, so JPEG is out and the generic masters pipeline is wrong
@@ -26,6 +27,12 @@
  *
  * NEVER overwrites. If the target folder already has files this exits 1 and
  * names them (rules R2/R3). Version up the slug or clear the folder yourself.
+ * `--append` is the one sanctioned way to grow a series: numbering continues
+ * from the highest NN already there, and every output path is still checked
+ * for existence before it is written.
+ *
+ * Sources: .png (alpha expected) plus .jpg/.jpeg for scanned drawings — those
+ * have no alpha and encode as opaque WebP, which is correct for a scan.
  */
 import { readdir, mkdir, stat, access } from 'node:fs/promises';
 import { join, extname, basename } from 'node:path';
@@ -39,7 +46,9 @@ const TIERS = [
   { suffix: '.large',  long: 1536, quality: 80, alphaQuality: 60 },
 ];
 
-const [slug, srcDir] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const APPEND = args.includes('--append');
+const [slug, srcDir] = args.filter((a) => !a.startsWith('--'));
 if (!slug || !srcDir) {
   console.error('usage: encode-cutouts.mjs <slug> "<source dir of PNGs>"');
   process.exit(2);
@@ -51,10 +60,15 @@ if (!/^[a-z0-9-]+$/.test(slug)) {
 
 const outDir = join(ROOT, 'public', 'projects', slug);
 
-// Refuse to clobber. A previous run, a hand-dropped file, anything.
+// Refuse to clobber. A previous run, a hand-dropped file, anything — unless
+// --append, in which case numbering continues after what is there.
+let startAt = 0;
 try {
   const existing = (await readdir(outDir)).filter((f) => !f.startsWith('.'));
-  if (existing.length) {
+  if (existing.length && APPEND) {
+    startAt = Math.max(0, ...existing.map((f) => Number((f.match(/^(\d+)\./) || [])[1] || 0)));
+    console.log(`[cutouts] --append: ${existing.length} file(s) present, numbering continues from ${String(startAt + 1).padStart(2, '0')}`);
+  } else if (existing.length) {
     console.error(`[cutouts] ${outDir} already holds ${existing.length} file(s) — refusing to overwrite:`);
     existing.slice(0, 8).forEach((f) => console.error(`  - ${f}`));
     console.error('[cutouts] Version the slug up or clear the folder yourself (R3).');
@@ -65,7 +79,7 @@ try {
 }
 
 const sources = (await readdir(srcDir))
-  .filter((f) => extname(f).toLowerCase() === '.png' && !f.startsWith('.'))
+  .filter((f) => /^\.(png|jpe?g)$/i.test(extname(f)) && !f.startsWith('.'))
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
 if (!sources.length) {
@@ -76,17 +90,17 @@ if (!sources.length) {
 await mkdir(outDir, { recursive: true });
 console.log(`[cutouts] ${sources.length} source PNG(s) → ${outDir}\n`);
 
-const pad = String(sources.length).length < 2 ? 2 : String(sources.length).length;
+const pad = Math.max(2, String(startAt + sources.length).length);
 let total = 0;
 const rows = [];
 
 for (let i = 0; i < sources.length; i += 1) {
   const src = join(srcDir, sources[i]);
-  const nn = String(i + 1).padStart(pad, '0');
+  const nn = String(startAt + i + 1).padStart(pad, '0');
   const meta = await sharp(src).metadata();
-  if (!meta.hasAlpha) {
-    // Not fatal, but the whole reason this script exists is alpha. Say so.
-    console.warn(`  ! ${sources[i]} has no alpha channel — it will encode, but this is the wrong tool for it`);
+  if (!meta.hasAlpha && extname(src).toLowerCase() === '.png') {
+    // A PNG without alpha is probably an export mistake; a JPEG is a scan.
+    console.warn(`  ! ${sources[i]} has no alpha channel — encoding as an opaque plate`);
   }
   const portrait = meta.height >= meta.width;
   const row = { nn, src: basename(src), dims: `${meta.width}x${meta.height}` };
