@@ -5,6 +5,17 @@ opinion; cite what proved it.
 
 ---
 
+**2026-09-11 · A CORS policy added AFTER a browser has cached the object does not reach that
+browser: it keeps serving the headerless copy for the full cache lifetime.** R2 project media
+is `Cache-Control: max-age=2592000, must-revalidate` — 30 days fresh. The preview browser had
+loaded the Reveries textures before the policy existed; after it was set, 14 pieces rendered
+and 2 still failed with "No Access-Control-Allow-Origin", while a fresh `curl` showed the
+header present.
+*Evidence:* `fetch(url, {{mode:'cors', cache:'reload'}})` on all 32 objects → 32/32 ok, and the
+next page load showed 16/16. The console's cumulative error log also kept showing the OLD
+failures across reloads — read the resource entries or the scene, not the console count.
+→ `HANDOFF.md`, ship log
+
 **2026-09-11 · WebGL textures need CORS; `<img>` tags do not — so a bucket that has served
 every image on the site for weeks can still block the first three.js texture.** The R2 public
 bucket sends no `Access-Control-Allow-Origin`. Browsers happily paint a cross-origin image into

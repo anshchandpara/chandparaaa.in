@@ -14,46 +14,48 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-11. Live at `b02dea7`. Everything from the type-and-hierarchy session is shipped;
-the Reveries room is live code but held as a draft until Ansh sets one Cloudflare setting.**
+**2026-09-11. Live at `da432ee`. The Reveries room is open — the lab's front door now leads
+somewhere.**
 
-ONE THING BLOCKS THE ROOM — R2 CORS. `?p=reveries` (sixteen ink cut-outs in a white three.js
-space) loads textures through WebGL, which refuses cross-origin images without a CORS header.
-The bucket sends none, and the API token cannot set bucket config. **Ansh, in the Cloudflare
-dashboard: R2 → `chandparaaa-media` → Settings → CORS policy →**
-`[{"AllowedOrigins":["*"],"AllowedMethods":["GET","HEAD"],"AllowedHeaders":["*"],"MaxAgeSeconds":86400}]`
-Verify with `curl -sI -H "Origin: https://chandparaaa.in" <any r2 url> | grep -i access-control`.
-Then flip `"draft": false` on the `reveries` lab entry (Python, `json.dump(indent=2,
-ensure_ascii=False)`) and ship — that alone puts it in the Archive and makes it the lab hero's
-CTA target. Verified live 2026-09-11: the page renders, white theme applies, 16/16 textures
-blocked — the hold was correct.
+R2 CORS is set (`Access-Control-Allow-Origin: *` on GET; the OPTIONS 403 is irrelevant —
+image loads with `crossOrigin` are simple requests, no preflight). Verified live: 32/32
+objects fetch under CORS, the room loads 16/16 textures, `L·006 · Reveries` is in the Archive
+in lab mode, and the lab hero CTA opens it. One caveat for anyone who visited the draft page
+BEFORE the policy existed: their browser may hold 30-day cached responses with no CORS
+header and see missing pieces — a hard reload fixes it, and no real visitor ever reached the
+draft.
 
-WHAT SHIPPED IN `b02dea7`: the three-step spacing scale, demoted text-break notes, credits
-hairlines removed, card hover captions carrying role · year, 120 lines of dead CSS removed
-(proved by computed-style diff), `useTitleFit` (MANORATHANGAL was rendering as MANORAT on
-production — now 69px and whole), the `.large.webp` two-tier cut-out encoder, the lab-page
-registry + `body.theme-light`, and the lab CTA fixed from a dead `#work`.
+SITE STATE: 27 `work` (22 published), 6 `lab` (2 published: bts-captures, reveries). R2 holds
+305 objects, `media:verify` PASS. 2 of 32 entries carry a Vimeo ID.
 
-SITE STATE: 27 `work` (22 published), 6 `lab` (1 published + reveries as draft). R2 holds 305
-objects, `media:verify` PASS. Local `public/projects/` survived the ship (28 folders).
+WAITING ON ANSH: (1) judge the room — arrangement, drift, fog, focus size; every number is in
+`TUNE` at the top of `src/components/lab/reveriesScene.js`; the front piece sits close to the
+left edge at the entrance (`radius`); (2) rewrite the Reveries title + desc in
+`projects.json`, currently my first draft; (3) the lab CTA copy "Browse experiments" now lands
+on one piece; (4) an Adobe Fonts web project (Obviously Variable, Neue Haas Grotesk, Ambroise,
+Bely) — send the kit ID and the type direction proceeds; (5) the title-fit playground on the
+Desktop if a different curve than 2 lines / 56–136px.
 
-WAITING ON ANSH: (1) the CORS policy above, then un-draft reveries; (2) judge the room —
-arrangement, drift, fog, focus size, all in `TUNE` at the top of
-`src/components/lab/reveriesScene.js` — and rewrite its title/desc, which are my first draft;
-(3) the lab CTA copy reads "Browse experiments" but will land on one piece; (4) an Adobe Fonts
-web project (Obviously Variable, Neue Haas Grotesk, Ambroise, Bely) — send the kit ID;
-(5) the title-fit playground on the Desktop if a different curve than 2 lines / 56–136px.
-
-SETTLED THIS SESSION: Reveries stays a scrolling room with click-to-focus; a direct-manipulation
-"plates" prototype was tried and declined → `memory/decisions.md`.
+SETTLED: Reveries is a scrolling room with click-to-focus; direct-manipulation plates were
+tried and declined → `memory/decisions.md`.
 
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — the manifest guard is npm's `prebuild`.
 2. **Both project hooks live in `Work/Claude/.claude/settings.json`**, the PARENT folder.
 3. **The media manifest REBUILDS from a disk scan.** Never regenerate it where media is absent.
+
+KNOWN LIMIT: `r2.dev` is rate-limited with no fallback; a custom domain needs the DNS zone
+moved to Cloudflare — a deliberate job with real blast radius.
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-11 — Reveries room opened** — commit `da432ee`.
+Ansh set the R2 CORS policy; `reveries` flipped from draft to published. Verified live: 32/32
+objects fetch under CORS, 16/16 textures in the room, Archive row present, lab CTA resolves to
+`?p=reveries`. Found on the way: a browser that loaded the draft before the policy holds
+poisoned 30-day cache entries with no CORS header — `fetch(url, {cache:'reload'})` per object
+repairs it; recorded so the next "some pieces are missing" report is not chased as a bug.
 
 **2026-09-11 — type + hierarchy pass, title fit, dead CSS, Reveries room (draft)** — commit `b02dea7`.
 One commit carrying a session's work: a three-step spacing scale replacing a flat 63–90px
