@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMagnetic } from '../hooks/useMagnetic';
+import Brand from './Brand';
 import './Nav.css';
 
 const PILL_LINKS = [
@@ -21,7 +22,7 @@ export default function Nav({ mode, onMode }) {
 
   return (
     <nav className={`nav${scrolled ? ' is-scrolled' : ''}`} style={{ zIndex: 50 }}>
-      <a href="./" data-cursor className="nav__brand">Ansh Chandpara</a>
+      <Brand />
 
       <div className="nav__right">
         <div className="nav__links">

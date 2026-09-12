@@ -5,6 +5,12 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+/* Each letter carries its own weight (--wght, set inline by Brand.jsx). Width
+   is restated because font-variation-settings replaces the inherited value
+   rather than merging with it. */
+.nav__brand-letter {
+  font-variation-settings: "wdth" var(--display-wdth), "wght" var(--wght, 700);
+}
 
 .nav__right {
   display: flex;

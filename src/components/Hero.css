@@ -74,19 +74,35 @@
 }
 
 /* One span per character so the reveal can decode into them individually AND so
-   each can carry its own `--g` (0→1) — the per-letter glitch intensity Hero.jsx
+   each can carry its own `--g` (0→1) — the per-letter intensity Hero.jsx
    writes from that letter's own distance to the cursor. The base letters never
-   transform (the scatter and gravity sag are both gone), so no `will-change`. */
+   transform (the scatter and gravity sag are both gone), so no `will-change`.
+
+   Weight is per letter on the variable axis: at rest the letter sits at its
+   own random cut (--w0, set inline by Hero.jsx) and travels to the opposite
+   cut (--w1) as --g rises — so the pocket under the cursor re-weights letter
+   by letter, and the word reflows with it. Width is restated because
+   font-variation-settings replaces the inherited value rather than merging
+   with it — dropping it would put the wordmark at the file's condensed
+   default. The short linear transition smooths the per-frame --g writes when
+   the cursor moves fast; it is not what drives the morph. */
 .hero__letter {
   display: inline-block;
   --g: 0;
+  --wght: calc(var(--w0, 700) + (var(--w1, 700) - var(--w0, 700)) * var(--g));
+  font-variation-settings: "wdth" var(--display-wdth), "wght" var(--wght);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--ease),
+    font-variation-settings 0.2s var(--ease);
 }
 
-/* Inside the cursor's pocket the letter inverts. Per letter, not per word —
-   that's what makes the effect local. */
-.hero__letter.is-hot {
-  color: #fff;
-  mix-blend-mode: difference;
+/* The fill exists only in the cursor's pocket — the wordmark at rest is its
+   outline (the ghost below). Where there is no cursor there is no pocket, so
+   touch and reduced-motion get the fill outright. */
+.hero__word > .hero__letter { opacity: var(--g); }
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .hero__word > .hero__letter { opacity: 1; }
 }
 
 /* SVG filter holder — kept out of flow */
@@ -97,23 +113,27 @@
   pointer-events: none;
 }
 
-/* --- Wordmark: a local glitch that follows the cursor --- */
+/* --- Wordmark: an outline that fills in around the cursor --- */
 /* Each letter carries its own `--g`; nothing here is word-wide any more. The
    SVG warp is deliberately NOT driven on hover — a whole-word warp would
-   contradict the locality — so it only fires once, during the reveal pulse. */
+   contradict the locality — so it only fires once, during the reveal pulse.
+   nowrap: the letters are inline-blocks and the word reflows as they
+   re-weight, so it must never be allowed to break between them. */
 .hero__word {
   position: relative;
   display: inline-block;
+  white-space: nowrap;
   color: var(--fg);
   /* Identity warp at rest; the reveal pulses the displacement scale up and back
      down to 0 (see Hero.jsx). */
   filter: url(#hero-glass);
 }
 
-/* Stroke-only registration layer — outline, no fill. Sits exactly over the base
-   letters (same class, so identical metrics). The container only positions; the
-   offset and fade are PER LETTER so the misregistration is confined to the
-   cursor's pocket instead of sliding the whole word. */
+/* Stroke-only layer — outline, no fill — and the wordmark's resting state.
+   Sits exactly over the base letters (same class and the same weight pair, so
+   identical metrics). The container only positions; the offset is PER LETTER
+   so the misregistration is confined to the cursor's pocket instead of sliding
+   the whole word. */
 .hero__ghost {
   position: absolute;
   top: 0;
@@ -125,8 +145,10 @@
 }
 
 .hero__ghost .hero__letter {
-  opacity: calc(var(--g) * 0.9);
   transform: translate3d(calc(var(--g) * 7px), calc(var(--g) * -4px), 0);
+  /* No opacity transition here: the reveal tweens the ghost's opacity with
+     GSAP frame by frame, and a CSS transition on top would drag behind it. */
+  transition-property: transform, font-variation-settings;
 }
 
 

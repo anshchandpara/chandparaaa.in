@@ -52,7 +52,7 @@ SITE STATE: 27 `work` (22 published), 6 `lab` (2 published). R2 holds 456 object
 
 WAITING ON ANSH: (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
-(3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) Adobe Fonts kit ID;
+(3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) judge the new type on dev, unshipped — Obviously Variable (display) + Instrument Sans (body); card titles morph 700 → 200 on hover; the hero wordmark is an outline at rest, each letter at its own random weight, and fills in + flips to the opposite weight only inside the cursor's pocket (touch / reduced-motion get the fill outright); the nav brand sets each letter at a random weight per mount (`lib/weights.js`, `components/Brand.jsx`);
 (5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
 
 THREE THINGS NOT TO BREAK:

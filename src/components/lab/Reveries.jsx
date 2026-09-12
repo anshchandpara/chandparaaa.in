@@ -1,6 +1,7 @@
 import { useLayoutEffect } from 'react';
 import { CURRENT_LOCATION } from '../../lib/location';
 import ReveriesRoom from './ReveriesRoom';
+import Brand from '../Brand';
 
 /**
  * Reveries as a page of its own — `?p=reveries` (see lab/pages.js). The room
@@ -29,7 +30,7 @@ export default function Reveries({ slug }) {
   return (
     <>
       <nav className="nav is-scrolled" style={{ zIndex: 50 }}>
-        <a href="./" data-cursor data-magnetic className="nav__brand">Ansh Chandpara</a>
+        <Brand />
         <div className="nav__links">
           <a href="?page=about#archive" data-cursor>← Lab</a>
           <a href="?page=about" data-cursor>About</a>

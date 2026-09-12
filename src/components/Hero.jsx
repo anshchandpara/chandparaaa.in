@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useMagnetic } from '../hooks/useMagnetic';
 import LocationMap from './LocationMap';
@@ -8,17 +8,17 @@ import { HERO_VIDEO, HERO_POSTER } from '../lib/heroVideo';
 // Lab-mode cover — Ansh's own ornamental drawing (replaces a stock photo).
 import LAB_IMG from '../media/lab/lab-cover.jpg';
 import { scrambleLetters, randomGlyph } from '../lib/glitch';
+import { randomWeight, oppositeWeight } from '../lib/weights';
 import './Hero.css';
 
 const WORDMARK = 'Chandparaaa';
 const LETTERS = WORDMARK.split('');
 const TAIL = 3; // the trailing "aaa" — these resolve last
 
-// The glitch is LOCAL: each letter's intensity comes from its own distance to
-// the cursor, falling to 0 at this radius. Only letters inside it react.
+// The reveal is LOCAL: each letter's intensity comes from its own distance to
+// the cursor, falling to 0 at this radius. Only letters inside it react — at
+// rest the wordmark is its outline (the ghost layer) and nothing else.
 const RADIUS = 150;
-// Above this per-letter intensity the colour inverts.
-const HOT_AT = 0.5;
 
 const COPY = {
   work: {
@@ -40,6 +40,10 @@ export default function Hero({ mode = 'work', play = true }) {
   const wordRef = useRef(null);
   const playedRef = useRef(false);
   const readyRef = useRef(false); // true once the decode has resolved
+  // One random cut per letter on the weight axis, drawn once per mount. Hero.css
+  // morphs each letter from its cut to the opposite one as the cursor nears;
+  // the ghost gets the same pair so outline and fill stay registered.
+  const [weights] = useState(() => LETTERS.map(randomWeight));
 
   const ctaRef = useMagnetic();
   const copy = COPY[mode] ?? COPY.work;
@@ -73,13 +77,14 @@ export default function Hero({ mode = 'work', play = true }) {
     const sub = subRef.current;
 
     if (reduced) {
-      gsap.set(letters, { opacity: 1 });
       if (sub) gsap.set(sub, { opacity: 1, y: 0 });
       readyRef.current = true;
       return;
     }
 
-    gsap.set(letters, { opacity: 0 });
+    // Only the ghost is faded in by the reveal. The fill's opacity is CSS's
+    // (it follows the letter's own --g), so GSAP never writes it.
+    gsap.set(ghosts, { opacity: 0 });
     letters.forEach((el) => (el.textContent = randomGlyph()));
     ghosts.forEach((el) => (el.textContent = randomGlyph()));
     if (sub) gsap.set(sub, { opacity: 0, y: 14 });
@@ -105,12 +110,14 @@ export default function Hero({ mode = 'work', play = true }) {
     const order = [...body, ...tail];
 
     const tl = gsap.timeline();
-    // Opacity only — no transform, or we're back to a scatter.
-    tl.to(letters, {
+    // Opacity only — no transform, or we're back to a scatter. Once every
+    // outline is up the inline value is cleared so the stylesheet owns it again.
+    tl.to(ghosts, {
       opacity: 1,
       duration: 0.16,
       ease: 'none',
       stagger: { each: 0.03, from: 'random' },
+      onComplete: () => gsap.set(ghosts, { clearProps: 'opacity' }),
     });
     if (sub) tl.to(sub, { opacity: 1, y: 0, duration: 0.4, ease: 'none' }, '-=0.05');
 
@@ -153,11 +160,12 @@ export default function Hero({ mode = 'work', play = true }) {
     };
   }, [play, reduced]);
 
-  // Hover: the glitch is LOCAL. Every letter gets its own `--g` from its own
-  // distance to the cursor, so a ~150px pocket of the wordmark glitches and
-  // inverts while the rest stays clean type. Nothing global is driven from
-  // here — in particular the SVG warp is left alone, since a whole-word warp
-  // would contradict the locality.
+  // Hover: the reveal is LOCAL. Every letter gets its own `--g` from its own
+  // distance to the cursor; Hero.css turns that into the fill's opacity and
+  // the letter's travel along the weight axis, so a ~150px pocket of the
+  // wordmark fills in and re-weights while the rest stays an outline. Nothing
+  // global is driven from here — in particular the SVG warp is left alone,
+  // since a whole-word warp would contradict the locality.
   useEffect(() => {
     const word = wordRef.current;
     if (!word || touch || reduced) return undefined;
@@ -182,11 +190,7 @@ export default function Hero({ mode = 'work', play = true }) {
     };
 
     const clear = () => {
-      lettersRef.current.forEach((el) => {
-        if (!el) return;
-        el.style.setProperty('--g', '0');
-        el.classList.remove('is-hot');
-      });
+      lettersRef.current.forEach((el) => el && el.style.setProperty('--g', '0'));
       ghostRef.current.forEach((el) => el && el.style.setProperty('--g', '0'));
     };
 
@@ -213,9 +217,6 @@ export default function Hero({ mode = 'work', play = true }) {
         const g = d >= RADIUS ? 0 : 1 - d / RADIUS;
 
         base.style.setProperty('--g', g.toFixed(3));
-        const isHot = g > HOT_AT;
-        if (base.classList.contains('is-hot') !== isHot) base.classList.toggle('is-hot', isHot);
-
         const gh = ghostRef.current[i];
         if (gh) gh.style.setProperty('--g', g.toFixed(3));
       }
@@ -242,53 +243,6 @@ export default function Hero({ mode = 'work', play = true }) {
       window.removeEventListener('resize', measure);
       if (raf) cancelAnimationFrame(raf);
       clear();
-    };
-  }, [reduced, touch]);
-
-  // Live character churn while the cursor is close: a couple of letters drop to
-  // a glyph and snap back. Only after the decode has resolved, or it fights it.
-  useEffect(() => {
-    if (reduced || touch) return undefined;
-    const timers = new Set();
-
-    const id = setInterval(() => {
-      if (!readyRef.current || !wordRef.current) return;
-
-      // Only letters actually under the cursor's pocket are eligible — each
-      // one's own `--g`, not a word-wide intensity.
-      const near = [];
-      lettersRef.current.forEach((el, i) => {
-        if (!el) return;
-        const g = parseFloat(el.style.getPropertyValue('--g')) || 0;
-        if (g > 0.35) near.push({ i, g });
-      });
-      if (!near.length) return;
-
-      const letters = lettersRef.current;
-      const ghosts = ghostRef.current;
-      const hits = 1 + ((Math.random() * 2) | 0);
-      for (let k = 0; k < hits; k++) {
-        const pick = near[(Math.random() * near.length) | 0];
-        // Stronger intensity → likelier to actually fire.
-        if (Math.random() > pick.g) continue;
-        const i = pick.i;
-        const el = Math.random() < 0.5 ? letters[i] : ghosts[i];
-        if (!el) continue;
-        el.textContent = randomGlyph();
-        const t = setTimeout(() => {
-          el.textContent = LETTERS[i];
-          timers.delete(t);
-        }, 70 + Math.random() * 90);
-        timers.add(t);
-      }
-    }, 90);
-
-    return () => {
-      clearInterval(id);
-      timers.forEach(clearTimeout);
-      // Never leave the wordmark misspelled.
-      lettersRef.current.forEach((el, i) => el && (el.textContent = LETTERS[i]));
-      ghostRef.current.forEach((el, i) => el && (el.textContent = LETTERS[i]));
     };
   }, [reduced, touch]);
 
@@ -355,10 +309,10 @@ export default function Hero({ mode = 'work', play = true }) {
         <LocationMap />
       </div>
 
-      {/* Wordmark — decodes in place, then glitches with cursor proximity.
-          aria-label pins the accessible name: the letters hold random glyphs
-          for ~1s during the decode (and again briefly during hover churn), so
-          without it a screen reader announces the heading as garbage. */}
+      {/* Wordmark — decodes in place as an outline; the fill appears only in
+          the cursor's pocket. aria-label pins the accessible name: the letters
+          hold random glyphs for ~1s during the decode, so without it a screen
+          reader announces the heading as garbage. */}
       <h1 className="hero__title" aria-label={WORDMARK}>
         <span ref={wordRef} className="hero__word" data-cursor>
           {LETTERS.map((ch, i) => (
@@ -366,6 +320,7 @@ export default function Hero({ mode = 'work', play = true }) {
               key={i}
               ref={(el) => (lettersRef.current[i] = el)}
               className="hero__letter"
+              style={{ '--w0': weights[i], '--w1': oppositeWeight(weights[i]) }}
             >
               {ch}
             </span>
@@ -374,7 +329,12 @@ export default function Hero({ mode = 'work', play = true }) {
               <h1>, so without it the heading is announced twice. */}
           <span className="hero__ghost" aria-hidden="true">
             {LETTERS.map((ch, i) => (
-              <span key={i} ref={(el) => (ghostRef.current[i] = el)} className="hero__letter">
+              <span
+                key={i}
+                ref={(el) => (ghostRef.current[i] = el)}
+                className="hero__letter"
+                style={{ '--w0': weights[i], '--w1': oppositeWeight(weights[i]) }}
+              >
                 {ch}
               </span>
             ))}

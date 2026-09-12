@@ -15,9 +15,18 @@
   --line: rgba(244, 241, 234, 0.12); /* hairline dividers */
   --accent: #d98b2b;      /* warm gold accent */
 
-  /* Type */
-  --f-display: "Space Grotesk", "Arial Narrow", sans-serif;
-  --f-sans: "Inter", system-ui, -apple-system, sans-serif;
+  /* Type. Display is Obviously Variable via Adobe Fonts (index.html), with
+     Archivo behind it — both carry a width axis, driven by --display-wdth
+     below. Body is Instrument Sans. */
+  --f-display: "obviously-variable", "Archivo", "Arial Narrow", sans-serif;
+  --f-sans: "Instrument Sans", system-ui, -apple-system, sans-serif;
+  /* Width of the display face, as the font's own wdth axis (50 condensed …
+     200 extended; 100 is the regular cut). Set as a raw axis rather than
+     font-stretch because Adobe's @font-face declares no stretch range, so
+     font-stretch cannot reach the axis — the tag can, and Archivo (the
+     fallback) reads the same tag. The file's built-in default is 50, so this
+     must be set or every heading renders condensed. Override per element. */
+  --display-wdth: 100;
 
   /* Layout */
   --max: 1440px;
@@ -78,6 +87,9 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--f-sans);
+  /* Inherited by everything. Only the display face has a wdth axis, so this
+     is a no-op on body text and sets the cut of every heading in one place. */
+  font-variation-settings: "wdth" var(--display-wdth);
   font-weight: 400;
   font-size: 16px;
   line-height: 1.6;

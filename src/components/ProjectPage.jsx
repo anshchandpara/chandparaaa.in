@@ -12,6 +12,7 @@ import Lightbox from './Lightbox';
 import Compare from './Compare';
 import { getCompares, getCompareLabels } from '../lib/compares';
 import { getHeroVideo } from '../lib/heroVideo';
+import Brand from './Brand';
 import './ProjectPage.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -131,7 +132,7 @@ export default function ProjectPage({ slug }) {
   return (
     <>
       <nav className="nav is-scrolled" style={{ zIndex: 50 }}>
-        <a href="./" data-cursor data-magnetic className="nav__brand">Ansh Chandpara</a>
+        <Brand />
         <div className="nav__links">
           <a href="./#work" data-cursor>← Projects</a>
           <a href="?page=about" data-cursor>About</a>

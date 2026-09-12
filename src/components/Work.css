@@ -208,87 +208,76 @@
   flex-direction: column;
   justify-content: space-between;
   padding: clamp(14px, 1.8vw, 26px);
-  transition: opacity 0.3s var(--ease), transform 0.45s var(--ease);
+  pointer-events: none;
 }
-.fcard__link:hover .fcard__cover,
-.fcard__link:focus-visible .fcard__cover {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
+/* The cover stays through the hover — only its number leaves. */
 .fcard__num {
   font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--fg-3);
   font-variant-numeric: tabular-nums;
+  transition: opacity 0.3s var(--ease);
 }
+.fcard__link:hover .fcard__num,
+.fcard__link:focus-visible .fcard__num { opacity: 0; }
 
+.fcard__cover-foot {
+  transition: transform 0.45s var(--ease);
+}
+.fcard__link:hover .fcard__cover-foot,
+.fcard__link:focus-visible .fcard__cover-foot { transform: translateY(-4px); }
+
+/* The title morphs along the weight axis on hover: bold at rest, its
+   opposite — the lightest cut — once the image is revealed. The width axis
+   is restated here because font-variation-settings replaces, not merges,
+   the inherited value; leaving it out would drop the title to the file's
+   default width, which is the condensed end. Archivo (the fallback) reads
+   the same two tags. */
 .fcard__title {
   font-family: var(--f-display);
   font-weight: 700;
+  font-variation-settings: "wdth" var(--display-wdth), "wght" 700;
   font-size: clamp(24px, 3vw, 46px);
   line-height: 0.98;
   letter-spacing: -0.005em;
   text-transform: uppercase;
   margin: 0 0 6px;
   color: var(--fg);
+  transition: font-variation-settings 0.55s var(--ease);
+}
+.fcard__link:hover .fcard__title,
+.fcard__link:focus-visible .fcard__title {
+  font-variation-settings: "wdth" var(--display-wdth), "wght" 200;
 }
 
+/* Two meta lines share one slot and crossfade: the cover line at rest,
+   role · year on hover. Stacked in a grid cell so the slot never changes
+   height. */
+.fcard__metas {
+  display: grid;
+}
 .fcard__meta {
+  grid-area: 1 / 1;
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--fg-3);
   margin: 0;
+  transition: opacity 0.3s var(--ease);
 }
+.fcard__meta--hover { opacity: 0; color: var(--fg-2); }
+.fcard__link:hover .fcard__meta,
+.fcard__link:focus-visible .fcard__meta { opacity: 0; }
+.fcard__link:hover .fcard__meta--hover,
+.fcard__link:focus-visible .fcard__meta--hover { opacity: 1; }
 
-/* Caption over the revealed image (fades in with it). */
-.fcard__caption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  margin: 0;
-  padding: clamp(14px, 1.8vw, 26px);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.35s var(--ease), transform 0.45s var(--ease);
-  pointer-events: none;
-}
-.fcard__link:hover .fcard__caption,
-.fcard__link:focus-visible .fcard__caption {
-  opacity: 1;
-  transform: none;
-}
-
-.fcard__ctitle {
-  font-family: var(--f-display);
-  font-weight: 700;
-  font-size: clamp(18px, 2vw, 30px);
-  line-height: 1;
-  text-transform: uppercase;
-  margin: 0 0 5px;
-  color: var(--fg);
-}
-
-.fcard__cmeta {
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-2);
-  margin: 0;
-}
 
 /* Denser grids get proportionally smaller type so a 4-up module reads at the
    same visual weight as a 2-up one. */
 .work__grid[data-cols='3'] .fcard__title { font-size: clamp(19px, 2.1vw, 30px); }
 .work__grid[data-cols='4'] .fcard__title { font-size: clamp(16px, 1.5vw, 23px); }
-.work__grid[data-cols='3'] .fcard__ctitle { font-size: clamp(15px, 1.5vw, 21px); }
-.work__grid[data-cols='4'] .fcard__ctitle { font-size: clamp(13px, 1.1vw, 17px); }
 .work__grid[data-cols='4'] .fcard__num,
-.work__grid[data-cols='4'] .fcard__meta,
-.work__grid[data-cols='4'] .fcard__cmeta { font-size: 10px; letter-spacing: 0.12em; }
+.work__grid[data-cols='4'] .fcard__meta { font-size: 10px; letter-spacing: 0.12em; }
 
 .work__foot {
   display: flex;

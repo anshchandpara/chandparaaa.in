@@ -57,21 +57,19 @@ function ProjectCard({ card }) {
           <div className="fcard__glass" />
           <div className="fcard__scrim" />
 
-          {/* Default state — the title fills the box, over the frosted glass. */}
+          {/* One title, always on screen. Hover clears the glass and the
+              title MORPHS along the weight axis (700 → 200) rather than being
+              swapped for a duplicate; the number fades, and the meta slot
+              crossfades from the cover line to the role · year line. */}
           <div className="fcard__cover">
             <span className="fcard__num">{card.num}</span>
             <div className="fcard__cover-foot">
               <h3 className="fcard__title">{card.title}</h3>
-              <p className="fcard__meta">{card.metaLine}</p>
+              <div className="fcard__metas">
+                <p className="fcard__meta">{card.metaLine}</p>
+                <p className="fcard__meta fcard__meta--hover" aria-hidden="true">{card.hoverLine}</p>
+              </div>
             </div>
-          </div>
-
-          {/* Caption over the revealed image. The title stays (it is the
-              anchor — the cover has faded out by now), but the second line
-              carries new information rather than repeating metaLine. */}
-          <div className="fcard__caption">
-            <h3 className="fcard__ctitle">{card.title}</h3>
-            <p className="fcard__cmeta">{card.hoverLine}</p>
           </div>
         </div>
       </a>
