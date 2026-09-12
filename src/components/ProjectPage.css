@@ -167,6 +167,24 @@
   overflow: hidden;
   margin-bottom: var(--sp-section);
 }
+/* The still merges into the page instead of ending on a hard line: a short
+   ramp to --bg along the bottom edge, over the image, the loop and the GL
+   layer alike. --hero-fade is the one dial — the ramp's height. pointer-events
+   stays off so the image underneath still takes the Expand click. */
+.pd__hero {
+  --hero-fade: clamp(72px, 22%, 180px);
+}
+.pd__hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--hero-fade);
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+  z-index: 2;
+}
 
 .pd__hero-img {
   position: absolute;
