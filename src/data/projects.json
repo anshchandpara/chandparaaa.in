@@ -247,19 +247,43 @@
       "num": "28",
       "title": "Decoupled",
       "category": "Title Sequence",
-      "client": "",
+      "client": "Plexus",
       "year": 2021,
       "platform": "Netflix",
-      "role": "CG",
+      "role": "Associate Motion Designer",
       "featured": false,
-      "desc": "Title sequence for the Netflix comedy — the couple's shared life rendered as still-life CG: the espresso machine, the wine, the toothbrushes, every object monogrammed. Wireframe, clay and final for each.",
+      "desc": "Eight title sequences for one show — a writer, the demise of his marriage, and the strange relationships it exposes. Separation played for comedy: objects that belong together, slowly moving apart. Eight photoreal environments, each lit to a real-world setup.",
       "credits": [
-        "CG — Karan Vanjari, Ansh Chandpara"
+        "Studio — Plexus",
+        "Director — Yashoda (@yashoda.plexus)",
+        "Creative Director — Vijesh (@vijesh.plexus)",
+        "Director of Photography — @mr_makhija",
+        "Lead Motion Designer — Jishnu Chatterjee",
+        "Modelling & Animation — @gully_ka_instagrapher",
+        "Associate Motion Designers — Karan Vanjari, Ansh Chandpara",
+        "Editor — Vijesh (@vijesh.plexus)",
+        "DI Colorist — @sidmeer (Bridge Postworks)",
+        "Compositor — Viraj S Patil (Splinter Cell Studios)",
+        "Storyboards — @artofthiyaga",
+        "Typeface & Logo Design — ManVsType",
+        "Additional Design — @divyatakart",
+        "Additional Typography — Vrajesh Pithadia"
       ],
       "gallery": [],
       "image": "",
       "video": "",
-      "draft": true
+      "notes": [
+        {
+          "after": 3,
+          "label": "Concept",
+          "text": "Separation, in a comedic key: things that usually go together, slowly moving apart."
+        },
+        {
+          "after": 9,
+          "label": "Craft",
+          "text": "Eight environments lit and textured photoreal — each one recreating the mood of a real-life lighting setup, then wireframe, clay and final for the record."
+        }
+      ]
     },
     {
       "slug": "hunter",
