@@ -130,7 +130,7 @@
       ],
       "gallery": [],
       "image": "",
-      "video": "",
+      "video": "1226256857",
       "notes": [
         {
           "after": 5,
@@ -142,7 +142,8 @@
           "label": "Craft",
           "text": "High contrast throughout — the palette stays almost monochrome so the fire and the warning lights carry all the colour."
         }
-      ]
+      ],
+      "videoAspect": 2.3933
     },
     {
       "slug": "monsoon-season-mixtape",
