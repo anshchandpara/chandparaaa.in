@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-12. Live at `c687973`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-13. Live at `212e5c6`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -60,9 +60,9 @@ says DYNAMIC even when cached. To change bytes under the TTL rename the object (
 purge in the dashboard. Cloudflare's managed robots.txt prepends an AI-crawler block;
 search engines unaffected.
 
-SITE STATE: 28 `work` (23 published), 6 `lab` (2 published). Manifest references 502 files;
-R2 holds 519 objects — the 17 extra are unreferenced deck stills (Railway Men 021–031, ICC 001,
-Hunter/Equals/UV singles) that Ansh dropped from the batch; local copies + staged masters are
+SITE STATE: 28 `work` (23 published), 6 `lab` (2 published). Manifest references 509 files;
+R2 holds 528 objects — the 19 extra are unreferenced deck stills (Railway Men 021–031, ICC 001,
+Hunter/Equals/UV singles, Lootere loop-05/06) that Ansh dropped or moved; local copies + staged masters are
 MOVED to `~/media-masters/_quarantine/2026-09-13-deck-unselected/` (MANIFEST.md lists keys +
 hashes) — the R2 objects are his to delete. **Unshipped on dev (2026-09-13):** from the "CG for
 Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) + 8
@@ -81,8 +81,9 @@ capability but is no longer used by any entry (Ansh chose one film over eight sl
 Ansh's own caption — six collaborators are Instagram handles until he supplies names; the desc
 and two notes are my words from his caption). Masters staged at `~/media-masters/<slug>/`.
 
-WAITING ON ANSH: (0) say ship for Lootere + Decoupled; real names for the six handle-only
-Decoupled credits; judge the desc/notes; (1) real social URLs + email for the About page and the schema; (2) judge the
+WAITING ON ANSH: (0) real names for the six handle-only Decoupled credits; the Decoupled desc
+and the Lootere Type/Process breaks are my words; 19 unreferenced R2 objects (quarantine
+manifests) are his to delete; (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
 (3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) judge the shipped type live — the random-per-letter weights (hero + brand) and the hero's
 word reflow on hover (the brand's pin is available there too if it shivers); (5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
@@ -94,6 +95,15 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-13 — deck media: Lootere + Decoupled** — commit `212e5c6`.
+From the "CG for Title Design" Google Slides deck (PPTX export, 106 images / 10 GIFs).
+Lootere: +19 stills (the credit-typography frames), 8 process loops (GIF → H.264 2×),
+a Clay → Final A/B slider from the two frame-synced kid-running loops, a `wide` rhythm and
+three text breaks. Decoupled: new published project — 24 frames (finals, triptychs, seven
+set-sheets), suitcase cover, Vimeo 1226250160 as the film, credits from Ansh's caption.
+Five other projects' pulls were quarantined at his word. Verified live: sitemap lists
+decoupled, media 200 from the edge, bundle carries the film id and the breaks.
 
 **2026-09-12 — brand hover flip, pinned** — commits `f78e669` → `c687973` (and the flip
 itself, shipped earlier on "yes do it" — see lessons). Hover flips each brand letter to its
