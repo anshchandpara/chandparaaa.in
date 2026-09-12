@@ -211,7 +211,7 @@ than overwrite.
 # Phase C — object storage
 
 Media lives in **Cloudflare R2** (`chandparaaa-media`) and is served from
-`https://pub-67342d07ad21409f99f55162c3acdbef.r2.dev`. `public/projects/` is gitignored: the
+`https://media.chandparaaa.in` (the bucket's custom domain; the r2.dev development URL still works as a fallback). `public/projects/` is gitignored: the
 files stay on disk locally so `npm run dev` works offline and the manifest can be
 regenerated, but git no longer carries them.
 
