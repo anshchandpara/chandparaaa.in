@@ -243,6 +243,25 @@
       "videoAspect": 1.775
     },
     {
+      "slug": "decoupled",
+      "num": "28",
+      "title": "Decoupled",
+      "category": "Title Sequence",
+      "client": "",
+      "year": 2021,
+      "platform": "Netflix",
+      "role": "CG",
+      "featured": false,
+      "desc": "Title sequence for the Netflix comedy — the couple's shared life rendered as still-life CG: the espresso machine, the wine, the toothbrushes, every object monogrammed. Wireframe, clay and final for each.",
+      "credits": [
+        "CG — Karan Vanjari, Ansh Chandpara"
+      ],
+      "gallery": [],
+      "image": "",
+      "video": "",
+      "draft": true
+    },
+    {
       "slug": "hunter",
       "num": "07",
       "title": "Hunter",

@@ -60,10 +60,18 @@ says DYNAMIC even when cached. To change bytes under the TTL rename the object (
 purge in the dashboard. Cloudflare's managed robots.txt prepends an AI-crawler block;
 search engines unaffected.
 
-SITE STATE: 27 `work` (22 published), 6 `lab` (2 published). R2 holds 456 objects,
-`media:verify` PASS.
+SITE STATE: 28 `work` (22 published), 6 `lab` (2 published). R2 holds 519 objects,
+`media:verify` PASS. **Unshipped on dev (2026-09-13):** 63 new gallery files pulled from the
+"CG for Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames)
++10 process loops (`loop-NN.mp4`, GIF → H.264 at 2×, hand-placed: the pipeline's loop preset
+would have dropped `-poster.jpg` / `.900p.mp4` siblings into the gallery), Railway Men +11
+(nine mono CG frames + two colour), ICC Women's T20 its first image, Equals +3, Hunter +1,
+UV +1, and a NEW DRAFT entry `decoupled` (17 frames, num 28; client/year/role/desc are my
+first draft in my words). Masters staged at `~/media-masters/<slug>/`; deck export in the
+session scratchpad only. Unplaced deck stills (champagne, cork, card-thrower, purple city,
+rain silhouette) skipped at Ansh's word.
 
-WAITING ON ANSH: (1) real social URLs + email for the About page and the schema; (2) judge the
+WAITING ON ANSH: (0) say ship for the deck media + judge the Decoupled draft copy; (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
 (3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) judge the shipped type live — the random-per-letter weights (hero + brand) and the hero's
 word reflow on hover (the brand's pin is available there too if it shivers); (5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
