@@ -34,11 +34,20 @@ export default function Brand() {
     };
     const pin = () => {
       if (!alive) return;
-      cells.forEach((c) => (c.style.width = '')); // measure the natural advance
+      // Transitions off while measuring: flipping the weight to read the hot
+      // advance would otherwise START the hover morph and then reverse it —
+      // a visible wobble on load. The reflow before restoring makes the
+      // rest state land without a transition too.
+      cells.forEach((c) => {
+        c.style.transition = 'none';
+        c.style.width = ''; // measure the natural advance
+      });
       const rest = widthsAt(false);
       const hot = widthsAt(true);
       widthsAt(false);
       cells.forEach((c, i) => (c.style.width = `${Math.max(rest[i], hot[i])}px`));
+      el.getBoundingClientRect();
+      cells.forEach((c) => (c.style.transition = ''));
     };
 
     pin();
