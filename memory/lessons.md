@@ -16,6 +16,13 @@ and the unstyled ‹ › × buttons went live in `c47572d`.
 replacement, diff the SELECTOR LIST before and after (`grep '^\.' | sort`), not just the
 feature you meant to touch. Restored the same day, alongside the zoom work.
 
+**2026-09-12 · `curl -I` says DYNAMIC on an object that GET serves as a HIT.** Probing the
+new edge Cache Rule with HEAD showed `cf-cache-status: DYNAMIC` three times in a row; the same
+object by GET was MISS → HIT → HIT, and a still cached eight minutes earlier reported `age: 499`.
+Cloudflare does not store or report HEAD the way it does GET.
+*Evidence:* `curl -s -o /dev/null -D - <url> | grep cf-cache-status` versus `curl -sI`. Probe
+caches with the verb the browser uses.
+
 **2026-09-12 · Resource Timing sizes are 0 for every cross-origin load unless the origin sends
 `Timing-Allow-Origin` — so "transferSize 0" means "hidden", not "blocked".** After moving media
 to `media.chandparaaa.in`, a check counting `transferSize===0` reported 51 "CORS failures" on

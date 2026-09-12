@@ -37,11 +37,12 @@ DOMAIN + MEDIA ORIGIN: nameservers are **Cloudflare**, the site is proxied, and 
 serves from **`https://media.chandparaaa.in`** — the R2 bucket's custom domain, connected
 2026-09-12 (`.env.production`). Verified: 200 + `Access-Control-Allow-Origin: *`, valid
 auto-managed cert, bytes identical to r2.dev, live bundle has zero r2.dev references, 61/61
-room textures load. r2.dev stays enabled as a fallback. **NOT YET CACHED AT THE EDGE** —
-`cf-cache-status: DYNAMIC` on every request, so first loads run to APAC (room base tier:
-median 5.6 s, slowest 11.5 s). Needs one Cache Rule in the zone: Caching → Cache Rules →
-hostname equals `media.chandparaaa.in` → Eligible for cache → Edge TTL: use origin
-cache-control (objects send 30 days). Dashboard-only; Ansh's move.
+room textures load. r2.dev stays enabled as a fallback. **Edge-cached** since 2026-09-12 via a zone Cache Rule (`http.request.full_uri wildcard
+"https://media.chandparaaa.in/*"` → eligible, edge TTL from origin cache-control = 30 days).
+Verified GET: MISS → HIT → HIT; per-texture ~200 ms from the edge with the browser cache
+bypassed, versus a 5.6 s median to origin before. Note: `curl -I` (HEAD) reports DYNAMIC even
+when GET is cached — always probe with GET. Renaming an object (`-v2`) remains the way to
+change bytes under a 30-day TTL, or purge the zone cache in the dashboard.
 Also from Cloudflare: its managed robots.txt prepends a block disallowing AI-training crawlers
 (GPTBot, CCBot, ClaudeBot, Google-Extended, …) — search engines unaffected, our Sitemap line
 follows beneath.
@@ -52,7 +53,7 @@ SITE STATE: 27 `work` (22 published), 6 `lab` (2 published). R2 holds 456 object
 WAITING ON ANSH: (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
 (3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) Adobe Fonts kit ID;
-(5) title-fit curve if not 2 lines / 56–136px; (6) the edge Cache Rule for media.chandparaaa.in, above.
+(5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
 
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — prebuild = manifest guard + sitemap.
