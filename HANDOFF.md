@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-12. Live at `206c7b5`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-12. Live at `c687973`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -31,7 +31,10 @@ fallback; body is Instrument Sans. Per-letter weight play, all on the wght axis:
   word reflows as letters re-weight — accepted. Touch / reduced-motion get the fill outright.
   The load decode now decodes into the outline; inversion and glyph churn are gone.
 - **Brand** (`components/Brand.jsx`): "Ansh Chandpara" in all three navs, one random weight per
-  letter per mount. So the hero and brand look different on every load — by design.
+  letter per mount; hover flips every letter to its opposite cut. Each letter is PINNED to a
+  fixed cell (the wider of its two cuts, measured after the kit loads, transitions suspended
+  while measuring) so the flip morphs in place — unpinned it reflowed 3.6px and shivered.
+  So the hero and brand look different on every load — by design.
 Verification note: the preview pane throttles CSS transitions as well as rAF — inject
 `transition:none` before reading computed weights/opacity, or you read mid-flight values.
 
@@ -62,8 +65,8 @@ SITE STATE: 27 `work` (22 published), 6 `lab` (2 published). R2 holds 456 object
 
 WAITING ON ANSH: (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
-(3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) judge the shipped type live — the random-per-letter weights (hero + brand), the hero's word
-reflow on hover, and whether the brand should flip on hover too (not asked, not built); (5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
+(3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) judge the shipped type live — the random-per-letter weights (hero + brand) and the hero's
+word reflow on hover (the brand's pin is available there too if it shivers); (5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
 
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — prebuild = manifest guard + sitemap.
@@ -72,6 +75,13 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-12 — brand hover flip, pinned** — commits `f78e669` → `c687973` (and the flip
+itself, shipped earlier on "yes do it" — see lessons). Hover flips each brand letter to its
+opposite weight; letters sit in fixed cells so nothing reflows (0.000px shift, measured);
+transitions suspended during the measurement pass (0 off-rest frames on load in real Chrome).
+Diagnosed with headless Chrome over CDP because the preview pane runs at ~1.8 fps when not
+fronted — every transition looks like a jump there.
 
 **2026-09-12 — type: Adobe kit + per-letter weight play** — commit `206c7b5`.
 Obviously Variable (display) + Instrument Sans (body) via `use.typekit.net/jkq4ugc.css`;
