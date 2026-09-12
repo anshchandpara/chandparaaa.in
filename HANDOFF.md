@@ -65,8 +65,13 @@ R2 holds 519 objects — the 17 extra are unreferenced deck stills (Railway Men 
 Hunter/Equals/UV singles) that Ansh dropped from the batch; local copies + staged masters are
 MOVED to `~/media-masters/_quarantine/2026-09-13-deck-unselected/` (MANIFEST.md lists keys +
 hashes) — the R2 objects are his to delete. **Unshipped on dev (2026-09-13):** from the "CG for
-Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) +10
-process loops (`loop-NN.mp4`, GIF → H.264 at 2×, ~16 MB total, hand-placed: the pipeline's loop
+Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) + 8
+process loops in the gallery + the two kid-running loops (clay / colour, 66 frames each, in
+sync) as the page's A/B slider (`compare/01-clean.mp4` + `01-final.mp4`, labels "Clay → Final";
+the gallery copies `loop-05/06` moved to `~/media-masters/_quarantine/2026-09-13-lootere-loops-
+to-compare/`, R2 copies unreferenced). Lootere's gallery now has a rhythm — a per-entry `wide`
+list in projects.json (basenames that span both columns; the first frame always does) and
+three text breaks (Concept · Type · Process; Type and Process are my words, first draft) (`loop-NN.mp4`, GIF → H.264 at 2×, ~16 MB total, hand-placed: the pipeline's loop
 preset would have dropped `-poster.jpg` / `.900p.mp4` siblings into the gallery), and a NEW
 PUBLISHED entry `decoupled` (num 28, 2021, Netflix, client Plexus, cover = the suitcase
 `008.jpg`, 24 frames incl. the seven composite set-sheets, Vimeo `1226250160` ("All episodes",

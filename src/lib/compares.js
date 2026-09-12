@@ -19,6 +19,7 @@ const isVideo = (url) => /\.(mp4|webm)(\?|$)/i.test(url);
  */
 const LABELS = {
   asur: { before: 'WIP', after: 'Final', heading: 'WIP → Final' },
+  lootere: { before: 'Clay', after: 'Final', heading: 'Clay → Final' },
 };
 const DEFAULT_LABELS = { before: 'Plate', after: 'Final', heading: 'Plate → Final' };
 

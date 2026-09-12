@@ -235,12 +235,34 @@
       "video": "1214204485",
       "notes": [
         {
-          "after": 2,
+          "after": 1,
           "label": "Concept",
           "text": "Pirates as hunter-gatherers: cargo ships stalked like prey across open water. Eat or be eaten."
+        },
+        {
+          "after": 4,
+          "label": "Type",
+          "text": "Every credit is set into the world it's cut against — a wall, a hull, a slab of sky — and travels with the shot."
+        },
+        {
+          "after": 23,
+          "label": "Process",
+          "text": "The same streets and hulls in the states they passed through: wireframe, clay, then colour. The slider above is one shot crossing over."
         }
       ],
-      "videoAspect": 1.775
+      "videoAspect": 1.775,
+      "wide": [
+        "005.jpg",
+        "006.jpg",
+        "013.jpg",
+        "020.jpg",
+        "023.jpg",
+        "024.jpg",
+        "loop-01.mp4",
+        "loop-04.mp4",
+        "loop-07.mp4",
+        "loop-10.mp4"
+      ]
     },
     {
       "slug": "decoupled",

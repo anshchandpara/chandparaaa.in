@@ -29,6 +29,7 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       // iframe is sized from this to COVER rather than letterbox. 16/9 fallback.
       videoAspect: Number(p.videoAspect) > 0 ? Number(p.videoAspect) : 16 / 9,
       youtube: p.youtube || '', // full YouTube URL — "Watch the film" link
+      wide: Array.isArray(p.wide) ? p.wide.map((w) => String(w).trim()).filter(Boolean) : [],
       // A show with several title sequences: one slot per episode, rendered as a
       // grid under the facts. `video` is a Vimeo ID; empty = reserved, drawn as a
       // placeholder until the film lands. [{ label, video }]
@@ -92,13 +93,17 @@ export function getProject(slug) {
   // and everything else — stills, GIFs and video loops — follows below.
   const imgs = getImages(item.slug, baseName(item.image));
   const heroImg = imgs.find((url) => !isVideoSrc(url)) || '';
+  // Frames that span both columns: the first one always, plus any the entry
+  // names in `wide` (basenames) — the rhythm of a gallery is set there, not
+  // by re-numbering files.
+  const wide = new Set(item.wide || []);
   const galleryImgs = imgs
     .filter((url) => url !== heroImg)
     .map((src, i) => ({
       src,
       video: isVideoSrc(src),
       alt: `${item.title || 'Frame'} — frame ${i + 1}`,
-      wide: i === 0,
+      wide: i === 0 || wide.has(baseName(src)),
     }));
 
   return { item, next, accent, heroImg, galleryImgs };
