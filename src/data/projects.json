@@ -271,7 +271,7 @@
       ],
       "gallery": [],
       "image": "008.jpg",
-      "video": "",
+      "video": "1226250160",
       "notes": [
         {
           "after": 3,
@@ -284,40 +284,7 @@
           "text": "Eight environments lit and textured photoreal — each one recreating the mood of a real-life lighting setup, then wireframe, clay and final for the record."
         }
       ],
-      "sequences": [
-        {
-          "label": "Episode 01",
-          "video": ""
-        },
-        {
-          "label": "Episode 02",
-          "video": ""
-        },
-        {
-          "label": "Episode 03",
-          "video": ""
-        },
-        {
-          "label": "Episode 04",
-          "video": ""
-        },
-        {
-          "label": "Episode 05",
-          "video": ""
-        },
-        {
-          "label": "Episode 06",
-          "video": ""
-        },
-        {
-          "label": "Episode 07",
-          "video": ""
-        },
-        {
-          "label": "Episode 08",
-          "video": ""
-        }
-      ]
+      "videoAspect": 1.775
     },
     {
       "slug": "hunter",
