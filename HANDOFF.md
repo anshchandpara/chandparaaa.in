@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-13. Live at `212e5c6`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-13. Live at `99b7369`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -95,6 +95,13 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-13 — Railway Men film + hero fade** — commit `99b7369`.
+Vimeo 1226256857 as the Railway Men film (scope 2.393, aspect fetched); its hero is now the
+one-point track frame (009). Every project hero fades into the page along its bottom edge
+(`.pd__hero::after`, dial `--hero-fade`, default clamp(72px, 22%, 180px)) — stills, hero
+loops and the GL layer alike; clicks still reach the image. Verified live by grep of the
+bundle and stylesheet.
 
 **2026-09-13 — deck media: Lootere + Decoupled** — commit `212e5c6`.
 From the "CG for Title Design" Google Slides deck (PPTX export, 106 images / 10 GIFs).
