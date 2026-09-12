@@ -8,6 +8,14 @@ decision — add it, mark the old one superseded, and never silently delete.
 
 ---
 
+**2026-09-12 · The lab home is the hero and the Reveries room, one scroll.** Lab mode on Home
+used to end at the hero (a dead `#work` CTA). Now `ReveriesRoom` mounts beneath it as a sticky
+section: no page change, the page's own scroll drives the walk, and the transition is a ground
+ramp (dark → white, fog and piece opacity² alongside) under a soft top mask — "gradient
+transition on scroll instead of a hard color break". The `?p=reveries` page still exists for the
+Archive and Next links and wraps the same component without ramps. A lab grid on Home remains a
+separate, undecided thing. → `src/components/lab/ReveriesRoom.jsx`
+
 **2026-09-11 · The Reveries room mixes cut-outs with opaque plates, scattered — not sorted.**
 Eight of the 61 pieces are opaque rectangles (full paintings, a scan, a coloured ground).
 Raised as a choice; Ansh: "opaque images are fine, use them, scatter them across." So placement
