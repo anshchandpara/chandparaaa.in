@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { randomWeight } from '../lib/weights';
+import { randomWeight, oppositeWeight } from '../lib/weights';
 
 const NAME = 'Ansh Chandpara';
 const CHARS = NAME.split('');
@@ -8,7 +8,9 @@ const CHARS = NAME.split('');
  * The nav wordmark. One span per letter so each can sit at its own random cut
  * on the display face's weight axis (see lib/weights.js); the cuts are drawn
  * once per mount, so the line is stable while a page is open and re-set on
- * the next. Shared by every nav that carries the name.
+ * the next. Hovering the link flips every letter to its opposite cut
+ * (Nav.css) — thin goes heavy, heavy goes thin. Shared by every nav that
+ * carries the name.
  */
 export default function Brand() {
   const [weights] = useState(() => CHARS.map(randomWeight));
@@ -18,7 +20,11 @@ export default function Brand() {
         ch === ' ' ? (
           ' '
         ) : (
-          <span key={i} className="nav__brand-letter" style={{ '--wght': weights[i] }}>
+          <span
+            key={i}
+            className="nav__brand-letter"
+            style={{ '--w0': weights[i], '--w1': oppositeWeight(weights[i]) }}
+          >
             {ch}
           </span>
         )

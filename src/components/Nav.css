@@ -5,11 +5,18 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-/* Each letter carries its own weight (--wght, set inline by Brand.jsx). Width
-   is restated because font-variation-settings replaces the inherited value
-   rather than merging with it. */
+/* Each letter sits at its own cut (--w0, set inline by Brand.jsx) and flips to
+   the opposite cut (--w1) while the link is hovered — the whole name at once,
+   each letter along its own distance. Width is restated because
+   font-variation-settings replaces the inherited value rather than merging
+   with it. */
 .nav__brand-letter {
-  font-variation-settings: "wdth" var(--display-wdth), "wght" var(--wght, 700);
+  --wght: var(--w0, 700);
+  font-variation-settings: "wdth" var(--display-wdth), "wght" var(--wght);
+  transition: font-variation-settings 0.45s var(--ease);
+}
+.nav__brand:hover .nav__brand-letter {
+  --wght: var(--w1, 700);
 }
 
 .nav__right {
