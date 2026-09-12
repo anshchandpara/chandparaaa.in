@@ -68,7 +68,10 @@ hashes) — the R2 objects are his to delete. **Unshipped on dev (2026-09-13):**
 Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) +10
 process loops (`loop-NN.mp4`, GIF → H.264 at 2×, ~16 MB total, hand-placed: the pipeline's loop
 preset would have dropped `-poster.jpg` / `.900p.mp4` siblings into the gallery), and a NEW
-PUBLISHED entry `decoupled` (num 28, 2021, Netflix, client Plexus, 17 frames, credits from
+PUBLISHED entry `decoupled` (num 28, 2021, Netflix, client Plexus, cover = the suitcase
+`008.jpg`, 24 frames incl. the seven composite set-sheets, plus a NEW `sequences` field — eight
+reserved 16:9 slots in a four-across grid under the facts (`.pd__seqs`, ProjectPage), each
+becoming a Vimeo player the moment its `video` ID is filled in; credits from
 Ansh's own caption — six collaborators are Instagram handles until he supplies names; the desc
 and two notes are my words from his caption). Masters staged at `~/media-masters/<slug>/`.
 

@@ -505,6 +505,50 @@ a.pd__name.is-self:hover {
   display: block;
 }
 
+/* Sequence grid — one player per episode, four across (two across on phones).
+   Reserved slots share the dashed look of .pd__slot so an unfilled set reads as
+   intent, not as a broken page. */
+.pd__seqs {
+  margin: 0 0 var(--sp-section);
+}
+.pd__seqs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.pd__seq {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #000;
+}
+.pd__seq--reserved {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line);
+  background: var(--bg-2);
+  text-align: center;
+  padding: 16px;
+}
+.pd__seq--reserved span {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.pd__seq-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+@media (max-width: 860px) {
+  .pd__seqs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 860px) {
   .pd__id { grid-template-columns: 1fr; gap: 28px; }
   .pd__hero { height: 42vh; min-height: 260px; }

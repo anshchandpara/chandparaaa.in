@@ -243,6 +243,37 @@ export default function ProjectPage({ slug }) {
           </div>
         )}
 
+        {/* Several title sequences (one per episode): a grid of players, four
+            across. Slots with no film yet are drawn as reserved space so the
+            page already holds the shape of the finished set. */}
+        {item.sequences.length > 0 && (
+          <div className="pd__seqs" data-rv>
+            <p className="eyebrow pd__film-label">
+              Title sequences · {String(item.sequences.length).padStart(2, '0')}
+            </p>
+            <div className="pd__seqs-grid">
+              {item.sequences.map((q, i) => (
+                <div
+                  key={i}
+                  className={`pd__seq${q.video ? '' : ' pd__seq--reserved'}`}
+                >
+                  {q.video ? (
+                    <iframe
+                      className="pd__seq-video"
+                      title={`${item.title} — ${q.label || `sequence ${i + 1}`}`}
+                      src={`https://player.vimeo.com/video/${q.video}?title=0&byline=0&portrait=0&dnt=1&color=d98b2b`}
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span>{q.label || `Sequence ${String(i + 1).padStart(2, '0')}`}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {item.youtube && (
           <div className="pd__watch" data-rv>
             <a

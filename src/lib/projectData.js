@@ -29,6 +29,13 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       // iframe is sized from this to COVER rather than letterbox. 16/9 fallback.
       videoAspect: Number(p.videoAspect) > 0 ? Number(p.videoAspect) : 16 / 9,
       youtube: p.youtube || '', // full YouTube URL — "Watch the film" link
+      // A show with several title sequences: one slot per episode, rendered as a
+      // grid under the facts. `video` is a Vimeo ID; empty = reserved, drawn as a
+      // placeholder until the film lands. [{ label, video }]
+      sequences: (p.sequences || []).map((q) => ({
+        label: (q.label || '').trim(),
+        video: (q.video || '').trim(),
+      })),
       // Text breaks between gallery frames: [{ after: <n frames>, label?, text }]
       notes: (p.notes || [])
         .map((n) => ({

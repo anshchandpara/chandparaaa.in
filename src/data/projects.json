@@ -283,6 +283,40 @@
           "label": "Craft",
           "text": "Eight environments lit and textured photoreal — each one recreating the mood of a real-life lighting setup, then wireframe, clay and final for the record."
         }
+      ],
+      "sequences": [
+        {
+          "label": "Episode 01",
+          "video": ""
+        },
+        {
+          "label": "Episode 02",
+          "video": ""
+        },
+        {
+          "label": "Episode 03",
+          "video": ""
+        },
+        {
+          "label": "Episode 04",
+          "video": ""
+        },
+        {
+          "label": "Episode 05",
+          "video": ""
+        },
+        {
+          "label": "Episode 06",
+          "video": ""
+        },
+        {
+          "label": "Episode 07",
+          "video": ""
+        },
+        {
+          "label": "Episode 08",
+          "video": ""
+        }
       ]
     },
     {
