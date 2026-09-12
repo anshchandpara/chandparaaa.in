@@ -16,6 +16,15 @@ and the unstyled ‹ › × buttons went live in `c47572d`.
 replacement, diff the SELECTOR LIST before and after (`grep '^\.' | sort`), not just the
 feature you meant to touch. Restored the same day, alongside the zoom work.
 
+**2026-09-12 · Resource Timing sizes are 0 for every cross-origin load unless the origin sends
+`Timing-Allow-Origin` — so "transferSize 0" means "hidden", not "blocked".** After moving media
+to `media.chandparaaa.in`, a check counting `transferSize===0` reported 51 "CORS failures" on
+a page with no console errors and 51 textures visibly loaded. r2.dev had exposed the sizes;
+the custom domain does not.
+*Evidence:* `performance.getEntriesByType('resource')` showed 61 entries from the new host,
+all with 0 sizes, while the scene held 61/61 textures with `naturalWidth > 0`. Judge loads by
+the thing that loaded (image dimensions, texture state), never by timing sizes across origins.
+
 **2026-09-11 · A CORS policy added AFTER a browser has cached the object does not reach that
 browser: it keeps serving the headerless copy for the full cache lifetime.** R2 project media
 is `Cache-Control: max-age=2592000, must-revalidate` — 30 days fresh. The preview browser had

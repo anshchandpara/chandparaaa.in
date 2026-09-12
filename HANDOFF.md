@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-12. Live at `54a4cf1`. The lab home scrolls straight into the Reveries room; the site
+**2026-09-12. Live at `f48e6e3`. The lab home scrolls straight into the Reveries room; the site
 has its SEO foundations; the domain now runs through Cloudflare.**
 
 LAB HOME = HERO + ROOM. `ReveriesRoom` (`src/components/lab/ReveriesRoom.jsx`) is a section
@@ -33,12 +33,18 @@ about, VideoObject or CreativeWork per project). Static defaults + share card (`
 email in the schema — the About page's four socials are `href="#"` and its mailto is flagged
 stale.** Per-project share cards need prerendered path URLs — deliberately not done.
 
-DOMAIN: nameservers are now **Cloudflare** (`robin`/`tim.ns.cloudflare.com`) and the site is
-proxied (`server: cloudflare`). Two consequences: (1) Cloudflare's managed robots.txt prepends a
-block that DISALLOWS AI-training crawlers (GPTBot, CCBot, ClaudeBot, Google-Extended, …) — a
-dashboard setting, search engines unaffected, ours follows beneath with the Sitemap line;
-(2) **the R2 custom domain is now cheap** — a `media.` subdomain on the bucket would replace
-rate-limited `r2.dev`. Not done; worth doing.
+DOMAIN + MEDIA ORIGIN: nameservers are **Cloudflare**, the site is proxied, and media now
+serves from **`https://media.chandparaaa.in`** — the R2 bucket's custom domain, connected
+2026-09-12 (`.env.production`). Verified: 200 + `Access-Control-Allow-Origin: *`, valid
+auto-managed cert, bytes identical to r2.dev, live bundle has zero r2.dev references, 61/61
+room textures load. r2.dev stays enabled as a fallback. **NOT YET CACHED AT THE EDGE** —
+`cf-cache-status: DYNAMIC` on every request, so first loads run to APAC (room base tier:
+median 5.6 s, slowest 11.5 s). Needs one Cache Rule in the zone: Caching → Cache Rules →
+hostname equals `media.chandparaaa.in` → Eligible for cache → Edge TTL: use origin
+cache-control (objects send 30 days). Dashboard-only; Ansh's move.
+Also from Cloudflare: its managed robots.txt prepends a block disallowing AI-training crawlers
+(GPTBot, CCBot, ClaudeBot, Google-Extended, …) — search engines unaffected, our Sitemap line
+follows beneath.
 
 SITE STATE: 27 `work` (22 published), 6 `lab` (2 published). R2 holds 456 objects,
 `media:verify` PASS.
@@ -46,7 +52,7 @@ SITE STATE: 27 `work` (22 published), 6 `lab` (2 published). R2 holds 456 object
 WAITING ON ANSH: (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
 (3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) Adobe Fonts kit ID;
-(5) title-fit curve if not 2 lines / 56–136px; (6) whether to do the R2 custom domain now.
+(5) title-fit curve if not 2 lines / 56–136px; (6) the edge Cache Rule for media.chandparaaa.in, above.
 
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — prebuild = manifest guard + sitemap.
@@ -55,6 +61,15 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-12 — media on media.chandparaaa.in** — commit `f48e6e3`.
+One line in `.env.production`, once Ansh connected the custom domain in R2 (the zone had
+quietly moved to Cloudflare). Verified end to end before flipping: DNS at the authoritative
+NS, cert, CORS header, byte-identical objects; then live: no r2.dev in the bundle, project
+media and all 61 room textures from the new host, 0 broken. Found on the way: the new host
+sends no `Timing-Allow-Origin`, so Resource Timing reports 0 bytes for every successful
+cross-origin load — a "0 bytes = blocked" heuristic is wrong there; read the scene, not the
+sizes. Edge caching still off (DYNAMIC) pending a Cache Rule.
 
 **2026-09-12 — lab home → Reveries seamless scroll with ground ramp; SEO foundations** — commit `54a4cf1`.
 The room became a sticky section under the lab hero (same component serves `?p=reveries`);
