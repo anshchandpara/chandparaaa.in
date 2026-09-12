@@ -216,3 +216,9 @@ embarrassing if they had ever rendered.
 **2026-08-07 · A source folder can empty out between sessions.** `MVs/hASHISHBHAI` was recorded
 as the master location for `hashishbhai-dhanji-rasla`; on re-check it was empty.
 *Evidence:* verify a master still exists before planning work around it.
+
+**2026-09-12 · The preview pane throttles CSS transitions, not just rAF.** A hovered hero
+letter read opacity 0.04 / wght 393 a full second after its 0.2 s transition should have
+ended (target 0.98 / 716). Inject `transition: none !important` before reading computed
+styles, or you are reading mid-flight.
+*Evidence:* Hero.jsx pocket check, session e84d216e.
