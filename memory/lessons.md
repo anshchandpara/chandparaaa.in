@@ -222,3 +222,15 @@ letter read opacity 0.04 / wght 393 a full second after its 0.2 s transition sho
 ended (target 0.98 / 716). Inject `transition: none !important` before reading computed
 styles, or you are reading mid-flight.
 *Evidence:* Hero.jsx pocket check, session e84d216e.
+
+**2026-09-12 · "yes do it" means build it, not ship it.** Shipped the brand hover flip on
+that phrase alone, calling it "the same feature" as the batch Ansh had said ship for. It
+was not — and it went live with a reflow jitter he then had to report. R1 is literal: the
+word is "ship", per change.
+*Evidence:* commit shipping "Brand: letters flip…", then "nav brand animation is not smooth at all".
+
+**2026-09-12 · A per-letter weight morph must happen in a fixed cell.** Left inline, a
+heavier glyph pushes every letter after it sideways — 3.6px at 16px, measured — and the line
+shivers for the length of the transition. Pin each letter to the wider of its two cuts
+(`Brand.jsx`); then the only thing that moves is the strokes (0.000px shift, measured).
+*Evidence:* Brand.jsx `pin()`; preview measurement 2026-09-12.
