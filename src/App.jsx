@@ -6,12 +6,16 @@ import AboutPage from './components/AboutPage';
 import ProjectPage from './components/ProjectPage';
 import { LAB_PAGES } from './components/lab/pages';
 import { useRoute, installRouter } from './hooks/useRoute';
+import { useDocumentMeta } from './hooks/useDocumentMeta';
+import { metaForRoute } from './lib/seo';
 
 export default function App() {
   const { slug, page } = useRoute();
 
   // Intercept in-app links for client-side navigation (no full reload).
   useEffect(() => installRouter(), []);
+  // Title, description, canonical, share card and JSON-LD follow the route.
+  useDocumentMeta(metaForRoute({ slug, page }));
 
   let view;
   let key;

@@ -5,7 +5,6 @@ import LocationMap from './LocationMap';
 // Hero background loop — muted, self-hosted in /public. Shared with the Landing
 // gate (lib/heroVideo.js) so both play the same cached file.
 import { HERO_VIDEO, HERO_POSTER } from '../lib/heroVideo';
-import { getLatestLab } from '../lib/projectData';
 // Lab-mode cover — Ansh's own ornamental drawing (replaces a stock photo).
 import LAB_IMG from '../media/lab/lab-cover.jpg';
 import { scrambleLetters, randomGlyph } from '../lib/glitch';
@@ -44,11 +43,17 @@ export default function Hero({ mode = 'work', play = true }) {
 
   const ctaRef = useMagnetic();
   const copy = COPY[mode] ?? COPY.work;
-  // Work mode scrolls to the masonry. Lab mode has no masonry — `#work` was a
-  // dead link there — so its door is the newest published experiment, with
-  // the Archive as the fallback when nothing is published.
-  const latestLab = mode === 'lab' ? getLatestLab() : null;
-  const ctaHref = mode === 'lab' ? (latestLab ? `?p=${latestLab.slug}` : '?page=about#archive') : '#work';
+  // Work mode scrolls to the masonry; lab mode scrolls to the room that now
+  // sits right under this hero. Both are anchors on this page, so the CTA
+  // smooth-scrolls rather than navigating — the router leaves bare hashes
+  // alone, and instant jumps are exactly what "seamless" is not.
+  const ctaHref = mode === 'lab' ? '#reveries' : '#work';
+  const onCta = (e) => {
+    const el = document.querySelector(ctaHref);
+    if (!el) return; // not on this page — let the browser do what it does
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const reduced =
     typeof window !== 'undefined' &&
@@ -380,7 +385,7 @@ export default function Hero({ mode = 'work', play = true }) {
       {/* Subhead + CTA */}
       <div className="hero__foot">
         <p ref={subRef} className="hero__sub">{copy.sub}</p>
-        <a ref={ctaRef} href={ctaHref} className="hero__cta" data-magnetic data-cursor>
+        <a ref={ctaRef} href={ctaHref} onClick={onCta} className="hero__cta" data-magnetic data-cursor>
           <span>{copy.cta}</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M12 4v16m0 0l-6-6m6 6l6-6" />

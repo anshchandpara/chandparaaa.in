@@ -129,7 +129,7 @@ export default function Lightbox({ images, index, onClose, onNavigate }) {
                 aria-label={`Go to image ${i + 1}`}
                 aria-current={i === index || undefined}
               >
-                <img src={im.src} alt="" loading="lazy" draggable="false" />
+                <img src={im.src} alt={im.alt || ''} loading="lazy" draggable="false" />
               </button>
             ))}
           </div>

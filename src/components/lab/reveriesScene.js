@@ -106,12 +106,21 @@ export function createScene(canvas, items, opts = {}) {
   // Throws when WebGL is unavailable — the caller catches and falls back.
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0xffffff, 1);
+  // The ground is driven by the shell: white when the room is pinned, the
+  // site's dark when it is sliding in over the hero or out to the footer.
+  // Clear colour and fog move together, so the drawings dissolve INTO the
+  // ground whatever shade it is — black ink emerges out of the dark as the
+  // room brightens, which is the whole transition.
+  const GROUND_DARK = new THREE.Color(0x0a0a0a);
+  const GROUND_LIGHT = new THREE.Color(0xffffff);
+  const ground = GROUND_LIGHT.clone();
+  let groundT = 1; // 0 dark … 1 white; pieces fade with it (see the frame loop)
+  renderer.setClearColor(ground, 1);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xffffff, TUNE.fog[0], TUNE.fog[1]);
+  scene.fog = new THREE.Fog(ground.clone(), TUNE.fog[0], TUNE.fog[1]);
 
   const camera = new THREE.PerspectiveCamera(TUNE.fov, 1, 0.1, 60);
   camera.position.set(0, 0, TUNE.camZ);
@@ -654,13 +663,21 @@ export function createScene(canvas, items, opts = {}) {
   // ---- frame ---------------------------------------------------------------
   let t = 0;
   let disposed = false;
+  let visible = true; // the shell gates this on the stage being on screen
   const panel = {
     render(dt) {
+      if (!visible) return;
       t += dt;
       placeCamera();
       const amp = reducedMotion ? 0 : 1;
       pieces.forEach((p) => {
-        p.material.opacity = p.loaded * p.dim;
+        // Opacity follows the ground ramp as well as load and focus state.
+        // Without this the opaque plates — white paper, a coloured card —
+        // lit up as bright rectangles against the dark before the ink pieces
+        // (which are black on dark and so naturally invisible) had emerged.
+        // Squared, so nothing shows while the ground is still dark grey; the
+        // whole room switches on together as it brightens.
+        p.material.opacity = p.loaded * p.dim * groundT * groundT;
         // The lean settles whether held or not; while held it is fed by the drag.
         p.lean.multiplyScalar(1 - TUNE.leanDecay);
         if (p.held) {
@@ -745,6 +762,14 @@ export function createScene(canvas, items, opts = {}) {
     get count() { return pieces.length; },
     get travel() { return travel; },
     get zoom() { return zoom; },
+    setVisible(v) { visible = !!v; },
+    /** 0 = the site's dark, 1 = white. Clear colour and fog follow. */
+    setGround(t) {
+      groundT = Math.min(1, Math.max(0, t));
+      ground.lerpColors(GROUND_DARK, GROUND_LIGHT, groundT);
+      renderer.setClearColor(ground, 1);
+      scene.fog.color.copy(ground);
+    },
     zoomIn: () => zoomIn(null),
     zoomOut: () => zoomOut(null),
     zoomReset,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import Loader from './Loader';
 import Landing from './Landing';
 import Nav from './Nav';
@@ -8,6 +8,10 @@ import Work from './Work';
 import Footer from './Footer';
 import { useMode } from '../hooks/useMode';
 import { DESIGN } from '../lib/design';
+
+// The lab's front room, under the lab hero. Lazy: its chunk (and the 61
+// textures it pulls) load only when someone is actually in lab mode.
+const ReveriesRoom = lazy(() => import('./lab/ReveriesRoom'));
 
 const INTRO_KEY = 'acIntroPlayed';
 
@@ -81,6 +85,14 @@ export default function Home() {
           <PlatformMarquee />
           <Work columns={COLUMNS} />
         </>
+      )}
+      {mode === 'lab' && (
+        // Scrolling out of the hero slides the room up over it — no page
+        // change, no CTA required. The section is the walk; the hero CTA
+        // just smooth-scrolls to its top.
+        <Suspense fallback={null}>
+          <ReveriesRoom slug="reveries" />
+        </Suspense>
       )}
 
       <Footer />

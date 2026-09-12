@@ -1,16 +1,48 @@
-/* Reveries — a white room of floating ink drawings.
-   Colour comes from the tokens, which body.theme-light re-resolves (global.css),
-   so nothing here names a colour that only works on one ground. */
+/* Reveries — a white room of floating drawings, as a section.
 
+   THE THEME IS SCOPED HERE, not on <body>: the room is a white section that a
+   dark page (the lab home) can host. Every colour below reads a token, and the
+   tokens are re-declared on .rv, so the same rules hold on the standalone page
+   (which additionally lights <body> for its footer and overscroll). */
 .rv {
   position: relative;
-  min-height: 100vh;
+  --bg: #ffffff;
+  --bg-2: #f6f5f2;
+  --bg-3: #efede8;
+  --fg: #0a0a0a;
+  --fg-2: #3d3a34;
+  --fg-3: #8a847a;
+  --line: rgba(10, 10, 10, 0.12);
+  /* No ground of its own: the canvas paints the ground, and under the lab
+     hero that ground ramps from the site's dark to white as the room slides
+     in (--rv-ground, set from scroll). A white section here would show as a
+     hard edge above the canvas during that ramp. */
+  background: transparent;
+  color: var(--fg);
+  /* Height is set inline from the piece count (runwayVhFor): the section IS
+     the runway, and the page's own scroll through it drives the camera. */
 }
+/* On its own page the ground is the page's, which is already white. */
+.rv--page { background: var(--bg); }
 
-/* The scene. Fixed and full-viewport; the page scrolls over it, and that
-   scroll is what drives the camera forward. */
+/* The stage pins for the whole walk. Coming from the hero above, it slides up
+   over it like a sheet of paper, then holds while the camera moves; at the
+   end it scrolls away to whatever follows. No scroll-jacking anywhere. */
+.rv__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  /* Soft top while entering under the hero: transparent at the very top,
+     solid by --rv-edge (45% at the fold, 0% once pinned — set from scroll).
+     With 0% the gradient is all-solid, i.e. no mask, so this costs nothing
+     on the standalone page or once the room is pinned. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--rv-edge, 0%));
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--rv-edge, 0%));
+}
 .rv__canvas {
-  position: fixed;
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
@@ -22,18 +54,14 @@
   touch-action: none;
 }
 
-/* Nothing in here — it is the scroll runway. Height is set inline from the
-   piece count (reveriesScene.runwayVhFor), so the pace of the walk holds. */
-.rv__driver {
-  pointer-events: none;
-}
-
 /* ---------- overlay (DOM, on top of the canvas) ---------- */
 .rv__ui {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none; /* only the buttons take input */
+  /* Rides the entry/exit ramp under the hero; 1 on the standalone page. */
+  opacity: var(--rv-ground, 1);
   padding: 92px var(--pad-x) 28px;
   display: flex;
   flex-direction: column;
@@ -193,6 +221,7 @@
 
 /* ---------- no-WebGL fallback ---------- */
 .rv__grid {
+  background: var(--bg);
   max-width: var(--max);
   margin: 0 auto;
   padding: 120px var(--pad-x) 80px;
