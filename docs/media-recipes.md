@@ -68,3 +68,29 @@ Historically done with `sips -s format jpeg -s formatOptions 82 -Z 2000`. `sharp
 installed as a devDependency and is the better tool for a ladder.
 
 The `smart-stills` skill automates the harvest-and-score half of this.
+
+---
+
+## 4K master → ~300 MB share file, grain kept (added 2026-09-13)
+
+Used on `Titles CG/The Railway Men/TRM_Title Sequence_v6_230610_4K_Clean_SRGB.mov`
+(ProRes HQ, 3840×1608, 10-bit 4:2:2, 38 s, 2.59 GB) → `…_h265.mp4`, 277 MB. Ansh: "its good".
+
+"No quality loss" at a 9× cut is not on the table — ProRes HQ is already lossy and a true
+lossless encode of this frame is 5–7 GB. What is on the table is keeping the **grain**,
+which is the first thing a plain encode throws away. Measured on the darkest sky frame:
+master grain σ 8.96 (8-bit units) · plain x265 56 Mb/s 4.93 (waxy) · x265 `-tune grain`
+62 Mb/s **6.57**. PSNR/SSIM are useless here (mid-30s dB / 0.85 for both — noise is
+re-synthesised, not copied); measure grain amplitude instead: high-pass a flat region
+(subtract a 9×9 box blur) and take the std-dev, master vs encode.
+
+```bash
+ffmpeg -i "$IN" -map 0:v:0 -c:v libx265 -preset slow -tune grain -b:v 62M -maxrate 90M -bufsize 140M \
+  -pix_fmt yuv420p10le -profile:v main10 -x265-params "pass=1:stats=grain.log" -f null -
+ffmpeg -i "$IN" -map 0:v:0 -c:v libx265 -preset slow -tune grain -b:v 62M -maxrate 90M -bufsize 140M \
+  -pix_fmt yuv420p10le -profile:v main10 -x265-params "pass=2:stats=grain.log" \
+  -colorspace bt709 -color_primaries bt709 -color_trc bt709 -tag:v hvc1 -movflags +faststart "$OUT"
+```
+
+Size scales with `-b:v` × duration; ~150 Mb/s (~700 MB here) holds nearly all the grain.
+`hvc1` so QuickTime opens it. Output goes NEXT TO the master with a suffix — never over it (R2).
