@@ -2,6 +2,7 @@ import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getProject } from '../lib/projectData';
+import { mediaUrl } from '../lib/mediaManifest';
 import { parseCredit } from '../lib/people';
 import { CURRENT_LOCATION } from '../lib/location';
 import { useReveal } from '../hooks/useReveal';
@@ -40,6 +41,14 @@ export default function ProjectPage({ slug }) {
   ];
   const lbOffset = !item.video && heroImg ? 1 : 0; // gallery index -> lbImages index
   const [lbIndex, setLbIndex] = useState(-1);
+  // The episode sequences open in the same mode, as their own set: a Vimeo
+  // player where a film has landed, the reserved slot where it hasn't.
+  const seqItems = item.sequences.map((q, i) => ({
+    ...(q.video ? { vimeo: q.video } : { reserved: true }),
+    label: q.label || `Sequence ${String(i + 1).padStart(2, '0')}`,
+    poster: q.poster ? mediaUrl(item.slug, q.poster) : '',
+  }));
+  const [seqIndex, setSeqIndex] = useState(-1);
 
   const compares = getCompares(slug); // before/after VFX pairs, if any
   const cmpLabels = getCompareLabels(slug);
@@ -243,32 +252,31 @@ export default function ProjectPage({ slug }) {
           </div>
         )}
 
-        {/* Several title sequences (one per episode): a grid of players, four
-            across. Slots with no film yet are drawn as reserved space so the
-            page already holds the shape of the finished set. */}
-        {item.sequences.length > 0 && (
+        {/* Several title sequences (one per episode): a grid of tiles, four
+            across, each opening the gallery mode on its own film. Tiles with no
+            film yet are drawn as reserved space so the page already holds the
+            shape of the finished set — and they open too, so the mode is one
+            thing, not two. A tile shows its `poster` (a project frame) once
+            one is named; until then, its label. */}
+        {seqItems.length > 0 && (
           <div className="pd__seqs" data-rv>
             <p className="eyebrow pd__film-label">
-              Title sequences · {String(item.sequences.length).padStart(2, '0')}
+              Title sequences · {String(seqItems.length).padStart(2, '0')}
             </p>
             <div className="pd__seqs-grid">
-              {item.sequences.map((q, i) => (
-                <div
+              {seqItems.map((q, i) => (
+                <button
                   key={i}
-                  className={`pd__seq${q.video ? '' : ' pd__seq--reserved'}`}
+                  type="button"
+                  className={`pd__seq${q.reserved ? ' pd__seq--reserved' : ''}`}
+                  onClick={() => setSeqIndex(i)}
+                  data-cursor
+                  data-cursor-label={q.reserved ? 'Open' : 'Play'}
+                  aria-label={`${q.label}${q.reserved ? ' — reserved' : ''}`}
                 >
-                  {q.video ? (
-                    <iframe
-                      className="pd__seq-video"
-                      title={`${item.title} — ${q.label || `sequence ${i + 1}`}`}
-                      src={`https://player.vimeo.com/video/${q.video}?title=0&byline=0&portrait=0&dnt=1&color=d98b2b`}
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span>{q.label || `Sequence ${String(i + 1).padStart(2, '0')}`}</span>
-                  )}
-                </div>
+                  {q.poster && <img src={q.poster} alt="" loading="lazy" draggable="false" />}
+                  <span>{q.label}</span>
+                </button>
               ))}
             </div>
           </div>
@@ -448,6 +456,14 @@ export default function ProjectPage({ slug }) {
           index={lbIndex}
           onClose={() => setLbIndex(-1)}
           onNavigate={setLbIndex}
+        />
+      )}
+      {seqIndex >= 0 && (
+        <Lightbox
+          images={seqItems}
+          index={seqIndex}
+          onClose={() => setSeqIndex(-1)}
+          onNavigate={setSeqIndex}
         />
       )}
     </>

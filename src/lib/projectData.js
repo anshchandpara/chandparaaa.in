@@ -32,9 +32,12 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       // A show with several title sequences: one slot per episode, rendered as a
       // grid under the facts. `video` is a Vimeo ID; empty = reserved, drawn as a
       // placeholder until the film lands. [{ label, video }]
+      // `poster` names a frame in the project's media folder (e.g. "008.jpg")
+      // to show on the tile and in the mode's filmstrip.
       sequences: (p.sequences || []).map((q) => ({
         label: (q.label || '').trim(),
         video: (q.video || '').trim(),
+        poster: (q.poster || '').trim(),
       })),
       // Text breaks between gallery frames: [{ after: <n frames>, label?, text }]
       notes: (p.notes || [])

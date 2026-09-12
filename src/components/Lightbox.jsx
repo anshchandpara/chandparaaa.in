@@ -7,7 +7,15 @@ import './Lightbox.css';
  * buttons navigate; a quick horizontal swipe navigates on touch; clicking the
  * veil (not the image) closes. Body scroll is locked while open. Neighbouring
  * frames are preloaded so navigation feels instant.
+ *
+ * Items are `{ src, alt }` for stills and self-hosted loops. Two more kinds
+ * carry a show's episode sequences through the same mode: `{ vimeo, label,
+ * poster? }` plays the film in a 16:9 player, and `{ reserved: true, label }`
+ * is a slot whose film hasn't landed yet — it opens, it counts, it steps.
  */
+const isVideoFile = (src) => /\.(mp4|webm)(\?|#|$)/i.test(src || '');
+const itemKey = (im, i) => im.src || (im.vimeo ? `v${im.vimeo}` : `r${i}`);
+const itemName = (im) => im.alt || im.label || 'Image';
 export default function Lightbox({ images, index, onClose, onNavigate }) {
   const count = images.length;
   const img = images[index];
@@ -49,11 +57,12 @@ export default function Lightbox({ images, index, onClose, onNavigate }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, count]);
 
-  // Preload neighbouring stills (videos stream themselves).
+  // Preload neighbouring stills (videos stream themselves; players and
+  // reserved slots have nothing to fetch).
   useEffect(() => {
     if (count < 2) return;
     [images[(index + 1) % count], images[(index - 1 + count) % count]].forEach((im) => {
-      if (/\.(mp4|webm)(\?|#|$)/i.test(im.src)) return;
+      if (!im.src || isVideoFile(im.src)) return;
       const pre = new Image();
       pre.src = im.src;
     });
@@ -77,14 +86,27 @@ export default function Lightbox({ images, index, onClose, onNavigate }) {
       className="lb"
       role="dialog"
       aria-modal="true"
-      aria-label={`${img.alt || 'Image'} — ${index + 1} of ${count}`}
+      aria-label={`${itemName(img)} — ${index + 1} of ${count}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
     >
-      {/\.(mp4|webm)(\?|#|$)/i.test(img.src) ? (
+      {img.vimeo ? (
+        <div key={`v${img.vimeo}`} className="lb__embed" onPointerDown={(e) => e.stopPropagation()}>
+          <iframe
+            className="lb__embed-frame"
+            title={itemName(img)}
+            src={`https://player.vimeo.com/video/${img.vimeo}?autoplay=1&title=0&byline=0&portrait=0&dnt=1&color=d98b2b`}
+            allow="autoplay; fullscreen; picture-in-picture"
+          />
+        </div>
+      ) : img.reserved ? (
+        <div key={`r${index}`} className="lb__reserved" aria-label={itemName(img)}>
+          <span>{img.label}</span>
+        </div>
+      ) : isVideoFile(img.src) ? (
         <video
           key={img.src}
           className="lb__img"
@@ -122,14 +144,18 @@ export default function Lightbox({ images, index, onClose, onNavigate }) {
           >
             {images.map((im, i) => (
               <button
-                key={im.src}
-                className={`lb__thumb${i === index ? ' is-active' : ''}`}
+                key={itemKey(im, i)}
+                className={`lb__thumb${i === index ? ' is-active' : ''}${im.src || im.poster ? '' : ' lb__thumb--label'}`}
                 onClick={() => onNavigate(i)}
                 data-cursor
-                aria-label={`Go to image ${i + 1}`}
+                aria-label={`Go to ${itemName(im)}`}
                 aria-current={i === index || undefined}
               >
-                <img src={im.src} alt={im.alt || ''} loading="lazy" draggable="false" />
+                {im.src || im.poster ? (
+                  <img src={im.src || im.poster} alt={im.alt || ''} loading="lazy" draggable="false" />
+                ) : (
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                )}
               </button>
             ))}
           </div>
