@@ -15,8 +15,8 @@ import './WeightedText.css';
  * fonts finish loading later (the fallback face has other advances), and
  * again on resize, since the cell is in px and the type may be in vw.
  *
- * Used by the nav brand and the "All work" header. The hero wordmark has its
- * own, cursor-driven version of this idea (Hero.jsx).
+ * Used by the nav brand. The hero wordmark and the "All work" header use the
+ * cursor-driven version of this idea instead (Hero.jsx, GhostText.jsx).
  */
 export default function WeightedText({ text, className = '' }) {
   const chars = text.split('');

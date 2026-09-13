@@ -1,0 +1,43 @@
+/* The hero wordmark's rules (Hero.css), lifted for any line. Each letter
+   carries its own --g (0→1, its distance to the cursor) and its own weight
+   pair; the fill's opacity and the weight both ride --g. Width (the axis) is
+   restated because font-variation-settings replaces the inherited value. The
+   short linear transition smooths the per-frame --g writes on a fast cursor. */
+.gt {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+.gt__letter {
+  display: inline-block;
+  --g: 0;
+  --wght: calc(var(--w0, 700) + (var(--w1, 700) - var(--w0, 700)) * var(--g));
+  font-variation-settings: "wdth" var(--display-wdth), "wght" var(--wght);
+  transition:
+    opacity 0.2s var(--ease),
+    transform 0.2s var(--ease),
+    font-variation-settings 0.2s var(--ease);
+}
+.gt__word > .gt__letter { opacity: var(--g); }
+
+/* Outline layer — the line's resting state. Same letters, same weight pair,
+   so it stays registered under the fill; the offset is per letter, confined
+   to the pocket. */
+.gt__ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--fg) 62%, transparent);
+}
+.gt__ghost .gt__letter {
+  transform: translate3d(calc(var(--g) * 7px), calc(var(--g) * -4px), 0);
+  transition-property: transform, font-variation-settings;
+}
+
+/* No cursor, no pocket: touch and reduced motion get the fill outright. */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .gt__word > .gt__letter { opacity: 1; }
+}
