@@ -578,7 +578,22 @@
       "gallery": [],
       "image": "",
       "video": "",
-      "subtitle": ""
+      "subtitle": "",
+      "wide": [
+        "102-breakdown-a.mp4",
+        "103-breakdown-b.mp4",
+        "106-breakdown-c.mp4",
+        "107-breakdown-d.mp4",
+        "108-board-b3.jpg",
+        "109-breakdown-e.mp4"
+      ],
+      "notes": [
+        {
+          "after": 6,
+          "label": "Process",
+          "text": "Storyboard to render, shot by shot: the pencil boards, then each frame wiping from wireframe through clay to the final."
+        }
+      ]
     },
     {
       "slug": "icc-womens-t20-2024",
