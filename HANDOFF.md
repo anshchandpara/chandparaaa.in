@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-13. Live at `58c8f96`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-14. Live at `fbeabf3`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -94,6 +94,12 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-14 — "All work" gets the hero's pocket** — commit `fbeabf3`.
+`GhostText.jsx` lifts the hero wordmark's treatment (outline at rest, fill + weight travel by
+cursor distance, random cut per letter) into a component; the Work header uses it. The brand's
+flip is now `WeightedText.jsx` (pinned cells, re-pins on resize). Hero.jsx keeps its own loop
+because of the decode and the glass pulse.
 
 **2026-09-13 — films and loops** — commit `58c8f96`.
 UV Automotive: Vimeo 1226318859 as the film; the player's eyebrow now follows the entry's
