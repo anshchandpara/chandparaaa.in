@@ -29,6 +29,10 @@ export function getAllProjects({ includeDrafts = false } = {}) {
       // iframe is sized from this to COVER rather than letterbox. 16/9 fallback.
       videoAspect: Number(p.videoAspect) > 0 ? Number(p.videoAspect) : 16 / 9,
       youtube: p.youtube || '', // full YouTube URL — "Watch the film" link
+      // The film's own thumbnail fronts the link (i.ytimg maxres); name a frame
+      // from the project's media folder here to front it with that instead.
+      youtubeId: youtubeIdOf(p.youtube || ''),
+      watchPoster: (p.watchPoster || '').trim(),
       wide: Array.isArray(p.wide) ? p.wide.map((w) => String(w).trim()).filter(Boolean) : [],
       // A show with several title sequences: one slot per episode, rendered as a
       // grid under the facts. `video` is a Vimeo ID; empty = reserved, drawn as a
@@ -74,6 +78,12 @@ export function getAllProjects({ includeDrafts = false } = {}) {
 }
 
 /** Resolve a project (and its "next") by slug, with derived view fields. */
+/** `v=` or youtu.be/<id> or /embed/<id> → the 11-char id, else ''. */
+export function youtubeIdOf(url) {
+  const m = String(url).match(/(?:[?&]v=|youtu\.be\/|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+
 export function getProject(slug) {
   // Resolve against everything (so a draft's ?p= link still previews), but
   // pick "next" only among published projects — never link out to a draft.

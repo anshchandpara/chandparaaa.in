@@ -282,6 +282,9 @@ export default function ProjectPage({ slug }) {
           </div>
         )}
 
+        {/* "Watch the film": the whole poster is the link. The film's own
+            YouTube thumbnail fronts it (maxres, falling back to hq when a video
+            has no maxres), or a frame the entry names in `watchPoster`. */}
         {item.youtube && (
           <div className="pd__watch" data-rv>
             <a
@@ -290,10 +293,30 @@ export default function ProjectPage({ slug }) {
               rel="noopener noreferrer"
               className="pd__watch-link"
               data-cursor
-              data-magnetic
+              data-cursor-label="Watch"
             >
-              <span className="pd__watch-eyebrow">Watch</span>
-              <span className="pd__watch-title">The full film on YouTube</span>
+              {(item.watchPoster || item.youtubeId) && (
+                <img
+                  className="pd__watch-poster"
+                  src={
+                    item.watchPoster
+                      ? mediaUrl(item.slug, item.watchPoster)
+                      : `https://i.ytimg.com/vi/${item.youtubeId}/maxresdefault.jpg`
+                  }
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    // No maxres rendition for this upload — take the 480p one.
+                    const hq = `https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`;
+                    if (item.youtubeId && e.currentTarget.src !== hq) e.currentTarget.src = hq;
+                  }}
+                />
+              )}
+              <span className="pd__watch-copy">
+                <span className="pd__watch-eyebrow">Watch</span>
+                <span className="pd__watch-title">The full film on YouTube</span>
+              </span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
                 <path d="M7 17L17 7M17 7H8M17 7v9" />
               </svg>
