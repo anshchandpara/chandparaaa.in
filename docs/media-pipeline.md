@@ -70,6 +70,12 @@ Matching is **longest-first**, so `.alpha-loop` beats `.loop`. An unrecognised d
 
 The suffix is stripped from the output: `homeloop.loop.mp4` → `homeloop.mp4`.
 
+**Gallery loops (2026-09-13):** a `<name>.loop.mp4` master lands in the gallery as a muted
+autoplay `<video>` frame, ordered by filename like any still (`000-almond.loop.mp4` → first
+frame, wide). The encoder's siblings — `<name>-poster.jpg`, `<name>.900p.mp4` — are excluded
+from the gallery by the manifest builder (reported as `encoder sibling`), so a loop never
+shows three times. Nothing consumes the siblings yet.
+
 ## The scene-cut guard (added here, not in the upstream pack)
 
 The pack's presets place **no keyframes at scene cuts**. Modern ffmpeg passes

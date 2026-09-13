@@ -57,6 +57,11 @@ const OUT = join(ROOT, 'src', 'data', 'media-manifest.json');
 // rather than silently dropped, because a silently ignored file looks exactly
 // like a missing one when a gallery comes up short.
 const GALLERY_EXT = /\.(jpg|jpeg|png|webp|gif|mp4|webm)$/i;
+// Siblings the encoder writes next to a loop — `<name>-poster.jpg` and
+// `<name>.900p.mp4` — are not gallery frames. Nothing on the site consumes
+// them yet, but they must never be listed as frames or a loop would show up
+// three times. Reported as skipped so their absence is visible.
+const SIBLING_RE = /(-poster\.(jpg|jpeg|png|webp)|\.\d{3,4}p\.(mp4|webm))$/i;
 const COMPARE_EXT = /\.(jpg|jpeg|png|webp|mp4|webm)$/i;
 const ABOUT_EXT = /\.(jpg|jpeg|png|webp)$/i;
 const HERO_RE = /^hero\.(mp4|webm)$/i;
@@ -83,13 +88,14 @@ async function build() {
 
     for (const f of all) {
       if (!GALLERY_EXT.test(f)) skipped.push(`${slug}/${f}`);
+      else if (SIBLING_RE.test(f)) skipped.push(`${slug}/${f} (encoder sibling)`);
     }
 
     // `hero.mp4` / `hero.webm` is reserved for the page hero and is deliberately
     // NOT part of the gallery, so the project page never shows it twice.
     const hero = all.find((f) => HERO_RE.test(f)) || null;
     const files = all
-      .filter((f) => GALLERY_EXT.test(f) && !HERO_RE.test(f))
+      .filter((f) => GALLERY_EXT.test(f) && !HERO_RE.test(f) && !SIBLING_RE.test(f))
       .sort((a, b) => a.localeCompare(b));
 
     const compareDir = join(slugDir, 'compare');
