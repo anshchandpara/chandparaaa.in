@@ -5,23 +5,6 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-/* Each letter sits at its own cut (--w0, set inline by Brand.jsx) and flips to
-   the opposite cut (--w1) while the link is hovered — the whole name at once,
-   each letter along its own distance. It is an inline-block because Brand.jsx
-   pins its width to the wider cut, so the flip never reflows the line. Width
-   (the axis) is restated because font-variation-settings replaces the
-   inherited value rather than merging with it. */
-.nav__brand-letter {
-  display: inline-block;
-  text-align: center;
-  --wght: var(--w0, 700);
-  font-variation-settings: "wdth" var(--display-wdth), "wght" var(--wght);
-  transition: font-variation-settings 0.45s var(--ease);
-}
-.nav__brand:hover .nav__brand-letter {
-  --wght: var(--w1, 700);
-}
-
 .nav__right {
   display: flex;
   align-items: center;

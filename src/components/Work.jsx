@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { getWorkCards, sortCards, SORTS } from '../lib/workCards';
 import { useMagnetic } from '../hooks/useMagnetic';
 import CardCanvas from './CardCanvas';
+import WeightedText from './WeightedText';
 import './Work.css';
 
 // Density by viewport — `columns` (from Home) is the cap at the widest size.
@@ -181,7 +182,9 @@ export default function Work({ columns = 4 }) {
   return (
     <section id="work" className="section work" data-screen-label="Index">
       <div className="work__head">
-        <h2 className="work__title">All work</h2>
+        <h2 className="work__title">
+          <WeightedText text="All work" />
+        </h2>
         <div className="work__tools">
           <p className="eyebrow work__eyebrow">
             01 — Index · {String(cards.length).padStart(2, '0')}

@@ -1,0 +1,17 @@
+/* One cell per letter, at its own cut (--w0, set inline) and flipping to the
+   opposite cut (--w1) while the line — or an ancestor carrying .wt-hover — is
+   hovered. inline-block because WeightedText.jsx pins each cell's width to
+   the wider cut, so the flip never reflows the line. Width (the axis) is
+   restated because font-variation-settings replaces the inherited value
+   rather than merging with it. */
+.wt__letter {
+  display: inline-block;
+  text-align: center;
+  --wght: var(--w0, 700);
+  font-variation-settings: "wdth" var(--display-wdth), "wght" var(--wght);
+  transition: font-variation-settings 0.45s var(--ease);
+}
+.wt:hover .wt__letter,
+.wt-hover:hover .wt__letter {
+  --wght: var(--w1, 700);
+}
