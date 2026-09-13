@@ -49,6 +49,15 @@ export default function ProjectPage({ slug }) {
     poster: q.poster ? mediaUrl(item.slug, q.poster) : '',
   }));
   const [seqIndex, setSeqIndex] = useState(-1);
+  // Poster candidates for the "Watch the film" link, best first.
+  const watchPosters = item.youtube
+    ? [
+        item.watchPoster ? mediaUrl(item.slug, item.watchPoster) : '',
+        item.youtubeId ? `https://i.ytimg.com/vi/${item.youtubeId}/maxresdefault.jpg` : '',
+        heroImg,
+        item.youtubeId ? `https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg` : '',
+      ].filter(Boolean)
+    : [];
 
   const compares = getCompares(slug); // before/after VFX pairs, if any
   const cmpLabels = getCompareLabels(slug);
@@ -295,21 +304,20 @@ export default function ProjectPage({ slug }) {
               data-cursor
               data-cursor-label="Watch"
             >
-              {(item.watchPoster || item.youtubeId) && (
+              {watchPosters.length > 0 && (
                 <img
                   className="pd__watch-poster"
-                  src={
-                    item.watchPoster
-                      ? mediaUrl(item.slug, item.watchPoster)
-                      : `https://i.ytimg.com/vi/${item.youtubeId}/maxresdefault.jpg`
-                  }
+                  src={watchPosters[0]}
                   alt=""
                   loading="lazy"
                   decoding="async"
                   onError={(e) => {
-                    // No maxres rendition for this upload — take the 480p one.
-                    const hq = `https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`;
-                    if (item.youtubeId && e.currentTarget.src !== hq) e.currentTarget.src = hq;
+                    // Walk the chain: a named frame or YouTube's maxres first,
+                    // then the project's own hero still, then YouTube's 480p —
+                    // uploads without a maxres rendition 404 on the first.
+                    const el = e.currentTarget;
+                    const next = watchPosters.indexOf(el.getAttribute('src')) + 1;
+                    if (next > 0 && next < watchPosters.length) el.setAttribute('src', watchPosters[next]);
                   }}
                 />
               )}
