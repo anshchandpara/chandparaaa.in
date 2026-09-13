@@ -276,7 +276,7 @@ const PRUNE = rawArgs.includes('--prune');
 // local media (fresh checkout, second machine), where "not present locally"
 // describes the entire R2 copy of a project.
 const ASSUME_YES = rawArgs.includes('--yes');
-const args = rawArgs.filter((a) => a !== '--force-headers' && a !== '--prune');
+const args = rawArgs.filter((a) => a !== '--force-headers' && a !== '--prune' && a !== '--yes');
 if (args.length === 0) {
   console.error('Usage: node --env-file=.env.local scripts/sync-to-store.mjs [--force-headers] [--prune] <path>...');
   process.exit(1);

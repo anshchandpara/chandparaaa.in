@@ -61,10 +61,8 @@ purge in the dashboard. Cloudflare's managed robots.txt prepends an AI-crawler b
 search engines unaffected.
 
 SITE STATE: 28 `work` (23 published), 6 `lab` (2 published). Manifest references 509 files;
-R2 holds 528 objects — the 19 extra are unreferenced deck stills (Railway Men 021–031, ICC 001,
-Hunter/Equals/UV singles, Lootere loop-05/06) that Ansh dropped or moved; local copies + staged masters are
-MOVED to `~/media-masters/_quarantine/2026-09-13-deck-unselected/` (MANIFEST.md lists keys +
-hashes) — the R2 objects are his to delete. **Unshipped on dev (2026-09-13):** from the "CG for
+R2 holds 509 objects (the 19 deck orphans were pruned 2026-09-13 at Ansh's word — `sync-to-store
+--prune --yes`; local copies + staged masters remain in `~/media-masters/_quarantine/`, his to clear). **Unshipped on dev (2026-09-13):** from the "CG for
 Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) + 8
 process loops in the gallery + the two kid-running loops (clay / colour, 66 frames each, in
 sync) as the page's A/B slider (`compare/01-clean.mp4` + `01-final.mp4`, labels "Clay → Final";
@@ -82,8 +80,7 @@ Ansh's own caption — six collaborators are Instagram handles until he supplies
 and two notes are my words from his caption). Masters staged at `~/media-masters/<slug>/`.
 
 WAITING ON ANSH: (0) real names for the six handle-only Decoupled credits; the Decoupled desc
-and the Lootere Type/Process breaks are my words; 19 unreferenced R2 objects (quarantine
-manifests) are his to delete; (1) real social URLs + email for the About page and the schema; (2) judge the
+and the Lootere Type/Process breaks are my words; (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
 (3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) judge the shipped type live — the random-per-letter weights (hero + brand) and the hero's
 word reflow on hover (the brand's pin is available there too if it shivers); (5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
