@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-13. Live at `2e1bb82`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-13. Live at `58c8f96`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -60,8 +60,8 @@ says DYNAMIC even when cached. To change bytes under the TTL rename the object (
 purge in the dashboard. Cloudflare's managed robots.txt prepends an AI-crawler block;
 search engines unaffected.
 
-SITE STATE: 28 `work` (23 published), 6 `lab` (2 published). Manifest references 509 files;
-R2 holds 509 objects (the 19 deck orphans were pruned 2026-09-13 at Ansh's word — `sync-to-store
+SITE STATE: 28 `work` (23 published), 6 `lab` (2 published). Manifest references 529 files;
+R2 holds 532 objects (3 are encoder siblings, excluded from galleries by design) (the 19 deck orphans were pruned 2026-09-13 at Ansh's word — `sync-to-store
 --prune --yes`; local copies + staged masters remain in `~/media-masters/_quarantine/`, his to clear). **Unshipped on dev (2026-09-13):** from the "CG for
 Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) + 8
 process loops in the gallery + the two kid-running loops (clay / colour, 66 frames each, in
@@ -92,6 +92,15 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-13 — films and loops** — commit `58c8f96`.
+UV Automotive: Vimeo 1226318859 as the film; the player's eyebrow now follows the entry's
+category ("Brand film", "Title sequence"…). Britannia: the 10-s Almond spot as a muted 1080p
+loop leading the gallery (house `loop` preset, 2 cuts keyframed). Dico Battery: the BTS lineup
+cut into five wipe-breakdown loops + five storyboard stills with a Process break (~32 MB of
+loops, lazy). Gallery loops now go through the pipeline: `<name>.loop.mp4` in the masters
+folder → the manifest builder excludes the encoder's `-poster.jpg` / `.900p.mp4` siblings.
+Also: `sync-to-store --yes` was being walked as a path — fixed; the 19 deck orphans pruned.
 
 **2026-09-13 — Watch-the-film posters** — commit `2e1bb82`.
 The YouTube CTA is a full-width 16:9 poster link (capped 82vh) fronted by the video's own
