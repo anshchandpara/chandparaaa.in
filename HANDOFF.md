@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-13. Live at `99b7369`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-13. Live at `2e1bb82`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -95,6 +95,12 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-13 — Watch-the-film posters** — commit `2e1bb82`.
+The YouTube CTA is a full-width 16:9 poster link (capped 82vh) fronted by the video's own
+thumbnail, with a fallback chain: `watchPoster` frame → YouTube maxres → the project's hero
+still → YouTube 480p. Raat Khatam got its link (INzwB4Yd1K8); Nothing Makes Sense already had
+one; Monsoon Season has no maxres on YouTube so it is fronted by its title frame.
 
 **2026-09-13 — Railway Men film + hero fade** — commit `99b7369`.
 Vimeo 1226256857 as the Railway Men film (scope 2.393, aspect fetched); its hero is now the
