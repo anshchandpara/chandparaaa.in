@@ -24,6 +24,9 @@ const SLOTS = [
   { id: 'f3', ar: '21 / 9', label: 'Drop a wide frame — 21:9', wide: true },
 ];
 
+/** "Title Sequence" → "Title sequence"; already-cased words after the first are kept lower. */
+const sentenceCase = (t) => (t ? t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() : '');
+
 export default function ProjectPage({ slug }) {
   const { item, next, accent, heroImg, galleryImgs } = getProject(slug);
   const revealRef = useReveal([slug]);
@@ -245,7 +248,9 @@ export default function ProjectPage({ slug }) {
             reads as "press play on the work" rather than as page furniture. */}
         {item.video && (
           <div className="pd__film" data-rv>
-            <p className="eyebrow pd__film-label">Title sequence</p>
+            {/* Named for what it is — "Title sequence" on a title job, "Brand
+                film" on a launch video — from the entry's category. */}
+            <p className="eyebrow pd__film-label">{sentenceCase(item.category || 'Film')}</p>
             <div
               className="pd__film-frame"
               style={{ '--video-aspect': item.videoAspect }}

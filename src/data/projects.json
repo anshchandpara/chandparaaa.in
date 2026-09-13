@@ -480,7 +480,7 @@
       ],
       "gallery": [],
       "image": "",
-      "video": "",
+      "video": "1226318859",
       "notes": [
         {
           "after": 4,
@@ -492,7 +492,8 @@
           "label": "Craft",
           "text": "Fully CG. The reveal had to land as the payoff of a journey, not the start of one."
         }
-      ]
+      ],
+      "videoAspect": 1.775
     },
     {
       "slug": "union-day-yas-mall",
