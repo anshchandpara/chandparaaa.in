@@ -1,15 +1,19 @@
-/* Landing gate — the front door. Hero loop at 35% under a difference-blended
-   FUI grid; brand pinned to the top margin, role line to the bottom, and a
-   small segmented control centred between them.
+/* Landing gate — the front door. Two worlds along a leaning seam, under a
+   difference-blended FUI grid; brand pinned to the top margin, role line to
+   the bottom, and the two choices set large, one per world.
 
    Stacking is load-bearing:
-     .landing__media  (video, 35%)          — bottom
+     .landing__worlds (videos)            — bottom
      .landing__grid   (mix-blend-mode: difference)
      .landing__veil   (legibility wash)
      .landing__stack  (z-index 1, NORMAL blend) — top
    The grid must stay below the stack; blended type is illegible. `isolation`
-   keeps the difference blend from reaching the page mounted behind the gate,
-   and doubles as the backdrop root for the panel's backdrop-filter. */
+   keeps the difference blend from reaching the page mounted behind the gate.
+
+   The seam is `--split` (0 → 1 across the width), written per frame by
+   Landing.jsx. It leans by tan(12°) — `--lean` is that figure as a height:
+   the seam is `--lean` right of --split at the top edge and `--lean` left of
+   it at the bottom. `--px/--py` (−1 → 1) carry the cursor for the parallax. */
 
 .landing {
   position: fixed;
@@ -17,80 +21,114 @@
   z-index: 8000; /* under Loader (9000), over nav (50) + lightbox (90) */
   background: var(--bg);
   isolation: isolate;
-  transition: opacity 0.52s var(--ease), transform 0.52s var(--ease);
+  --split: 0.5;
+  --px: 0;
+  --py: 0;
+  --lean: 10.63vh; /* tan(12°) × 50vh */
+  --sx: calc(var(--split) * 100%);
+  transition: opacity 0.3s var(--ease);
 }
-
 .landing.is-leaving {
-  opacity: 0;
-  transform: scale(1.035);
   pointer-events: none;
 }
+.landing.is-leaving .landing__stack,
+.landing.is-leaving .landing__grid {
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+}
 
-/* --- The split: each choice previews its own world --- */
-/* 50/50 and static. The panel's separator is centred on this seam and the two
-   are meant to read as one line, so the boundary must never move — hover is
-   expressed by lighting the half, not by resizing it. */
-
-.landing__halves {
+/* --- The two worlds --- */
+.landing__worlds {
   position: absolute;
   inset: 0;
-  display: flex;
-}
-
-.landing__half {
-  position: relative;
-  flex: 1 1 50%;
-  min-width: 0;
   overflow: hidden;
 }
+.landing__world {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: pointer;
+  /* Opaque before its video paints — Lab is layered over Work, so without
+     this the Work loop shows through the Lab window until Monsoon loads. */
+  background: var(--bg);
+}
+/* Lab sits over Work, clipped to the right of the seam. The polygon reads the
+   same variables the seam line is drawn from, so they can never disagree. */
+.landing__world--lab {
+  clip-path: polygon(
+    calc(var(--sx) + var(--lean)) 0,
+    100% 0,
+    100% 100%,
+    calc(var(--sx) - var(--lean)) 100%
+  );
+}
 
+/* Rest: both worlds dim and a little grey. Hot: colour, presence, and a drift
+   with the cursor; the other world falls back. The scale gives the drift
+   room so no edge ever shows. */
 .landing__media {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.35;
-  filter: grayscale(0.45);
-  transition: opacity 0.45s var(--ease), filter 0.45s var(--ease);
+  opacity: 0.38;
+  filter: grayscale(0.4);
+  transform: translate3d(calc(var(--px) * 10px), calc(var(--py) * 8px), 0) scale(1.06);
+  transition: opacity 0.5s var(--ease), filter 0.5s var(--ease);
+  will-change: transform;
 }
-
-/* Hovering a choice lights its own half. */
-.landing__half.is-hot .landing__media {
-  opacity: 0.55;
+.landing.is-hot-work .landing__world--work .landing__media,
+.landing.is-hot-lab .landing__world--lab .landing__media {
+  opacity: 0.8;
   filter: grayscale(0);
 }
-
-/* The two sources are wildly mismatched in luminance: the hero loop is dark
-   footage, the Monsoon timelapse is paint on WHITE paper, which at the same
-   opacity reads roughly twice as bright and makes the Lab half dominate the
-   composition. Knock it back so the pair sits level. */
-.landing__half--lab .landing__media {
-  filter: grayscale(0.45) brightness(0.5);
+.landing.is-hot-work .landing__world--lab .landing__media,
+.landing.is-hot-lab .landing__world--work .landing__media {
+  opacity: 0.22;
+  filter: grayscale(0.9);
 }
-.landing__half--lab.is-hot .landing__media {
-  filter: grayscale(0) brightness(0.7);
+/* The Monsoon timelapse is paint on WHITE paper and reads ~2× brighter than
+   the hero loop at the same opacity; knock it back so the pair sits level. */
+.landing__world--lab .landing__media {
+  filter: grayscale(0.4) brightness(0.55);
+}
+.landing.is-hot-lab .landing__world--lab .landing__media {
+  filter: grayscale(0) brightness(0.72);
+}
+.landing.is-hot-work .landing__world--lab .landing__media {
+  filter: grayscale(0.9) brightness(0.45);
 }
 
-/* Continues the panel's separator across the full height, same token. */
+/* The seam itself: a hairline through (--split, 50%) rotated to the lean,
+   with a soft glow that comes up while a world is hot. Taller than the
+   viewport so the rotation never uncovers an end. */
 .landing__seam {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
+  top: 50%;
+  left: var(--sx);
   width: 1px;
-  transform: translateX(-50%);
+  height: 140vh;
+  transform: translate(-50%, -50%) rotate(12deg);
   background: var(--line);
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow 0.5s var(--ease), background 0.5s var(--ease);
+  pointer-events: none;
+}
+.landing.is-hot-work .landing__seam,
+.landing.is-hot-lab .landing__seam {
+  background: color-mix(in srgb, var(--fg) 55%, transparent);
+  box-shadow: 0 0 18px 1px color-mix(in srgb, var(--fg) 22%, transparent);
 }
 
 .landing__grid {
   position: absolute;
   inset: 0;
   background-image: var(--fui-tile);
-  /* Finer than the site-wide backdrop (128px) — tune by eye. */
   background-size: var(--landing-grid, 72px) var(--landing-grid, 72px);
   opacity: var(--landing-grid-opacity, 0.2);
   mix-blend-mode: difference;
+  pointer-events: none;
 }
 
 /* Pulls the centre down so the type holds against a bright frame of the loop. */
@@ -99,14 +137,16 @@
   inset: 0;
   background: radial-gradient(
     ellipse 70% 60% at 50% 50%,
-    rgba(10, 10, 10, 0.72),
-    rgba(10, 10, 10, 0.32) 70%,
+    rgba(10, 10, 10, 0.6),
+    rgba(10, 10, 10, 0.28) 70%,
     transparent
   );
+  pointer-events: none;
 }
 
-/* Three rows: brand / panel / role. Same padding as the loader, so the brand
-   lands on exactly the same baseline as `.loader__brand` behind it. */
+/* Three rows: brand / choices / role. Same padding as the loader, so the brand
+   lands on exactly the same baseline as `.loader__brand` behind it. The stack
+   itself lets clicks through to the worlds; only its children take them. */
 .landing__stack {
   position: absolute;
   inset: 0;
@@ -118,65 +158,9 @@
   padding: clamp(20px, 4vw, 72px);
   box-sizing: border-box;
   text-align: center;
-}
-
-/* Middle row takes the slack, so the panel sits centred regardless of the
-   brand/role line heights. */
-/* Centred on the GATE, not on the slack between the brand and role rows.
-   Those two rows differ in height (21px vs 16px), so flowing the panel between
-   them lands its separator a few px off the media seam — invisible on the
-   horizontal axis but a clear 6px miss once everything stacks on mobile.
-   Absolute centring inside `.landing__stack` (itself inset:0) makes the
-   separator meet the seam exactly on both axes at every size. */
-.landing__mid {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* inset:0 resolves against the stack's PADDING box, so the gate margin has
-     to be restated here or a full-width panel runs to the screen edge. */
-  padding: 0 clamp(20px, 4vw, 72px);
-  box-sizing: border-box;
-  pointer-events: none; /* don't cover the brand/role hover targets */
-}
-
-.landing__panel {
-  pointer-events: auto;
-}
-
-/* --- Stray glitch glyphs around the panel --- */
-/* Sibling of the panel, not a child — the panel clips its own overflow to
-   contain the breathing glow, which would eat these too. */
-
-.landing__glitch {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(560px, 78vw);
-  height: 220px;
-  transform: translate(-50%, -50%);
   pointer-events: none;
 }
-
-.landing__gly {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  font-family: var(--f-display);
-  font-size: 12px;
-  line-height: 1;
-  color: var(--fg-3);
-  opacity: 0.35;
-  transition: opacity 0.3s var(--ease), color 0.3s var(--ease);
-}
-
-/* Glyphs on the hovered side lead; the far side stays as faint interference. */
-.landing__gly.is-hot {
-  color: var(--accent);
-  opacity: 0.85;
-}
-
-/* --- Type: brand and role mirror the loader's scale --- */
+.landing__stack > * { pointer-events: auto; }
 
 .landing__brand {
   font-family: var(--f-display);
@@ -185,7 +169,6 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--fg);
-  transition: text-shadow 0.3s var(--ease);
 }
 
 .landing__role {
@@ -196,152 +179,64 @@
   color: var(--fg-3);
 }
 
-/* --- The choice panel: one glass surface, split by a hairline --- */
-/* Flat and quiet on purpose — a single pane of dark glass over the loop, in
-   the same hairline language as the rest of the site. `overflow: hidden`
-   clips each choice's glow to its own half, so the light reads as coming
-   from inside the panel. */
-
-.landing__panel {
-  /* Grid, not flex, specifically to equalise the two halves. "Work" is wider
-     than "Lab", so content-sized columns put the separator ~7px off the media
-     seam. `flex: 1 1 0` does NOT fix it — the panel is intrinsically sized, so
-     there is no free space for flex-grow to distribute. Grid `1fr` tracks do
-     equalise under intrinsic sizing, which puts the separator dead centre. */
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: stretch;
-  border-radius: clamp(9px, 1vw, 13px);
-  border: 1px solid var(--line);
-  background: rgba(11, 11, 11, 0.5);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
-  backdrop-filter: blur(18px) saturate(1.2);
-  box-shadow: 0 20px 54px rgba(0, 0, 0, 0.55);
-  overflow: hidden;
-}
-
-.landing__choice {
-  position: relative;
-  isolation: isolate;
-  appearance: none;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  padding: clamp(12px, 1.2vw, 17px) clamp(26px, 2.9vw, 44px);
-  font-family: var(--f-display);
-  font-weight: 700;
-  font-size: clamp(13px, 1.25vw, 18px);
-  line-height: 1;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg-2);
-  transition: color 0.3s var(--ease), background-color 0.3s var(--ease),
-    text-shadow 0.3s var(--ease);
-}
-
-/* The separator — a single hairline, full height of the panel. */
-.landing__choice + .landing__choice {
-  border-left: 1px solid var(--line);
-}
-
-/* Breathing glow, clipped to each half by the panel's overflow. Compositor-only
-   (opacity + transform); never animate box-shadow spread, it repaints. */
-.landing__choice::before {
-  content: '';
+/* --- The choices: one per world, anchored at each world's centre --- */
+/* Anchored to the QUARTER lines, not to the moving seam: the seam swings
+   around them (it never crosses 43% / 57%), so the type holds still while the
+   worlds breathe. Outline at rest, filling around the cursor (GhostText). */
+.landing__choices {
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background: radial-gradient(
-    closest-side,
-    color-mix(in srgb, var(--accent) 46%, transparent),
-    transparent 80%
-  );
-  filter: blur(14px);
-  opacity: 0.26;
-  animation: landing-breathe 3.6s ease-in-out infinite alternate;
-  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+  pointer-events: none;
 }
-
-/* Half-cycle offset so the two never pulse in lockstep. */
-.landing__panel .landing__choice:last-child::before {
-  animation-delay: -1.8s;
-}
-
-@keyframes landing-breathe {
-  from {
-    opacity: 0.26;
-    transform: scale(0.86);
-  }
-  to {
-    opacity: 0.72;
-    transform: scale(1.04);
-  }
-}
-
-/* --- Hover / focus --- */
-
-.landing__brand:hover,
-.landing__role:hover {
-  text-shadow: 0 0 0.7em color-mix(in srgb, var(--accent) 60%, transparent);
-}
-
-.landing__choice:hover,
-.landing__choice:focus-visible {
+.landing__choice {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0.1em 0.2em;
+  border: 0;
+  background: none;
   color: var(--fg);
-  background: rgba(255, 255, 255, 0.045);
-  outline: none;
-  text-shadow: 0 0 0.6em color-mix(in srgb, var(--accent) 55%, transparent);
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: clamp(56px, 11vw, 170px);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.landing__choice--work { left: 22%; }
+.landing__choice--lab { left: 78%; }
+/* A hot world's word brightens its outline so the choice reads as live even
+   before the pocket reaches it. Keyboard focus shows the same way — the
+   gate focuses Work on mount for reachability, and Chrome draws a
+   :focus-visible ring for that programmatic focus; a box around the word is
+   not the gate's language, the brightened outline is. */
+.landing__choice { outline: none; }
+.landing.is-hot-work .landing__choice--work .gt__ghost,
+.landing.is-hot-lab .landing__choice--lab .gt__ghost,
+.landing__choice:focus-visible .gt__ghost {
+  -webkit-text-stroke-color: var(--fg);
+}
+.landing__choice .gt__ghost {
+  transition: -webkit-text-stroke-color 0.4s var(--ease);
 }
 
-/* Hovering locks the glow at full instead of letting it drift. */
-.landing__choice:hover::before,
-.landing__choice:focus-visible::before {
-  animation: none;
-  opacity: 0.85;
-  transform: scale(1.06);
-}
-
-.landing__choice:active {
-  background: rgba(255, 255, 255, 0.02);
+/* --- Touch: no cursor, so the seam rests and the words are filled (GhostText
+   does that itself); the worlds sit level and a tap picks one. --- */
+@media (hover: none) {
+  .landing__media { opacity: 0.5; }
 }
 
 @media (max-width: 640px) {
-  /* Panel keeps its frame; the choices stack and the hairline turns. The
-     halves turn with it, so the seam still meets the panel's separator. */
-  .landing__panel {
-    grid-template-columns: 1fr;
-    /* NOT align-self:stretch — `.landing__mid` is a row-direction flex parent,
-       so that stretches the panel VERTICALLY and the separator drifts. */
-    width: 100%;
-  }
-  .landing__choice + .landing__choice {
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
-  .landing__halves {
-    flex-direction: column;
-  }
-  .landing__seam {
-    top: 50%;
-    bottom: auto;
-    left: 0;
-    right: 0;
-    width: auto;
-    height: 1px;
-    transform: translateY(-50%);
-  }
+  .landing { --lean: 6vh; }
+  .landing__choice { font-size: clamp(44px, 16vw, 90px); }
+  .landing__choice--work { left: 27%; }
+  .landing__choice--lab { left: 73%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing {
-    transition: none;
-  }
-  .landing__choice::before {
-    animation: none;
-    opacity: 0.45;
-    transform: none;
-  }
-  .landing__media {
-    display: none;
-  }
+  .landing__media { transform: none; transition: none; }
+  .landing__seam { transition: none; }
 }
