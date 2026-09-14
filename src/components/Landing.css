@@ -199,7 +199,7 @@
   color: var(--fg);
   font-family: var(--f-display);
   font-weight: 700;
-  font-size: clamp(56px, 11vw, 170px);
+  font-size: clamp(17px, 3.3vw, 51px); /* 30% of the first cut, at Ansh's word */
   line-height: 0.9;
   letter-spacing: -0.02em;
   text-transform: uppercase;
@@ -231,7 +231,7 @@
 
 @media (max-width: 640px) {
   .landing { --lean: 6vh; }
-  .landing__choice { font-size: clamp(44px, 16vw, 90px); }
+  .landing__choice { font-size: clamp(13px, 4.8vw, 27px); }
   .landing__choice--work { left: 27%; }
   .landing__choice--lab { left: 73%; }
 }
