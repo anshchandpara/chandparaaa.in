@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-14. Live at `fbeabf3`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-14. Live at `ea95f35`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -94,6 +94,8 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-14 — Hunter film** — commit `ea95f35`. Vimeo 1186245456 in the inset player, scope 2.341.
 
 **2026-09-14 — "All work" gets the hero's pocket** — commit `fbeabf3`.
 `GhostText.jsx` lifts the hero wordmark's treatment (outline at rest, fill + weight travel by
