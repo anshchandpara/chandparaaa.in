@@ -344,14 +344,15 @@
         "Content/website_images_Optim/08_Hunter/y6pe23hmIOx9cWII9uyFUbgQLg.jpg"
       ],
       "image": "Content/website_images_Optim/08_Hunter/27E3xz1kPmkw1gwVMF5X1j3Ghk.jpg",
-      "video": "",
+      "video": "1186245456",
       "notes": [
         {
           "after": 3,
           "label": "Approach",
           "text": "Graphic-novel language for a cop who lives on both sides of the law — noir contrast, hard ink, no middle ground."
         }
-      ]
+      ],
+      "videoAspect": 2.3407
     },
     {
       "slug": "equals",
