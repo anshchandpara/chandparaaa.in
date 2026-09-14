@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-14. Live at `ea95f35`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-14. Live at `0c554f6`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -39,6 +39,14 @@ fallback; body is Instrument Sans. Per-letter weight play, all on the wght axis:
   So the hero and brand look different on every load — by design.
 Verification note: the preview pane throttles CSS transitions as well as rAF — inject
 `transition:none` before reading computed weights/opacity, or you read mid-flight values.
+
+LANDING GATE (`Landing.jsx/.css`, shipped `0c554f6`): two worlds along a 12° leaning seam —
+`--split` (0→1) lerped per frame from the cursor (rest 0.5, ±0.07 toward the hot world, side
+measured against the leaning seam), `--px/--py` parallax on the loops; WORK / LAB as GhostText
+at the quarter lines (type at 30% of the first cut, Ansh's call — clamp(17px, 3.3vw, 51px));
+click sweeps the seam off the edge, then hands off. Worlds are opaque before their video
+paints. Touch / reduced motion: static split, filled words. The pill, the scramble and the
+glitch glyphs are gone.
 
 LAB HOME = HERO + ROOM. `ReveriesRoom` (`src/components/lab/ReveriesRoom.jsx`) is a section
 mounted under the lab hero on Home (lazy) and wrapped by the `?p=reveries` page. The section is
@@ -94,6 +102,12 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-14 — landing gate redesign** — commit `0c554f6`.
+Leaning cursor-driven seam, worlds that come to colour and drift when hot, WORK / LAB in the
+wordmark's outline-and-pocket treatment, a sweep exit. Verified in the built preview at 1440:
+seam swings 0.43 ↔ 0.57 and settles, hot/cold opacities 0.8 / 0.22, the sweep lands on Lab-mode
+home with the room mounted.
 
 **2026-09-14 — Hunter film** — commit `ea95f35`. Vimeo 1186245456 in the inset player, scope 2.341.
 
