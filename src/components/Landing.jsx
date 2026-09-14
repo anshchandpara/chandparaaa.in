@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { HERO_VIDEO, HERO_POSTER, getHeroVideo } from '../lib/heroVideo';
+import { randomGlyph } from '../lib/glitch';
 import GhostText from './GhostText';
 import WeightedText from './WeightedText';
 import './Landing.css';
@@ -27,6 +28,36 @@ import './Landing.css';
  */
 
 const LAB_VIDEO = getHeroVideo('monsoon-season-mixtape');
+
+// Stray glyphs scattered around a word. Percentages of a field ~3× the word,
+// kept clear of the word's own box in the middle.
+const SPOTS = [
+  { x: 4, y: 12 }, { x: 22, y: 92 }, { x: 0, y: 55 }, { x: 40, y: 2 },
+  { x: 62, y: 98 }, { x: 80, y: 8 }, { x: 98, y: 48 }, { x: 90, y: 90 },
+];
+
+/** Flickering special characters around a word while its world is hot. */
+function GlitchField({ hot }) {
+  const [glyphs, setGlyphs] = useState(() => SPOTS.map(randomGlyph));
+  useEffect(() => {
+    if (!hot) return undefined;
+    // Re-roll a random subset each tick — rolling all of them at once reads as
+    // a synchronised blink rather than interference.
+    const id = setInterval(() => {
+      setGlyphs((g) => g.map((c) => (Math.random() < 0.45 ? randomGlyph() : c)));
+    }, 90);
+    return () => clearInterval(id);
+  }, [hot]);
+  return (
+    <span className={`landing__glitch${hot ? ' is-hot' : ''}`} aria-hidden="true">
+      {SPOTS.map((sp, i) => (
+        <span key={i} className="landing__gly" style={{ left: `${sp.x}%`, top: `${sp.y}%` }}>
+          {glyphs[i]}
+        </span>
+      ))}
+    </span>
+  );
+}
 // Where the seam rests, and how far a hot world pushes it. tan(12°) is the
 // lean — Landing.css draws the seam with the same figure.
 const REST = 0.5;
@@ -192,6 +223,7 @@ export default function Landing({ onChoose }) {
             onClick={() => choose('work')}
           >
             <GhostText text="Work" />
+            {!reduced && <GlitchField hot={hot === 'work'} />}
           </button>
           <button
             type="button"
@@ -203,6 +235,7 @@ export default function Landing({ onChoose }) {
             onClick={() => choose('lab')}
           >
             <GhostText text="Lab" />
+            {!reduced && <GlitchField hot={hot === 'lab'} />}
           </button>
         </div>
 

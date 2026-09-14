@@ -144,9 +144,11 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  transform: scale(1.14);
-  /* Covers rest monotone behind the frost; hover restores full colour. */
-  filter: blur(15px) grayscale(1) contrast(1.06) brightness(0.86);
+  transform: scale(1.08);
+  /* Covers in colour behind a light frost; hover clears it. Was blur(15px)
+     grayscale(1) — Ansh, 2026-09-14: less blur, no black and white. The
+     scale only has to hide a 6px blur's edges now. */
+  filter: blur(6px) contrast(1.06) brightness(0.86);
   transition: transform 0.6s var(--ease), filter 0.55s var(--ease);
   will-change: transform, filter;
 }
@@ -155,7 +157,7 @@
 .fcard__link:hover .fcard__gl,
 .fcard__link:focus-visible .fcard__gl {
   transform: scale(var(--card-zoom, 1.03));
-  filter: blur(0) grayscale(0) contrast(1) brightness(1);
+  filter: blur(0) contrast(1) brightness(1);
 }
 
 /* The frosted pane: a glassy tint + top sheen highlight, darkening toward the

@@ -223,6 +223,35 @@
   transition: -webkit-text-stroke-color 0.4s var(--ease);
 }
 
+/* --- Stray glitch glyphs around each word --- */
+/* A field ~3× the word, centred on it; the glyphs live at its edges. Faint
+   interference at rest, leading in the accent while the world is hot. */
+.landing__glitch {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 300%;
+  height: 300%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.landing__gly {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--f-display);
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fg-3);
+  opacity: 0.3;
+  transition: opacity 0.3s var(--ease), color 0.3s var(--ease);
+}
+.landing__glitch.is-hot .landing__gly {
+  color: var(--accent);
+  opacity: 0.85;
+}
+
 /* --- Touch: no cursor, so the seam rests and the words are filled (GhostText
    does that itself); the worlds sit level and a tap picks one. --- */
 @media (hover: none) {
