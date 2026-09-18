@@ -15,3 +15,9 @@ export const randomWeight = () =>
   WGHT_MIN + Math.round(Math.random() * (WGHT_MAX - WGHT_MIN));
 
 export const oppositeWeight = (w) => WGHT_MIN + WGHT_MAX - w;
+
+/** A ramp of n cuts from `from` to `to`, evenly spaced along the line. */
+export const rampWeights = (n, from = WGHT_MAX, to = WGHT_MIN) =>
+  Array.from({ length: n }, (_, i) =>
+    Math.round(n > 1 ? from + ((to - from) * i) / (n - 1) : from)
+  );

@@ -3,8 +3,9 @@ import { randomWeight, oppositeWeight } from '../lib/weights';
 import './WeightedText.css';
 
 /**
- * A line of type where every letter sits at its own random cut on the display
- * face's weight axis (see lib/weights.js) and flips to the opposite cut while
+ * A line of type where every letter sits at its own cut on the display face's
+ * weight axis (see lib/weights.js) — random, or a ramp the caller hands in —
+ * and flips to the opposite cut while
  * the line — or the `hoverWithin` ancestor it names — is hovered. Drawn once
  * per mount, so the line is stable while a page is open and re-set on the next.
  *
@@ -18,9 +19,11 @@ import './WeightedText.css';
  * Used by the nav brand. The hero wordmark and the "All work" header use the
  * cursor-driven version of this idea instead (Hero.jsx, GhostText.jsx).
  */
-export default function WeightedText({ text, className = '' }) {
+export default function WeightedText({ text, className = '', weights: given }) {
   const chars = text.split('');
-  const [weights] = useState(() => chars.map(randomWeight));
+  // `weights` may be handed in (a ramp, say) — otherwise one random cut per
+  // letter, drawn once per mount.
+  const [weights] = useState(() => given || chars.map(randomWeight));
   const ref = useRef(null);
 
   useEffect(() => {

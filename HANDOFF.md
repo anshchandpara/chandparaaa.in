@@ -30,8 +30,9 @@ fallback; body is Instrument Sans. Per-letter weight play, all on the wght axis:
   pocket, fills in (opacity = `--g`) and travels to the opposite cut (`--w1` = 1100 − w0). The
   word reflows as letters re-weight — accepted. Touch / reduced-motion get the fill outright.
   The load decode now decodes into the outline; inversion and glyph churn are gone.
-- **Brand** (`components/WeightedText.jsx` via `Brand.jsx`): one random weight per letter per
-  mount; hover flips every letter to its opposite cut.
+- **Brand** (`components/WeightedText.jsx` via `Brand.jsx`): an even weight RAMP across the
+  name, 900 at the A → 200 at the last a (`rampWeights`); hover reverses it. Random per letter
+  was the first cut; Ansh asked for order (2026-09-18).
 - **"All work" header** (`components/GhostText.jsx`): the hero's pocket treatment as a component
   — outline at rest, fill + weight travel by cursor distance (radius 1.45× font size, min 110px). Each letter is PINNED to a
   fixed cell (the wider of its two cuts, measured after the kit loads, transitions suspended
