@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-14. Live at `0c554f6`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-18. Live at `9b30ae4`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -46,8 +46,8 @@ LANDING GATE (`Landing.jsx/.css`, shipped `0c554f6`): two worlds along a 12° le
 measured against the leaning seam), `--px/--py` parallax on the loops; WORK / LAB as GhostText
 at the quarter lines (type at 30% of the first cut, Ansh's call — clamp(17px, 3.3vw, 51px));
 click sweeps the seam off the edge, then hands off. Worlds are opaque before their video
-paints. Touch / reduced motion: static split, filled words. The pill, the scramble and the
-glitch glyphs are gone.
+paints. Touch / reduced motion: static split, filled words. The pill and the scramble are gone;
+the glitch glyphs are back, a field around each word (`GlitchField`).
 
 LAB HOME = HERO + ROOM. `ReveriesRoom` (`src/components/lab/ReveriesRoom.jsx`) is a section
 mounted under the lab hero on Home (lazy) and wrapped by the `?p=reveries` page. The section is
@@ -103,6 +103,10 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-18 — glyphs, colour cards, brand ramp** — commit `9b30ae4`.
+Landing: glitch glyphs back around each word. Work cards: no grayscale at rest, frost 15px →
+6px (scale 1.14 → 1.08). Brand: even weight ramp 900 → 200 across the name, reversing on hover.
 
 **2026-09-14 — landing gate redesign** — commit `0c554f6`.
 Leaning cursor-driven seam, worlds that come to colour and drift when hot, WORK / LAB in the
