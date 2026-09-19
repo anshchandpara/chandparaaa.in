@@ -240,7 +240,7 @@ export default function Landing({ onChoose }) {
         </div>
 
         <p className="eyebrow landing__role">
-          Creative Director · Title Designer · Filmmaker
+          Artist · CG Generalist · Creative Director
         </p>
       </div>
     </div>

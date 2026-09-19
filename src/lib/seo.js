@@ -17,11 +17,11 @@ import { getProject } from './projectData';
 export const SITE = {
   origin: 'https://chandparaaa.in',
   name: 'Ansh Chandpara',
-  title: 'Ansh Chandpara — Creative Director · Title Designer · Filmmaker',
+  title: 'Ansh Chandpara — Artist · CG Generalist · Creative Director',
   description:
-    'Ansh Chandpara — Creative Director, Title Designer & Filmmaker. Selected work across title design, film, music videos, and brand storytelling.',
+    'Ansh Chandpara — Artist, CG Generalist & Creative Director. Selected work across title design, film, music videos, and brand storytelling.',
   image: 'https://chandparaaa.in/og.jpg',
-  jobTitle: 'Creative Director, Title Designer & Filmmaker',
+  jobTitle: 'Artist, CG Generalist & Creative Director',
   locale: 'en_IN',
 };
 

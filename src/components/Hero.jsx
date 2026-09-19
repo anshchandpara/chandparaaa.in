@@ -22,7 +22,7 @@ const RADIUS = 150;
 
 const COPY = {
   work: {
-    eyebrow: 'Creative Director · Title Designer · Filmmaker',
+    eyebrow: 'Artist · CG Generalist · Creative Director',
     sub: 'Selected work across title design, film, music videos, and brand storytelling.',
     cta: 'View work',
   },

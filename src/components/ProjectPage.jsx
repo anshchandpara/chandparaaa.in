@@ -482,7 +482,7 @@ export default function ProjectPage({ slug }) {
 
       <footer className="foot">
         <span>© 2026 Chandparaaa</span>
-        <span>Creative Director · Title Designer · Filmmaker</span>
+        <span>Artist · CG Generalist · Creative Director</span>
         <span>{CURRENT_LOCATION.city}, {CURRENT_LOCATION.country}</span>
       </footer>
 
