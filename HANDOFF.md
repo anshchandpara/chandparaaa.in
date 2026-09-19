@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-18. Live at `9b30ae4`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-19. Live at `619fc01`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -103,6 +103,10 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-19 — designation** — commit `619fc01`. "Artist · CG Generalist · Creative Director"
+everywhere the line appears (hero, loader, gate, footers, title, meta, OG, JSON-LD). `og.jpg`
+is a plain frame with no text — nothing to regenerate. Project-entry `role` fields untouched.
 
 **2026-09-18 — glyphs, colour cards, brand ramp** — commit `9b30ae4`.
 Landing: glitch glyphs back around each word. Work cards: no grayscale at rest, frost 15px →
