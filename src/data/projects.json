@@ -458,9 +458,19 @@
           "after": 7,
           "label": "Approach",
           "text": "Each episode needed its own outline while still belonging to one continuous world."
+        },
+        {
+          "after": 8,
+          "label": "Process",
+          "text": "Lookdev on the forest floor, the floating cliff in its passes, and the ember rock — the environments underneath the prologue."
         }
       ],
-      "youtube": "https://www.youtube.com/watch?v=ymk8O_ydf5E"
+      "youtube": "https://www.youtube.com/watch?v=ymk8O_ydf5E",
+      "wide": [
+        "zz1-forest-lookdev.mp4",
+        "zz2-cliff-passes.mp4",
+        "zz3-ember-rock.mp4"
+      ]
     },
     {
       "slug": "uv-automotive-f77",
