@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-19. Live at `619fc01`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-21. Live at `4cc809a`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -90,6 +90,11 @@ capability but is no longer used by any entry (Ansh chose one film over eight sl
 Ansh's own caption — six collaborators are Instagram handles until he supplies names; the desc
 and two notes are my words from his caption). Masters staged at `~/media-masters/<slug>/`.
 
+FILMS AUDIT (2026-09-21): Vimeo film on Railway Men, Lootere, Decoupled, Hunter, Equals, UV;
+YouTube poster link on Monsoon, Raat Khatam, Nothing Makes Sense, Tivvra, Lakk nu Hila, Ekam;
+loops only on Mars, Asur, ISBL, Dico, Britannia, BTS Captures. **No film at all:** Manorathangal,
+Union Day, SAVI, ICC Women's T20, Murder Mubarak, Spring Health — links wanted.
+
 WAITING ON ANSH: (0) real names for the six handle-only Decoupled credits; the Decoupled desc
 and the Lootere Type/Process breaks are my words; (1) real social URLs + email for the About page and the schema; (2) judge the
 room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still my draft;
@@ -103,6 +108,9 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-21 — three YouTube links** — commit `4cc809a`. Tivvra (Alterego 2.0), Lakk nu Hila,
+Ekam (Prologue 4K) get the poster link; radio/playlist params stripped from the Lakk nu Hila URL.
 
 **2026-09-19 — designation** — commit `619fc01`. "Artist · CG Generalist · Creative Director"
 everywhere the line appears (hero, loader, gate, footers, title, meta, OG, JSON-LD). `og.jpg`
