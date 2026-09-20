@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-21. Live at `3970bbe`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-21. Live at `baf5596`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -106,6 +106,11 @@ room at 61 — `TUNE` in `reveriesScene.js`; the Reveries title/desc are still m
 (3) Gorillaz (31, 32) and Marlboro (30, 31) pieces stay at his word; (4) judge the shipped type live — the random-per-letter weights (hero + brand) and the hero's
 word reflow on hover (the brand's pin is available there too if it shivers); (5) title-fit curve if not 2 lines / 56–136px; (6) nothing on the media origin — it is done.
 
+TOUCH (`hover: none`) IS A SIMPLER SITE, by design (2026-09-21): gate + hero use stills, not
+loops; type is one weight with no ghost / warp / glyphs; cards are sharp (no frost); gallery
+loops play only in view (`useInViewPlayback`, all devices). Verify media on a phone viewport
+with the CDP probe — the pane's hidden document pauses video.
+
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — prebuild = manifest guard + sitemap.
 2. **Both project hooks live in `Work/Claude/.claude/settings.json`**, the PARENT folder.
@@ -113,6 +118,13 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-21 — mobile pass, Ekam first, Dico lead loop** — commit `baf5596`.
+Touch: stills for the gate's worlds and the hero (no autoplay loops), one-weight type with no
+ghost/warp/glyphs, sharp cards; gallery loops play only in view everywhere (verified in
+headless Chrome at 375px). Ekam is card 01 and the index numbers follow the curated order.
+Dico's rack → end-card breakdown now leads its gallery (renamed 109 → 000; the old R2 keys are
+orphans for the next prune).
 
 **2026-09-21 — Ekam loops, About off, ICC draft** — commit `3970bbe`.
 Ekam: three process GIFs from Website Master as 1080p loops (forest lookdev flip-book, cliff
