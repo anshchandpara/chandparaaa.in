@@ -592,16 +592,16 @@
       "video": "",
       "subtitle": "",
       "wide": [
+        "000-breakdown-e.mp4",
         "102-breakdown-a.mp4",
         "103-breakdown-b.mp4",
         "106-breakdown-c.mp4",
         "107-breakdown-d.mp4",
-        "108-board-b3.jpg",
-        "109-breakdown-e.mp4"
+        "108-board-b3.jpg"
       ],
       "notes": [
         {
-          "after": 6,
+          "after": 7,
           "label": "Process",
           "text": "Storyboard to render, shot by shot: the pencil boards, then each frame wiping from wireframe through clay to the final."
         }
