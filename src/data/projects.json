@@ -1,8 +1,68 @@
 {
   "work": [
     {
-      "slug": "mars-beauty-ad",
+      "slug": "ekam",
       "num": "01",
+      "title": "Ekam",
+      "subtitle": "The One and the Multitude",
+      "category": "Prologue & Episodic Outlines",
+      "client": "Journeyman Films, Paramvah Studios",
+      "year": 2025,
+      "platform": "ekamtheseries.com",
+      "role": "CG Team",
+      "featured": true,
+      "desc": "Title-sequence prologue and episodic outlines for the series Ekam — CG-heavy world-building (particle streams, floating forests, glowing rivers, nebula clouds) across Houdini, Cinema4D, Octane and After Effects.",
+      "credits": [
+        "Director — Jishnu Chatterjee",
+        "Post Producer — Vrajesh Pithadiya",
+        "CG Team — Ansh Chandpara, Karan Vanjari",
+        "FX Animation — Vrajesh Pithadiya, Devanshu Tak",
+        "Episodic Outlines — Vrajesh Pithadiya",
+        "Compositor — Jishnu Chatterjee",
+        "Editor — Siddharth Kapoor",
+        "Storyboard Artist — Arkaprabha Dey",
+        "Identity Design — Samresh Shrivastava"
+      ],
+      "gallery": [
+        "Content/website_images_Optim/02_Ekam/7fZWasSOeFa8sN4LR3WeIqcRV4.jpg",
+        "Content/website_images_Optim/02_Ekam/Jf2eZogT3fhgVHoezWGBmwHKDY.jpg",
+        "Content/website_images_Optim/02_Ekam/M9KXJgAw20YTKXzMxQT99sjubK8.jpg",
+        "Content/website_images_Optim/02_Ekam/SkbcIlGLGlNYZILaYXyhoLzGHs4.jpg",
+        "Content/website_images_Optim/02_Ekam/XgQIP9NIyks90o2imnv0UaQ2LRM.jpg",
+        "Content/website_images_Optim/02_Ekam/cyjqt0x2xPlZYqTWqMQrlEtKIM.jpg",
+        "Content/website_images_Optim/02_Ekam/ldwuCY2APqgVVxfu3AlHFOMBeM4.jpg",
+        "Content/website_images_Optim/02_Ekam/meLFHRMG2b3RVBvQ90mpgbMYR24.jpg",
+        "Content/website_images_Optim/02_Ekam/snhv5XchsTphu8p8rXZXjIMx2t4.jpg"
+      ],
+      "image": "Content/website_images_Optim/02_Ekam/7fZWasSOeFa8sN4LR3WeIqcRV4.jpg",
+      "video": "",
+      "notes": [
+        {
+          "after": 3,
+          "label": "Craft",
+          "text": "World-building carried the whole prologue — particle streams, floating forests, glowing rivers, nebulae."
+        },
+        {
+          "after": 7,
+          "label": "Approach",
+          "text": "Each episode needed its own outline while still belonging to one continuous world."
+        },
+        {
+          "after": 8,
+          "label": "Process",
+          "text": "Lookdev on the forest floor, the floating cliff in its passes, and the ember rock — the environments underneath the prologue."
+        }
+      ],
+      "youtube": "https://www.youtube.com/watch?v=ymk8O_ydf5E",
+      "wide": [
+        "zz1-forest-lookdev.mp4",
+        "zz2-cliff-passes.mp4",
+        "zz3-ember-rock.mp4"
+      ]
+    },
+    {
+      "slug": "mars-beauty-ad",
+      "num": "02",
       "title": "Living the MARS Life",
       "category": "Product Film",
       "client": "MARS Cosmetics",
@@ -75,7 +135,7 @@
     },
     {
       "slug": "asur",
-      "num": "02",
+      "num": "03",
       "title": "Asur",
       "category": "Episodic Intros",
       "client": "Viacom18",
@@ -110,7 +170,7 @@
     },
     {
       "slug": "the-railway-men",
-      "num": "03",
+      "num": "04",
       "title": "The Railway Men",
       "category": "Title Sequence",
       "client": "Yash Raj Films",
@@ -147,7 +207,7 @@
     },
     {
       "slug": "monsoon-season-mixtape",
-      "num": "04",
+      "num": "05",
       "title": "Monsoon Season",
       "category": "Title Sequence",
       "client": "Hanumankind",
@@ -178,7 +238,7 @@
     },
     {
       "slug": "mindscapes",
-      "num": "05",
+      "num": "06",
       "title": "Manorathangal",
       "subtitle": "Mindscapes",
       "category": "Title Sequence",
@@ -213,7 +273,7 @@
     },
     {
       "slug": "lootere",
-      "num": "06",
+      "num": "07",
       "title": "Lootere",
       "category": "Title Sequence",
       "client": "Karma Media and Entertainment",
@@ -268,7 +328,7 @@
     },
     {
       "slug": "decoupled",
-      "num": "28",
+      "num": "08",
       "title": "Decoupled",
       "category": "Title Sequence",
       "client": "Plexus",
@@ -312,7 +372,7 @@
     },
     {
       "slug": "hunter",
-      "num": "07",
+      "num": "09",
       "title": "Hunter",
       "subtitle": "Tootega nahi, Todega",
       "category": "Title Sequence",
@@ -356,7 +416,7 @@
     },
     {
       "slug": "equals",
-      "num": "08",
+      "num": "10",
       "title": "Equals",
       "category": "Title Sequence",
       "client": "Anahad Foundation",
@@ -396,7 +456,7 @@
     },
     {
       "slug": "raat-khatam",
-      "num": "09",
+      "num": "11",
       "title": "Raat Khatam",
       "category": "Music Video",
       "client": "5.5 Records",
@@ -413,68 +473,8 @@
       "youtube": "https://www.youtube.com/watch?v=INzwB4Yd1K8"
     },
     {
-      "slug": "ekam",
-      "num": "10",
-      "title": "Ekam",
-      "subtitle": "The One and the Multitude",
-      "category": "Prologue & Episodic Outlines",
-      "client": "Journeyman Films, Paramvah Studios",
-      "year": 2025,
-      "platform": "ekamtheseries.com",
-      "role": "CG Team",
-      "featured": true,
-      "desc": "Title-sequence prologue and episodic outlines for the series Ekam — CG-heavy world-building (particle streams, floating forests, glowing rivers, nebula clouds) across Houdini, Cinema4D, Octane and After Effects.",
-      "credits": [
-        "Director — Jishnu Chatterjee",
-        "Post Producer — Vrajesh Pithadiya",
-        "CG Team — Ansh Chandpara, Karan Vanjari",
-        "FX Animation — Vrajesh Pithadiya, Devanshu Tak",
-        "Episodic Outlines — Vrajesh Pithadiya",
-        "Compositor — Jishnu Chatterjee",
-        "Editor — Siddharth Kapoor",
-        "Storyboard Artist — Arkaprabha Dey",
-        "Identity Design — Samresh Shrivastava"
-      ],
-      "gallery": [
-        "Content/website_images_Optim/02_Ekam/7fZWasSOeFa8sN4LR3WeIqcRV4.jpg",
-        "Content/website_images_Optim/02_Ekam/Jf2eZogT3fhgVHoezWGBmwHKDY.jpg",
-        "Content/website_images_Optim/02_Ekam/M9KXJgAw20YTKXzMxQT99sjubK8.jpg",
-        "Content/website_images_Optim/02_Ekam/SkbcIlGLGlNYZILaYXyhoLzGHs4.jpg",
-        "Content/website_images_Optim/02_Ekam/XgQIP9NIyks90o2imnv0UaQ2LRM.jpg",
-        "Content/website_images_Optim/02_Ekam/cyjqt0x2xPlZYqTWqMQrlEtKIM.jpg",
-        "Content/website_images_Optim/02_Ekam/ldwuCY2APqgVVxfu3AlHFOMBeM4.jpg",
-        "Content/website_images_Optim/02_Ekam/meLFHRMG2b3RVBvQ90mpgbMYR24.jpg",
-        "Content/website_images_Optim/02_Ekam/snhv5XchsTphu8p8rXZXjIMx2t4.jpg"
-      ],
-      "image": "Content/website_images_Optim/02_Ekam/7fZWasSOeFa8sN4LR3WeIqcRV4.jpg",
-      "video": "",
-      "notes": [
-        {
-          "after": 3,
-          "label": "Craft",
-          "text": "World-building carried the whole prologue — particle streams, floating forests, glowing rivers, nebulae."
-        },
-        {
-          "after": 7,
-          "label": "Approach",
-          "text": "Each episode needed its own outline while still belonging to one continuous world."
-        },
-        {
-          "after": 8,
-          "label": "Process",
-          "text": "Lookdev on the forest floor, the floating cliff in its passes, and the ember rock — the environments underneath the prologue."
-        }
-      ],
-      "youtube": "https://www.youtube.com/watch?v=ymk8O_ydf5E",
-      "wide": [
-        "zz1-forest-lookdev.mp4",
-        "zz2-cliff-passes.mp4",
-        "zz3-ember-rock.mp4"
-      ]
-    },
-    {
       "slug": "uv-automotive-f77",
-      "num": "11",
+      "num": "12",
       "title": "UV Automotive",
       "subtitle": "F77 Launch Video",
       "category": "Brand Film",
@@ -509,7 +509,7 @@
     },
     {
       "slug": "union-day-yas-mall",
-      "num": "12",
+      "num": "13",
       "title": "Union Day",
       "subtitle": "Yas Mall",
       "category": "Event Film",
@@ -526,7 +526,7 @@
     },
     {
       "slug": "savi-bb",
-      "num": "13",
+      "num": "14",
       "title": "SAVI",
       "subtitle": "BB",
       "category": "Event Film",
@@ -543,7 +543,7 @@
     },
     {
       "slug": "isbl",
-      "num": "14",
+      "num": "15",
       "title": "Indian Superbike League",
       "category": "Launch Trailer",
       "client": "Indian Superbike League",
@@ -577,7 +577,7 @@
     },
     {
       "slug": "dico-battery",
-      "num": "15",
+      "num": "16",
       "title": "Dico Battery",
       "category": "Commercial",
       "client": "Dico",
@@ -609,7 +609,7 @@
     },
     {
       "slug": "icc-womens-t20-2024",
-      "num": "16",
+      "num": "17",
       "title": "ICC Women's T20 World Cup",
       "category": "Title Sequence",
       "client": "ICC, Star Sports India",
@@ -645,7 +645,7 @@
     },
     {
       "slug": "murder-mubarak",
-      "num": "17",
+      "num": "18",
       "title": "Murder Mubarak",
       "category": "Titles & Packaging",
       "client": "Maddock Films",
@@ -692,7 +692,7 @@
     },
     {
       "slug": "tivvra",
-      "num": "18",
+      "num": "19",
       "title": "Tivvra",
       "subtitle": "Alter Ego 2.0",
       "category": "Commercial",
@@ -740,7 +740,7 @@
     },
     {
       "slug": "spring-health",
-      "num": "19",
+      "num": "20",
       "title": "Spring Health",
       "category": "Brand Reveal",
       "client": "Spring Health",
@@ -779,7 +779,7 @@
     },
     {
       "slug": "britannia-winkin-cow",
-      "num": "20",
+      "num": "21",
       "title": "Britannia",
       "subtitle": "Winkin' Cow",
       "category": "Commercial",
@@ -826,7 +826,7 @@
     },
     {
       "slug": "lakk-nu-hila",
-      "num": "21",
+      "num": "22",
       "title": "Lakk nu Hila",
       "category": "Music Video",
       "client": "Su Real",
@@ -870,7 +870,7 @@
     },
     {
       "slug": "varun-grover-comedy-special",
-      "num": "22",
+      "num": "23",
       "title": "Nothing Makes Sense",
       "category": "Comedy Special",
       "client": "Varun Grover",
@@ -888,7 +888,7 @@
     },
     {
       "slug": "hashishbhai-dhanji-rasla",
-      "num": "23",
+      "num": "24",
       "title": "hASHISHBHAI - Dhanji Rasla",
       "category": "Music Video",
       "client": "Thaltej Publishing Company",
@@ -906,7 +906,7 @@
     },
     {
       "slug": "kyra-itc-farmlite",
-      "num": "24",
+      "num": "25",
       "title": "Kyra × ITC",
       "subtitle": "Sunfeast Farmlite",
       "category": "Commercial",
@@ -924,7 +924,7 @@
     },
     {
       "slug": "storm-plus",
-      "num": "25",
+      "num": "26",
       "title": "Storm Plus",
       "category": "Product Film",
       "client": "",
@@ -942,7 +942,7 @@
     },
     {
       "slug": "tasc",
-      "num": "26",
+      "num": "27",
       "title": "TASC",
       "category": "Environment Design",
       "client": "TASC",
@@ -960,7 +960,7 @@
     },
     {
       "slug": "sketches-live",
-      "num": "27",
+      "num": "28",
       "title": "Sketches Live",
       "category": "",
       "client": "",
