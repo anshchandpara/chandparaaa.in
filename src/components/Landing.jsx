@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { HERO_VIDEO, HERO_POSTER, getHeroVideo } from '../lib/heroVideo';
+import { mediaUrl } from '../lib/mediaManifest';
 import { randomGlyph } from '../lib/glitch';
 import GhostText from './GhostText';
 import WeightedText from './WeightedText';
@@ -28,6 +29,9 @@ import './Landing.css';
  */
 
 const LAB_VIDEO = getHeroVideo('monsoon-season-mixtape');
+// Touch gets stills: two autoplaying loops (~10 MB) is not a first paint
+// for a phone, and there is no hover to light them anyway.
+const LAB_POSTER = mediaUrl('monsoon-season-mixtape', '001.jpg');
 
 // Stray glyphs scattered around a word. Percentages of a field ~3× the word,
 // kept clear of the word's own box in the middle.
@@ -178,23 +182,31 @@ export default function Landing({ onChoose }) {
           right of the leaning seam. Each is also a click target for its side. */}
       <div className="landing__worlds" aria-hidden="true">
         <div className="landing__world landing__world--work" onClick={() => choose('work')}>
-          <video
-            className="landing__media"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster={HERO_POSTER}
-          >
-            <source src={HERO_VIDEO} type="video/mp4" />
-          </video>
+          {touch ? (
+            <img className="landing__media" src={HERO_POSTER} alt="" decoding="async" />
+          ) : (
+            <video
+              className="landing__media"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              poster={HERO_POSTER}
+            >
+              <source src={HERO_VIDEO} type="video/mp4" />
+            </video>
+          )}
         </div>
         <div className="landing__world landing__world--lab" onClick={() => choose('lab')}>
-          {LAB_VIDEO && (
-            <video className="landing__media" autoPlay muted loop playsInline preload="auto">
-              <source src={LAB_VIDEO} type="video/mp4" />
-            </video>
+          {touch ? (
+            <img className="landing__media" src={LAB_POSTER} alt="" decoding="async" />
+          ) : (
+            LAB_VIDEO && (
+              <video className="landing__media" autoPlay muted loop playsInline preload="auto">
+                <source src={LAB_VIDEO} type="video/mp4" />
+              </video>
+            )
           )}
         </div>
         <span className="landing__seam" />
@@ -223,7 +235,7 @@ export default function Landing({ onChoose }) {
             onClick={() => choose('work')}
           >
             <GhostText text="Work" />
-            {!reduced && <GlitchField hot={hot === 'work'} />}
+            {!reduced && !touch && <GlitchField hot={hot === 'work'} />}
           </button>
           <button
             type="button"
@@ -235,7 +247,7 @@ export default function Landing({ onChoose }) {
             onClick={() => choose('lab')}
           >
             <GhostText text="Lab" />
-            {!reduced && <GlitchField hot={hot === 'lab'} />}
+            {!reduced && !touch && <GlitchField hot={hot === 'lab'} />}
           </button>
         </div>
 

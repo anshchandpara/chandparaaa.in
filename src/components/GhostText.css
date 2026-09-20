@@ -37,7 +37,13 @@
   transition-property: transform, font-variation-settings;
 }
 
-/* No cursor, no pocket: touch and reduced motion get the fill outright. */
+/* No cursor, no pocket: touch and reduced motion get the fill outright. On
+   touch the line is simply set — one weight, no ghost — small random cuts
+   read as a fault, not a treatment. */
 @media (hover: none), (prefers-reduced-motion: reduce) {
   .gt__word > .gt__letter { opacity: 1; }
+}
+@media (hover: none) {
+  .gt__letter { --wght: 700; transition: none; }
+  .gt__ghost { display: none; }
 }

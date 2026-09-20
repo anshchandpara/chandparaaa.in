@@ -249,7 +249,15 @@ export default function Hero({ mode = 'work', play = true }) {
   return (
     <header id="top" className="hero" data-screen-label="Hero">
       {/* Background media */}
-      {mode === 'work' ? (
+      {mode === 'work' && touch ? (
+        <img
+          className="hero__media hero__media--video"
+          src={HERO_POSTER}
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+        />
+      ) : mode === 'work' ? (
         <video
           className="hero__media hero__media--video"
           autoPlay

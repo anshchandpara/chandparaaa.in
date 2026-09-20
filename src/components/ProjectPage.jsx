@@ -8,6 +8,7 @@ import { CURRENT_LOCATION } from '../lib/location';
 import { useReveal } from '../hooks/useReveal';
 import { useMagnetic } from '../hooks/useMagnetic';
 import { useTitleFit } from '../hooks/useTitleFit';
+import { useInViewPlayback } from '../hooks/useInViewPlayback';
 import ProjectHeroCanvas from './ProjectHeroCanvas';
 import Lightbox from './Lightbox';
 import Compare from './Compare';
@@ -52,6 +53,8 @@ export default function ProjectPage({ slug }) {
     poster: q.poster ? mediaUrl(item.slug, q.poster) : '',
   }));
   const [seqIndex, setSeqIndex] = useState(-1);
+  // Loops start when they scroll into view and stop when they leave.
+  useInViewPlayback(revealRef, [slug]);
   // Poster candidates for the "Watch the film" link, best first.
   const watchPosters = item.youtube
     ? [
@@ -376,7 +379,6 @@ export default function ProjectPage({ slug }) {
                     muted
                     loop
                     playsInline
-                    autoPlay
                     preload="metadata"
                     data-cursor
                     data-cursor-label="Expand"

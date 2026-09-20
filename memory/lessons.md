@@ -234,3 +234,10 @@ heavier glyph pushes every letter after it sideways — 3.6px at 16px, measured 
 shivers for the length of the transition. Pin each letter to the wider of its two cuts
 (`Brand.jsx`); then the only thing that moves is the strokes (0.000px shift, measured).
 *Evidence:* Brand.jsx `pin()`; preview measurement 2026-09-12.
+
+**2026-09-21 · The preview pane pauses media it cannot see.** A muted loop started by
+`play()` resolved `paused === false`, then read paused a second later — the pane's document is
+hidden and Chrome pauses background media. Not a bug in the code: the same page in headless
+Chrome at 375px played the in-view loops and paused them on scroll-away. Verify media playback
+with the CDP probe, not the pane.
+*Evidence:* `useInViewPlayback` debug run, session e84d216e.

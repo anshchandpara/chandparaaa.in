@@ -99,7 +99,10 @@
 
 /* The fill exists only in the cursor's pocket — the wordmark at rest is its
    outline (the ghost below). Where there is no cursor there is no pocket, so
-   touch and reduced-motion get the fill outright. */
+   touch and reduced-motion get the fill outright — and on touch the wordmark
+   is simply set: one weight, no ghost layer, no SVG warp. Random cuts at
+   35px read as a rendering fault, and the displacement filter is the single
+   most expensive thing on the page for a phone GPU. */
 .hero__word > .hero__letter { opacity: var(--g); }
 @media (hover: none), (prefers-reduced-motion: reduce) {
   .hero__word > .hero__letter { opacity: 1; }
@@ -185,4 +188,12 @@
 @media (max-width: 720px) {
   .hero__scroll { display: none; }
   .hero__foot { gap: 28px; }
+}
+
+/* Touch: one weight, no ghost layer, no SVG warp (see the note above the
+   fill rule). Last in the file so it outranks the rules above. */
+@media (hover: none) {
+  .hero__letter { --wght: 700; transition: none; }
+  .hero__ghost { display: none; }
+  .hero__word { filter: none; }
 }

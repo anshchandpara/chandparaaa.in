@@ -303,3 +303,15 @@
   transition: color 0.35s var(--ease);
 }
 .work__all:hover { color: var(--accent); }
+
+/* Touch: there is no hover to clear the frost, so a phone would see every
+   thumbnail blurred forever — and a blur filter on a column of full-width
+   images is heavy on a phone GPU. Cards are simply sharp there. */
+@media (hover: none) {
+  .fcard__img,
+  .fcard__gl {
+    filter: none;
+    transform: none;
+    will-change: auto;
+  }
+}
