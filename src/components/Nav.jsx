@@ -5,7 +5,6 @@ import './Nav.css';
 
 const PILL_LINKS = [
   { href: './#work', label: 'Projects' },
-  { href: '?page=about', label: 'About' },
 ];
 
 export default function Nav({ mode, onMode }) {

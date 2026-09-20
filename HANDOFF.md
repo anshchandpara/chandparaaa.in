@@ -71,7 +71,12 @@ says DYNAMIC even when cached. To change bytes under the TTL rename the object (
 purge in the dashboard. Cloudflare's managed robots.txt prepends an AI-crawler block;
 search engines unaffected.
 
-SITE STATE: 28 `work` (23 published), 6 `lab` (2 published). Manifest references 529 files;
+ABOUT PAGE OFF (2026-09-21, Ansh): `?page=about` falls through to Home; no About link in any
+nav; the Work footer's Archive link (which lived on About) is gone; not in the sitemap.
+`AboutPage.jsx` + `About.jsx` stay on disk, unimported — the lab index (archive) with them, so
+`bts-captures` is now reachable only by URL. ICC Women's T20 set to draft.
+
+SITE STATE: 28 `work` (22 published), 6 `lab` (2 published). Manifest references 529 files;
 R2 holds 532 objects (3 are encoder siblings, excluded from galleries by design) (the 19 deck orphans were pruned 2026-09-13 at Ansh's word — `sync-to-store
 --prune --yes`; local copies + staged masters remain in `~/media-masters/_quarantine/`, his to clear). **Unshipped on dev (2026-09-13):** from the "CG for
 Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) + 8

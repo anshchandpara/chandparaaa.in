@@ -32,8 +32,7 @@ export default function Reveries({ slug }) {
       <nav className="nav is-scrolled" style={{ zIndex: 50 }}>
         <Brand />
         <div className="nav__links">
-          <a href="?page=about#archive" data-cursor>← Lab</a>
-          <a href="?page=about" data-cursor>About</a>
+          <a href="./" data-cursor>← Lab</a>
         </div>
       </nav>
 

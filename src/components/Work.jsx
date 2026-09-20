@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { getWorkCards, sortCards, SORTS } from '../lib/workCards';
-import { useMagnetic } from '../hooks/useMagnetic';
 import CardCanvas from './CardCanvas';
 import GhostText from './GhostText';
 import './Work.css';
@@ -86,7 +85,6 @@ export default function Work({ columns = 4 }) {
 
   const gridRef = useRef(null);
   const sentinelRef = useRef(null);
-  const allWorkRef = useMagnetic();
 
   // Infinite scroll: start with a couple of rows, extend as the sentinel nears.
   const batch = Math.max(4, cols * 2);
@@ -221,12 +219,6 @@ export default function Work({ columns = 4 }) {
         <div ref={sentinelRef} className="work__sentinel" aria-hidden="true" />
       )}
 
-      <div className="work__foot">
-        <a ref={allWorkRef} href="?page=about#archive" data-cursor data-magnetic className="work__all">
-          <span>Archive</span>
-          <span aria-hidden="true">→</span>
-        </a>
-      </div>
     </section>
   );
 }

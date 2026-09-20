@@ -56,16 +56,6 @@ const absolute = (url) => {
 /** Route → meta. `slug` wins over `page`; neither = home. */
 export function metaForRoute({ slug, page } = {}) {
   if (slug) return projectMeta(slug);
-  if (page === 'about') {
-    return {
-      title: `About · ${SITE.name}`,
-      description: `${SITE.name} is a ${SITE.jobTitle.toLowerCase()} working direct with clients and studios on title sequences, films, music videos and brand work.`,
-      canonical: `${SITE.origin}/?page=about`,
-      image: SITE.image,
-      type: 'profile',
-      jsonLd: { '@context': 'https://schema.org', ...PERSON, mainEntityOfPage: `${SITE.origin}/?page=about` },
-    };
-  }
   return {
     title: SITE.title,
     description: SITE.description,

@@ -156,7 +156,6 @@ export default function ProjectPage({ slug }) {
         <Brand />
         <div className="nav__links">
           <a href="./#work" data-cursor>← Projects</a>
-          <a href="?page=about" data-cursor>About</a>
         </div>
       </nav>
 

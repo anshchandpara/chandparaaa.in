@@ -25,7 +25,6 @@ const published = [...(data.work || []), ...(data.lab || [])].filter((p) => !p.d
 
 const urls = [
   `${ORIGIN}/`,
-  `${ORIGIN}/?page=about`,
   ...published.map((p) => `${ORIGIN}/?p=${encodeURIComponent(p.slug)}`),
 ];
 

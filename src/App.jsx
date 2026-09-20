@@ -2,7 +2,6 @@ import { Suspense, useEffect } from 'react';
 import Cursor from './components/Cursor';
 import FuiGrid from './components/FuiGrid';
 import Home from './components/Home';
-import AboutPage from './components/AboutPage';
 import ProjectPage from './components/ProjectPage';
 import { LAB_PAGES } from './components/lab/pages';
 import { useRoute, installRouter } from './hooks/useRoute';
@@ -32,9 +31,6 @@ export default function App() {
   } else if (slug) {
     view = <ProjectPage key={slug} slug={slug} />;
     key = `p:${slug}`;
-  } else if (page === 'about') {
-    view = <AboutPage />;
-    key = 'about';
   } else {
     view = <Home />;
     key = 'home';
