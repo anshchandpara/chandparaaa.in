@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-21. Live at `4cc809a`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-09-21. Live at `3970bbe`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -113,6 +113,11 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-09-21 — Ekam loops, About off, ICC draft** — commit `3970bbe`.
+Ekam: three process GIFs from Website Master as 1080p loops (forest lookdev flip-book, cliff
+passes, ember rock) with a Process break. About page unrouted and unlinked (files kept); the
+Archive link went with it. ICC Women's T20 → draft. Live sitemap: 24 URLs, no about, no ICC.
 
 **2026-09-21 — three YouTube links** — commit `4cc809a`. Tivvra (Alterego 2.0), Lakk nu Hila,
 Ekam (Prologue 4K) get the poster link; radio/playlist params stripped from the Lakk nu Hila URL.
