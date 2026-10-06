@@ -76,24 +76,21 @@ nav; the Work footer's Archive link (which lived on About) is gone; not in the s
 `AboutPage.jsx` + `About.jsx` stay on disk, unimported — the lab index (archive) with them, so
 `bts-captures` is now reachable only by URL. ICC Women's T20 set to draft.
 
-SITE STATE: 28 `work` (22 published), 6 `lab` (2 published). Manifest references 529 files;
-R2 holds 532 objects (3 are encoder siblings, excluded from galleries by design) (the 19 deck orphans were pruned 2026-09-13 at Ansh's word — `sync-to-store
---prune --yes`; local copies + staged masters remain in `~/media-masters/_quarantine/`, his to clear). **Unshipped on dev (2026-09-13):** from the "CG for
-Title Design" Google Slides deck — Lootere +19 stills (the credit-typography frames) + 8
-process loops in the gallery + the two kid-running loops (clay / colour, 66 frames each, in
-sync) as the page's A/B slider (`compare/01-clean.mp4` + `01-final.mp4`, labels "Clay → Final";
-the gallery copies `loop-05/06` moved to `~/media-masters/_quarantine/2026-09-13-lootere-loops-
-to-compare/`, R2 copies unreferenced). Lootere's gallery now has a rhythm — a per-entry `wide`
-list in projects.json (basenames that span both columns; the first frame always does) and
-three text breaks (Concept · Type · Process; Type and Process are my words, first draft) (`loop-NN.mp4`, GIF → H.264 at 2×, ~16 MB total, hand-placed: the pipeline's loop
-preset would have dropped `-poster.jpg` / `.900p.mp4` siblings into the gallery), and a NEW
-PUBLISHED entry `decoupled` (num 28, 2021, Netflix, client Plexus, cover = the suitcase
-`008.jpg`, 24 frames incl. the seven composite set-sheets, Vimeo `1226250160` ("All episodes",
-aspect 1.775) as the film. The `sequences` feature — per-episode tiles opening in the gallery
-mode, Vimeo or reserved, optional poster — stays in ProjectPage/Lightbox as a data-driven
-capability but is no longer used by any entry (Ansh chose one film over eight slots); credits from
-Ansh's own caption — six collaborators are Instagram handles until he supplies names; the desc
-and two notes are my words from his caption). Masters staged at `~/media-masters/<slug>/`.
+SITE STATE: 28 `work` (22 published), 6 `lab` (2 published). Manifest references 523 files;
+R2 holds 541 objects — the 18 extra are encoder siblings (`-poster.jpg`, `.900p.mp4` for the
+Britannia, Dico and Ekam loops), local and kept, excluded from galleries. 0 orphans (pruned
+2026-10-06). Local copies of everything pulled from the site sit in `~/media-masters/_quarantine/`
+(dated folders + MANIFEST.md) — Ansh's to clear. Masters staged at `~/media-masters/<slug>/`.
+
+DECK MEDIA (shipped `212e5c6`, from the "CG for Title Design" Google Slides deck): Lootere +19
+credit-typography stills, 8 process loops (`loop-NN.mp4`, GIF → H.264 at 2×, hand-placed) and a
+Clay → Final A/B slider from the two frame-synced kid-running loops; a per-entry `wide` list sets
+its rhythm, with three text breaks (Type and Process are my words, first draft). Decoupled is a
+published project (card 08, 2021, Netflix, client Plexus): suitcase cover `008.jpg`, 24
+frames incl. the seven set-sheets, Vimeo `1226250160` (all episodes) as the film; credits from
+Ansh's caption — six are Instagram handles until he supplies names; desc + two notes are my
+words. The `sequences` feature (per-episode tiles opening in the gallery mode) stays in
+ProjectPage/Lightbox, unused.
 
 FILMS AUDIT (2026-09-21): Vimeo film on Railway Men, Lootere, Decoupled, Hunter, Equals, UV;
 YouTube poster link on Monsoon, Raat Khatam, Nothing Makes Sense, Tivvra, Lakk nu Hila, Ekam;
