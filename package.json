@@ -20,7 +20,8 @@
     "media:pull": "node --env-file=.env.local tools/pipeline/pull-from-store.mjs",
     "media:video-meta": "node tools/pipeline/fetch-video-meta.mjs",
     "media:cutouts": "node tools/pipeline/encode-cutouts.mjs",
-    "postbuild": "cp dist/index.html dist/404.html"
+    "postbuild": "cp dist/index.html dist/404.html",
+    "og:card": "node tools/og-card/render.mjs"
   },
   "dependencies": {
     "gsap": "^3.12.5",

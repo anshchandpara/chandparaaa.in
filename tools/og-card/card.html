@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- The site's own faces: Obviously Variable (Adobe kit, allowlisted for
+     localhost) for the name, Instrument Sans for the small lines. render.mjs
+     refuses to shoot unless the Adobe face actually loaded. -->
+<link rel="stylesheet" href="https://use.typekit.net/jkq4ugc.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&display=swap">
+<style>
+  html, body { margin: 0; background: #0a0a0a; }
+  .card { position: relative; width: 1200px; height: 630px; overflow: hidden; background: #0a0a0a;
+    color: #f4f1ea; font-family: "obviously-variable", "Archivo", sans-serif;
+    font-variation-settings: "wdth" 100, "wght" 700; }
+  .card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.82); }
+  /* A ramp to the page black along the bottom, like the project heroes, so
+     the type holds against the ballast. */
+  .veil { position: absolute; inset: 0; background: linear-gradient(180deg,
+      rgba(10,10,10,.25) 0%, rgba(10,10,10,0) 30%, rgba(10,10,10,.55) 62%, rgba(10,10,10,.94) 100%); }
+  .rule { position: absolute; left: 64px; right: 64px; top: 64px; height: 1px; background: rgba(244,241,234,.18); }
+  .site { position: absolute; right: 64px; top: 40px; font-family: "Instrument Sans", sans-serif;
+    font-size: 15px; letter-spacing: .22em; text-transform: uppercase; color: rgba(244,241,234,.7); }
+  .name { position: absolute; left: 64px; bottom: 128px; margin: 0; font-size: 92px; line-height: .9;
+    letter-spacing: -.02em; text-transform: uppercase; white-space: nowrap; }
+  .name span { display: inline-block; }
+  .role { position: absolute; left: 66px; bottom: 82px; margin: 0; font-family: "Instrument Sans", sans-serif;
+    font-size: 20px; letter-spacing: .24em; text-transform: uppercase; color: #d98b2b; }
+</style></head>
+<body><div class="card">
+  <img src="frame.jpg" alt="">
+  <div class="veil"></div>
+  <div class="rule"></div>
+  <div class="site">chandparaaa.in</div>
+  <h1 class="name" id="name"></h1>
+  <p class="role">Artist · CG Generalist · Creative Director</p>
+</div>
+<script>
+  // The nav brand's ramp (src/lib/weights.js rampWeights): 900 at the A, one
+  // even step per letter down to 200 at the last a; the space stays a space.
+  const name = 'Ansh Chandpara'; const n = name.length; const h = document.getElementById('name');
+  [...name].forEach((ch, i) => {
+    const w = Math.round(900 + (200 - 900) * i / (n - 1));
+    if (ch === ' ') { h.appendChild(document.createTextNode(' ')); return; }
+    const s = document.createElement('span'); s.textContent = ch;
+    s.style.fontVariationSettings = `"wdth" 100, "wght" ${w}`; h.appendChild(s);
+  });
+</script>
+</body></html>

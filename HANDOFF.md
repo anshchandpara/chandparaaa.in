@@ -108,6 +108,12 @@ loops; type is one weight with no ghost / warp / glyphs; cards are sharp (no fro
 loops play only in view (`useInViewPlayback`, all devices). Verify media on a phone viewport
 with the CDP probe — the pane's hidden document pauses video.
 
+SHARE CARD: `public/og-v2.jpg` (1200×630) — name in the nav's weight ramp, designation in the
+accent, over the hero loop's frame at 1.00 s. Rendered by `npm run og:card -- public/og-vN.jpg`
+(`tools/og-card/`: headless Chrome, refuses to shoot without the Adobe face, refuses to
+overwrite). Scrapers cache by URL — a changed card gets a new name, and index.html + seo.js
+follow it. The old `public/og.jpg` is unreferenced, kept.
+
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — prebuild = manifest guard + sitemap.
 2. **Both project hooks live in `Work/Claude/.claude/settings.json`**, the PARENT folder.

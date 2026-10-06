@@ -20,7 +20,9 @@ export const SITE = {
   title: 'Ansh Chandpara — Artist · CG Generalist · Creative Director',
   description:
     'Ansh Chandpara — Artist, CG Generalist & Creative Director. Selected work across title design, film, music videos, and brand storytelling.',
-  image: 'https://chandparaaa.in/og.jpg',
+  // Rendered by `npm run og:card` (tools/og-card). A changed card gets a new
+  // name — scrapers cache by URL.
+  image: 'https://chandparaaa.in/og-v2.jpg',
   jobTitle: 'Artist, CG Generalist & Creative Director',
   locale: 'en_IN',
 };
