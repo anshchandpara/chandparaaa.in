@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-09-21. Live at `baf5596`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-10-06. Live at `6ad4c92`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -121,6 +121,12 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-10-06 — share card, R2 pruned** — commit `6ad4c92`.
+`public/og-v2.jpg`: name in the nav's weight ramp + designation in the accent over the hero
+loop's frame at 1.00 s, rendered by the new `npm run og:card` (tools/og-card). og:image,
+twitter:image and the JSON-LD image point at it; verified live (200, 90,902 B). The three Dico
+orphans pruned from R2 (0 left); 541 objects = 523 referenced + 18 encoder siblings.
 
 **2026-09-21 — mobile pass, Ekam first, Dico lead loop** — commit `baf5596`.
 Touch: stills for the gate's worlds and the hero (no autoplay loops), one-weight type with no
