@@ -14,7 +14,7 @@ searching for those exact comments, and a renamed marker makes it print nothing,
 identical to "there was nothing to print".
 
 <!-- CURRENT:START -->
-**2026-10-06. Live at `6ad4c92`. The site is set in Obviously Variable + Instrument Sans via the
+**2026-10-13. Live at `7fd9fc1`. The site is set in Obviously Variable + Instrument Sans via the
 Adobe kit, with per-letter weight play on the hero, the brand and the cards; the lab home
 scrolls straight into the Reveries room; SEO foundations and Cloudflare are in.**
 
@@ -112,7 +112,7 @@ SHARE CARD: `public/og-v2.jpg` (1200×630) — name in the nav's weight ramp, de
 accent, over the hero loop's frame at 1.00 s. Rendered by `npm run og:card -- public/og-vN.jpg`
 (`tools/og-card/`: headless Chrome, refuses to shoot without the Adobe face, refuses to
 overwrite). Scrapers cache by URL — a changed card gets a new name, and index.html + seo.js
-follow it. The old `public/og.jpg` is unreferenced, kept.
+follow it. The old `public/og.jpg` was removed 2026-10-13 at Ansh's word.
 
 THREE THINGS NOT TO BREAK:
 1. **`npm run build`, never `npx vite build`** — prebuild = manifest guard + sitemap.
@@ -121,6 +121,13 @@ THREE THINGS NOT TO BREAK:
 <!-- CURRENT:END -->
 
 ## Ship log (append-only, newest first)
+
+**2026-10-13 — Raat Khatam title loop, old og.jpg removed** — commit `7fd9fc1`.
+The drip title animation, from the ProRes 4444 alpha master laid on the page black (#0a0a0a),
+leads the Raat Khatam gallery as a muted 1080p / 15 fps loop (266 KB). `encode-video.mjs`
+poster step now falls back to `-sseof -1 -update 1` (the 50 ms seek found no frame at 15 fps).
+`public/og.jpg` deleted (unreferenced since og-v2). Verified live: loop 200 from the edge,
+og.jpg 404, bundle references the loop.
 
 **2026-10-06 — share card, R2 pruned** — commit `6ad4c92`.
 `public/og-v2.jpg`: name in the nav's weight ramp + designation in the accent over the hero
