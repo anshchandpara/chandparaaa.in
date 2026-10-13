@@ -561,10 +561,16 @@ async function main() {
     } else {
       const posterArgs = ['-sseof', '-0.05', '-i', input, '-frames:v', '1', '-q:v', '3', '-y', posterPath];
       await runFfmpeg(posterArgs, args.dryRun);
-      // ffmpeg exits 0 with "nothing was encoded" on inputs whose final
-      // 50ms doesn't decode (some VFR exports) — that left a silent hole
-      // where a poster should be. Fail loudly instead.
-      if (!args.dryRun && (!existsSync(posterPath) || statSync(posterPath).size === 0)) {
+      // A seek 50 ms before EOF lands inside the last frame of a low-frame-rate
+      // clip (15 fps = 67 ms a frame) and decodes nothing; so does some VFR
+      // export. Fallback: decode the last second and keep overwriting one file
+      // (`-update 1`), which leaves the true last frame whatever the rate.
+      const posterEmpty = () => !existsSync(posterPath) || statSync(posterPath).size === 0;
+      if (!args.dryRun && posterEmpty()) {
+        await runFfmpeg(['-sseof', '-1', '-i', input, '-update', '1', '-q:v', '3', '-y', posterPath], args.dryRun);
+      }
+      // Still nothing: fail loudly rather than leave a silent hole.
+      if (!args.dryRun && posterEmpty()) {
         throw new Error(`poster extraction produced no file: ${posterPath} — try a manual -sseof value (e.g. -0.5)`);
       }
     }

@@ -241,3 +241,9 @@ hidden and Chrome pauses background media. Not a bug in the code: the same page 
 Chrome at 375px played the in-view loops and paused them on scroll-away. Verify media playback
 with the CDP probe, not the pane.
 *Evidence:* `useInViewPlayback` debug run, session e84d216e.
+
+**2026-10-13 · `-sseof -0.05` finds no frame on a low-frame-rate clip.** The Raat Khatam title
+(15 fps, 67 ms a frame) produced an empty poster and failed the whole encode, though the loop
+itself was fine. `encode-video.mjs` now falls back to decoding the last second with `-update 1`,
+which leaves the true last frame at any rate.
+*Evidence:* `npm run media -- raat-khatam`, first run exit 1, second run poster written.
